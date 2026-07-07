@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>CyclomaticComplexMethod:Freehand.kt$fun strokeOutline( xs: FloatArray, ys: FloatArray, pressures: FloatArray, width: Float, thinning: Float = 0.5f, streamline: Float = 0.5f, capSteps: Int = 8, smoothingSpacing: Float = 3.5f, ): FloatArray</ID>
+    <ID>CyclomaticComplexMethod:PenConnectionManager.kt$PenConnectionManager$private fun onPenMessage(msg: PenMessage)</ID>
+    <ID>CyclomaticComplexMethod:PenConnectionManager.kt$PenConnectionManager$private fun scheduleReconnect()</ID>
+    <ID>EmptyElseBlock:Freehand.kt$if (p &lt; pMin) pMin = p</ID>
+    <ID>LongParameterList:Freehand.kt$( out: ArrayList&lt;Float&gt;, cx: Float, cy: Float, nx: Float, ny: Float, tx: Float, ty: Float, r: Float, steps: Int, sign: Float, )</ID>
+    <ID>LongParameterList:Freehand.kt$( xs: FloatArray, ys: FloatArray, pressures: FloatArray, width: Float, thinning: Float = 0.5f, streamline: Float = 0.5f, capSteps: Int = 8, smoothingSpacing: Float = 3.5f, )</ID>
+    <ID>LongParameterList:PenConnectionManager.kt$PenConnectionManager$( private val sdk: NeoPenSdk, private val prefs: PenPrefs, private val scope: CoroutineScope, private val onDot: (PenDot) -&gt; Unit, /** * Called with a password the user typed that the pen then accepted (a successful unlock). The * host persists it to its secure store so the next connect auto-unlocks ("enter once"). NOT * called for passwords the pen auto-tried from storage — those are already stored. */ private val onPasswordAccepted: (String) -&gt; Unit = {}, /** Called when the pen's password is turned off — the host clears its stored secret. */ private val onPasswordCleared: () -&gt; Unit = {}, private val backoffSchedule: List&lt;Long&gt; = listOf(2_000, 4_000, 8_000, 16_000), /** Stop auto-reconnecting after this many failed attempts and return to Disconnected. */ private val maxReconnectAttempts: Int = 6, private val now: () -&gt; Long = System::currentTimeMillis, /** How often to poll the pen for a fresh battery reading while connected. */ private val batteryPollMs: Long = 60_000L, /** * Reacquire the pen's CURRENT LE target by scanning for its stable identity ([PenTarget.sppAddress]) * for up to the given window, returning the fresh target when the pen reappears or null on timeout. * The LE address is a rotating random address that changes when the pen power-cycles, so reconnect * must RE-SCAN rather than redial the now-dead cached address (which is what a manual tap-to-connect * does, and why that works when the in-cycle retries don't). A null hook (tests / the fake SDK) ⇒ * fall back to redialing the cached target. */ private val rescan: (suspend (sppAddress: String, windowMs: Long) -&gt; PenTarget?)? = null, )</ID>
+    <ID>LoopWithTooManyJumpStatements:PenConnectionManager.kt$PenConnectionManager$while</ID>
+    <ID>MagicNumber:FakeNeoPenSdk.kt$FakeNeoPenSdk$100</ID>
+    <ID>MagicNumber:Freehand.kt$0.05f</ID>
+    <ID>MagicNumber:Freehand.kt$0.5f</ID>
+    <ID>MagicNumber:Freehand.kt$1e-3f</ID>
+    <ID>MagicNumber:Freehand.kt$1e-4f</ID>
+    <ID>MagicNumber:Freehand.kt$3</ID>
+    <ID>MagicNumber:Freehand.kt$3f</ID>
+    <ID>MagicNumber:Freehand.kt$4</ID>
+    <ID>MagicNumber:Freehand.kt$4f</ID>
+    <ID>MagicNumber:Freehand.kt$5f</ID>
+    <ID>MagicNumber:Freehand.kt$64</ID>
+    <ID>MagicNumber:HotZone.kt$HotZones$0.15f</ID>
+    <ID>MagicNumber:HotZone.kt$HotZones$0.80f</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$100</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$16_000</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$2_000</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$30</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$4_000</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$6000</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$60_000.0</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$60_000L</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$8_000</ID>
+    <ID>MagicNumber:PenConnectionManager.kt$PenConnectionManager$90_000L</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$100f</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$12</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$1e-3</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$1e-9</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$3</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$33f</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$360</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$4</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$5</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$50</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$50f</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$72.0</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$8</ID>
+    <ID>MagicNumber:UnistrokeRecognizer.kt$UnistrokeRecognizer$90.0</ID>
+    <ID>MaxLineLength:Freehand.kt$ox.add(0.5f * (2f * cx[i] + (-cx[p0] + cx[i + 1]) * t + (2f * cx[p0] - 5f * cx[i] + 4f * cx[i + 1] - cx[p3]) * t2 + (-cx[p0] + 3f * cx[i] - 3f * cx[i + 1] + cx[p3]) * t3))</ID>
+    <ID>MaxLineLength:Freehand.kt$oy.add(0.5f * (2f * cy[i] + (-cy[p0] + cy[i + 1]) * t + (2f * cy[p0] - 5f * cy[i] + 4f * cy[i + 1] - cy[p3]) * t2 + (-cy[p0] + 3f * cy[i] - 3f * cy[i + 1] + cy[p3]) * t3))</ID>
+    <ID>MaxLineLength:UnistrokeRecognizer.kt$UnistrokeRecognizer$"circle" to (0..360 step 12).map { Pt((50 + 50 * Math.cos(Math.toRadians(it.toDouble()))).toFloat(), (50 + 50 * Math.sin(Math.toRadians(it.toDouble()))).toFloat()) }</ID>
+    <ID>NestedBlockDepth:PenConnectionManager.kt$PenConnectionManager$private fun onPenMessage(msg: PenMessage)</ID>
+    <ID>NestedBlockDepth:UnistrokeRecognizer.kt$UnistrokeRecognizer$private fun cloudDistance(pts: List&lt;Pt&gt;, tmpl: List&lt;Pt&gt;, start: Int): Double</ID>
+    <ID>ReturnCount:Freehand.kt$fun strokeOutline( xs: FloatArray, ys: FloatArray, pressures: FloatArray, width: Float, thinning: Float = 0.5f, streamline: Float = 0.5f, capSteps: Int = 8, smoothingSpacing: Float = 3.5f, ): FloatArray</ID>
+    <ID>ReturnCount:PenConnectionManager.kt$PenConnectionManager$private fun chargeEtaMinutes(percent: Int, t: Long): Int?</ID>
+    <ID>ReturnCount:UnistrokeRecognizer.kt$UnistrokeRecognizer$fun recognize(points: List&lt;Pt&gt;, maxDistance: Double = 1.2, minMargin: Double = 0.3): Match?</ID>
+    <ID>TooManyFunctions:FakeNeoPenSdk.kt$FakeNeoPenSdk : NeoPenSdk</ID>
+    <ID>TooManyFunctions:NeoPenSdk.kt$NeoPenSdk</ID>
+    <ID>TooManyFunctions:PenConnectionManager.kt$PenConnectionManager</ID>
+    <ID>TooManyFunctions:UnistrokeRecognizer.kt$UnistrokeRecognizer</ID>
+  </CurrentIssues>
+</SmellBaseline>

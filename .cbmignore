@@ -1,0 +1,8 @@
+# codebase-memory-mcp ignore (gitignore syntax). Build/generated dirs are already
+# auto-excluded; this file keeps VENDORED third-party source out of the knowledge graph
+# so the graph reflects Nibhaus's own code, not its dependencies' internals.
+
+# llama.cpp upstream (compiled via JNI for the Tier-1 on-device VLM). Nibhaus's own
+# JNI bridge + Kotlin VlmInk still get indexed; this drops ggml/gguf/examples/convert
+# scripts and llama.cpp's Svelte/TS web UI (~70% of the raw graph, all third-party).
+android/premium/src/main/cpp/llama.cpp/

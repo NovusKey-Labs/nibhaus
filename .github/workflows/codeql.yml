@@ -1,0 +1,85 @@
+# CodeQL code scanning (advanced setup).
+#
+# Language build modes:
+#   actions, python  -> build-mode: none  (interpreted; no build needed)
+#   java-kotlin      -> build-mode: manual
+#
+# Why manual for java-kotlin: this is an Android Gradle project. CodeQL `autobuild` can't provision
+# the Android SDK / right JDK and fails; `build-mode: none` runs Gradle ForceDependencyResolution,
+# which can't resolve Android's variant attributes (AmbiguousArtifactsFailure). So we replicate the
+# working Android CI build (JDK 17 + Android SDK + :app:assembleDebug, built against the fake — no
+# :neosdk AAR needed) and let CodeQL trace it.
+name: "CodeQL Advanced"
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '44 5 * * 2'
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: actions
+          build-mode: none
+        - language: java-kotlin
+          build-mode: manual
+        - language: python
+          build-mode: none
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      with:
+        persist-credentials: false
+
+    # --- java-kotlin manual build prerequisites (mirrors .github/workflows/android.yml) ---
+    - name: Set up JDK 17
+      if: matrix.language == 'java-kotlin'
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: "17"
+
+    - name: Set up Android SDK
+      if: matrix.language == 'java-kotlin'
+      continue-on-error: true # setup-android@v3's sdkmanager flakes intermittently; the next step recovers
+      uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+
+    - name: Ensure SDK platform + licenses (resilient; retries the flaky sdkmanager)
+      if: matrix.language == 'java-kotlin'
+      run: |
+        sdkm="$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")"
+        yes | "$sdkm" --licenses >/dev/null 2>&1 || true
+        for i in 1 2 3; do
+          "$sdkm" "platform-tools" "platforms;android-37" && break
+          echo "sdkmanager attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
+        done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+
+    # CodeQL traces this build to extract java-kotlin. Builds against the fake (no AAR present).
+    - name: Build java-kotlin (traced by CodeQL)
+      if: matrix.build-mode == 'manual'
+      working-directory: android
+      run: ./gradlew :app:assembleDebug --stacktrace
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:${{ matrix.language }}"

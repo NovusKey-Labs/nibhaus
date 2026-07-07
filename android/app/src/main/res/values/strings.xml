@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home-screen widget (#13) picker description. The app itself has no other string resources —
+         everything else is Compose text — this file exists only because appwidget-provider XML
+         requires android:description to be a @string reference, not a literal. -->
+    <string name="widget_description">Your latest page, with a tap to jump back in</string>
+</resources>

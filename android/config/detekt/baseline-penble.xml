@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ComplexCondition:NeoDotDecoder.kt$NeoDotDecoder$haveDot &amp;&amp; (nBook != book || nPage != page || nSection != section || nOwner != owner)</ID>
+    <ID>ComplexCondition:NeoGattTransport.kt$NeoGattTransport.&lt;no name provided&gt;$!established &amp;&amp; status != BluetoothGatt.GATT_SUCCESS &amp;&amp; leAddr != null &amp;&amp; connectAttempts &lt; MAX_CONNECT_ATTEMPTS</ID>
+    <ID>EmptyElseBlock:NeoOfflineDecoder.kt$NeoOfflineDecoder$if (n &lt; 0) break</ID>
+    <ID>LongParameterList:NeoOfflineDecoder.kt$NeoOfflineDecoder$( body: ByteArray, strokeCount: Int, section: Int, owner: Int, note: Int, maxPress: Int, )</ID>
+    <ID>LongParameterList:NeoOfflineTest.kt$NeoOfflineTest$(timeDelta: Int, force: Int, xInt: Int, yInt: Int, xFrac: Int, yFrac: Int)</ID>
+    <ID>LoopWithTooManyJumpStatements:NeoOfflineDecoder.kt$NeoOfflineDecoder$for</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$0.01</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$0xFF</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$12</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$16</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$24</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$3</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$4</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$5</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$7</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$8</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder$9</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder.Companion$0x63</ID>
+    <ID>MagicNumber:NeoDotDecoder.kt$NeoDotDecoder.Companion$0x6F</ID>
+    <ID>MagicNumber:NeoFraming.kt$NeoFrameDecoder$0xFF</ID>
+    <ID>MagicNumber:NeoFraming.kt$NeoFraming$0xFF</ID>
+    <ID>MagicNumber:NeoFraming.kt$NeoFraming$3</ID>
+    <ID>MagicNumber:NeoFraming.kt$NeoFraming$4</ID>
+    <ID>MagicNumber:NeoFraming.kt$NeoFraming$8</ID>
+    <ID>MagicNumber:NeoGattTransport.kt$NeoGattTransport$0x40</ID>
+    <ID>MagicNumber:NeoGattTransport.kt$NeoGattTransport$0xC0</ID>
+    <ID>MagicNumber:NeoGattTransport.kt$NeoGattTransport$16</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$0.01f</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$0xFF</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$10</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$11</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$12</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$15</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$16</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$2048</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$21</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$24</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$25</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$3</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$4</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$5</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$7</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$8</ID>
+    <ID>MagicNumber:NeoOfflineDecoder.kt$NeoOfflineDecoder$9</ID>
+    <ID>MagicNumber:NeoProto.kt$0xFF</ID>
+    <ID>MagicNumber:NeoProto.kt$16</ID>
+    <ID>MagicNumber:NeoProto.kt$24</ID>
+    <ID>MagicNumber:NeoProto.kt$3</ID>
+    <ID>MagicNumber:NeoProto.kt$4</ID>
+    <ID>MagicNumber:NeoProto.kt$5</ID>
+    <ID>MagicNumber:NeoProto.kt$6</ID>
+    <ID>MagicNumber:NeoProto.kt$7</ID>
+    <ID>MagicNumber:NeoProto.kt$8</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoCmd$0x80</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$0x03</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$0xFF</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$14</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$16</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$18</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$19</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$20</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$24</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$3</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$36</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$4</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$42</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$5</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$6</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$7</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$8</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$9</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$0xFF</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$100</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$16</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$17</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$20</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$24</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$40</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$56</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$6</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$0xFF</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$12</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$3</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$4</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$8</ID>
+    <ID>MaxLineLength:NeoDotDecodeTest.kt$NeoDotDecodeTest$d.decode(NeoDotDecoder.EVT_DOT_ID, bytes(0x1B, 0x00, 0x00, 0x03, 0xB6, 0x01, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00))</ID>
+    <ID>MaxLineLength:NeoGattTransport.kt$NeoGattTransport.&lt;no name provided&gt;$Log.i(tag, "establishment failed (status=$status) — retry ${connectAttempts + 1}/$MAX_CONNECT_ATTEMPTS")</ID>
+    <ID>NestedBlockDepth:NeoOfflineDecoder.kt$NeoOfflineDecoder$private fun inflate(data: ByteArray): ByteArray</ID>
+    <ID>ReturnCount:NeoGattTransport.kt$NeoGattTransport$@Suppress("DEPRECATION") private fun pump()</ID>
+    <ID>ReturnCount:NeoGattTransport.kt$NeoGattTransport.&lt;no name provided&gt;$override fun onServicesDiscovered(g: BluetoothGatt, status: Int)</ID>
+    <ID>ReturnCount:NeoProto.kt$fun parseOfflineNoteList(payload: ByteArray): List&lt;NeoOfflineNote&gt;</ID>
+    <ID>ReturnCount:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$override fun onFrame(body: ByteArray)</ID>
+    <ID>TooGenericExceptionCaught:NeoOfflineDecoder.kt$NeoOfflineDecoder$e: Exception</ID>
+    <ID>TooManyFunctions:PenBleSdk.kt$PenBleSdk : NeoPenSdk</ID>
+  </CurrentIssues>
+</SmellBaseline>

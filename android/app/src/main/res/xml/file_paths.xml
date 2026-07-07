@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Rendered page exports shared with other apps (PageShare writes here). -->
+    <cache-path name="shared" path="shared/" />
+    <!-- Voice notes, optionally attached to a page share. -->
+    <files-path name="recordings" path="recordings/" />
+</paths>

@@ -1,0 +1,34 @@
+Nibhaus
+Copyright 2026 NovusKey Labs LLC
+
+This product includes software developed by NovusKey Labs LLC and is licensed under the
+Apache License, Version 2.0 (see LICENSE). Module-level licensing is described in LICENSING.md.
+
+================================================================================
+Trademarks — independence & non-affiliation
+================================================================================
+
+Nibhaus and NovusKey Labs are trademarks of NovusKey Labs LLC.
+
+Nibhaus is an independent product. It is NOT affiliated with, authorized by, endorsed by, or
+sponsored by NeoLAB Convergence, LAMY, Anoto, or any pen/hardware manufacturer. The names
+"Neo", "NeoLAB", "Neo Studio", "Ncode", "LAMY", and "Anoto" are trademarks of their respective
+owners and are used here only nominatively — to describe hardware interoperability and
+compatibility — never to imply origin, affiliation, or endorsement. No third-party logos are used.
+
+The pen wire-protocol support in the shipped app (`:penble`) is an independent, clean-room
+reimplementation created for interoperability and contains no third-party SDK code
+(see android/penble/CLEAN_ROOM.md).
+
+================================================================================
+Third-party components
+================================================================================
+
+Attribution for bundled third-party components is provided with the modules that use them:
+  - android/app/THIRD_PARTY_FONTS.md      — bundled fonts and their licenses
+  - android/neosdk/THIRD_PARTY_NOTICES.md — NeoLAB SDK (GPLv3; development-only, not shipped)
+
+Open-source components used by the app are licensed under their own terms, including (non-exhaustive):
+perfect-freehand (MIT), Wacom universal-ink-library / InkML (Apache-2.0), and, in the proprietary
+premium module only, llama.cpp (MIT). Google ML Kit is used under Google's proprietary-but-free SDK
+terms. A complete, generated dependency-license report should accompany each release.

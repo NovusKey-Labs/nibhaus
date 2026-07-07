@@ -1,0 +1,13 @@
+# Sample replay fixture (synthetic but structurally real). Replace with a real capture:
+# run the Phase 0 spike, `adb logcat -s SPIKE`, and convert each logged dot to one line here.
+# Session: two strokes on notebook 603 page 1, one stroke on notebook 601 page 1.
+{"section":3,"owner":27,"note":603,"page":1,"x":10.0,"y":20.0,"pressure":0.5,"phase":"DOWN","t":1718900000000,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":11.0,"y":21.0,"pressure":0.6,"phase":"MOVE","t":1718900000010,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":12.0,"y":22.5,"pressure":0.6,"phase":"MOVE","t":1718900000020,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":13.0,"y":24.0,"pressure":0.4,"phase":"UP","t":1718900000030,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":30.0,"y":40.0,"pressure":0.5,"phase":"DOWN","t":1718900001000,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":31.5,"y":41.0,"pressure":0.7,"phase":"MOVE","t":1718900001010,"color":-16777216}
+{"section":3,"owner":27,"note":603,"page":1,"x":33.0,"y":42.0,"pressure":0.3,"phase":"UP","t":1718900001020,"color":-16777216}
+{"section":3,"owner":27,"note":601,"page":1,"x":5.0,"y":5.0,"pressure":0.5,"phase":"DOWN","t":1718900002000,"color":-65536}
+{"section":3,"owner":27,"note":601,"page":1,"x":6.0,"y":6.0,"pressure":0.5,"phase":"MOVE","t":1718900002010,"color":-65536}
+{"section":3,"owner":27,"note":601,"page":1,"x":7.0,"y":7.0,"pressure":0.5,"phase":"UP","t":1718900002020,"color":-65536}

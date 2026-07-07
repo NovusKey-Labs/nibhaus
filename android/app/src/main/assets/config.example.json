@@ -1,0 +1,65 @@
+{
+  "_comment": "Reference for the runtime-configurable settings. In the app these are set in the in-app Settings screen and persisted with Jetpack DataStore (NOT this file, NOT SharedPreferences) — see the Phase 3-4 spec in android/DESIGN.md. This file documents the keys, options, and defaults. Hard rule: no tracking/telemetry/ads, and no outbound network except to the sync/OCR targets the user explicitly selects.",
+
+  "sync": {
+    "method": "local_folder",
+    "_method_options": [
+      "local_folder", "tailscale_push", "local_only",
+      "google_drive", "dropbox", "onedrive", "webdav", "s3"
+    ],
+    "_abstraction": "All options implement ONE StorageProvider interface (one impl per backend) so targets can be swapped/added without rewiring. Switchable at runtime, choice persisted, nothing hardcoded.",
+
+    "local_folder": {
+      "_doc": "DEFAULT. App writes exports into a SAF-granted folder (ACTION_OPEN_DOCUMENT_TREE + takePersistableUriPermission). A separate folder-sync app (Syncthing, Nextcloud, FolderSync) you run watches that folder. The app does NOT drive the sync app.",
+      "folderTreeUri": ""
+    },
+    "tailscale_push": {
+      "_doc": "App POSTs each export over HTTP(S) to this NAS endpoint on your tailnet. Unreachable => queue + retry, never lose the export.",
+      "endpointUrl": "",
+      "_endpointUrl_example": "https://<NAS_TAILNET_IP>:<port>/ingest"
+    },
+    "local_only": { "_doc": "Exports stay on-device. For testing. No contextual field." },
+
+    "_cloud_doc": "Cloud providers below are allowed targets the user explicitly selects. Their per-provider auth, least-privilege OAuth scopes, secret storage, and setup are NOT specified in the dropdowns doc I currently have — DO NOT invent them. The master brief points to the Settings/dropdowns implementation order for that spec; needed before building cloud providers.",
+    "google_drive": { "_auth": "PENDING SPEC (OAuth, least-privilege scope, token storage)" },
+    "dropbox":      { "_auth": "PENDING SPEC" },
+    "onedrive":     { "_auth": "PENDING SPEC" },
+    "webdav":       { "_doc": "Covers Nextcloud/ownCloud", "baseUrl": "", "_auth": "PENDING SPEC (user/app-password, secret storage)" },
+    "s3":           { "_doc": "Covers MinIO/Backblaze B2/AWS/Wasabi", "endpoint": "", "bucket": "", "region": "", "_auth": "PENDING SPEC (access key/secret, secret storage)" }
+  },
+
+  "ocr": {
+    "trigger": "nas_watcher",
+    "_trigger_options": ["nas_watcher", "in_app", "off"],
+
+    "nas_watcher": {
+      "_doc": "DEFAULT. App makes NO OCR calls. It only exports cleanly and tags each file (sidecar) with page ID, notebook/Ncode ID, pen ID, capture timestamp. A separate NAS watcher service (out of this app's scope) does the OCR. Do not build the watcher here."
+    },
+    "in_app": {
+      "_doc": "After export, a background worker POSTs the page image to this endpoint and stores the returned transcript beside the page.",
+      "endpoint": "",
+      "_endpoint_example_ollama": "http://<OCR_TAILNET_IP>:11434",
+      "backend": "ollama",
+      "_backend_options": ["ollama", "vllm"],
+      "model": "qwen3-vl",
+      "_model_options": ["qwen3-vl", "olmOCR-2-7B", "GLM-OCR"],
+      "verbatimPrompt": "Transcribe the handwriting in this image EXACTLY as written. Do not correct spelling, grammar, or word choice. Do not add commentary or reasoning. Output only the verbatim transcription.",
+      "_qwen_note": "For Qwen3-VL also disable thinking leakage (equivalent of --hidethinking); it tends to leak reasoning and silently correct text."
+    },
+    "off": { "_doc": "Export only, no OCR." }
+  },
+
+  "export": {
+    "formats": ["pdf", "png", "svg", "txt"],
+    "_formats_doc": "SVG preserves stroke vectors. Idempotent: re-exporting a page does not duplicate/corrupt; failed exports retry (no page loss). Run export/sync/OCR as WorkManager jobs.",
+    "sidecar": {
+      "_doc": "Sidecar (or embedded) metadata written next to each export; consumed by NAS-watcher mode.",
+      "fields": ["pageId", "notebookNcodeId", "penId", "captureTimestamp"]
+    }
+  },
+
+  "firmware": {
+    "updateEnabled": false,
+    "_note": "Off by default. Firmware updates are left to the occasional official-app run (master brief)."
+  }
+}

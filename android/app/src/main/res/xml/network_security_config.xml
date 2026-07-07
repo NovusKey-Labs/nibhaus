@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Default-secure: cleartext (plain HTTP) is blocked everywhere. Nibhaus reaches your OCR /
+  translation endpoints over HTTPS — easiest via `tailscale serve`, which gives each host a real
+  Let's Encrypt certificate for its <name>.<tailnet>.ts.net MagicDNS name that Android trusts
+  natively (no cert pinning / custom trust anchor needed). Point the endpoints in Settings at
+  https://<host>.<tailnet>.ts.net.
+
+  HTTP override (opt-in): Tailscale already encrypts the wire (WireGuard), so if you'd rather keep a
+  host on plain HTTP on your tailnet, UNCOMMENT the domain-config below and replace the domain with
+  your host's MagicDNS name (or its 100.x tailnet IP), then rebuild. Keep it scoped to that one host
+  — never set cleartextTrafficPermitted="true" on <base-config> (that would allow plaintext to ANY
+  server, on any network).
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Opt-in plain-HTTP override for ONE tailnet host. Uncomment and edit the domain(s):
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">ocr-host.your-tailnet.ts.net</domain>
+        <domain includeSubdomains="false">100.100.100.100</domain>
+    </domain-config>
+    -->
+</network-security-config>

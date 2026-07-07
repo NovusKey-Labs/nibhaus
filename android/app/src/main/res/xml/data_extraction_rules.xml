@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Privacy (Section C4): keep the note vault + secrets out of Google cloud-backup AND device-to-device
+  transfer. Nibhaus is local-first — restore/migration is via Syncthing and the in-app encrypted
+  backup, not Google's backup channel. Excludes the Room DB (all notes), the encrypted-secret prefs
+  (pen password), and the DataStore (settings incl. homelab endpoints). API 31+.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="database" path="nibhaus.db" />
+        <exclude domain="database" path="nibhaus.db-wal" />
+        <exclude domain="database" path="nibhaus.db-shm" />
+        <exclude domain="sharedpref" path="nibhaus_secrets.xml" />
+        <exclude domain="file" path="datastore/" />
+        <exclude domain="file" path="recordings/" />  <!-- voice notes -->
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="database" path="nibhaus.db" />
+        <exclude domain="database" path="nibhaus.db-wal" />
+        <exclude domain="database" path="nibhaus.db-shm" />
+        <exclude domain="sharedpref" path="nibhaus_secrets.xml" />
+        <exclude domain="file" path="datastore/" />
+        <exclude domain="file" path="recordings/" />  <!-- voice notes -->
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,7 @@
+# SHA-256 allowlist for the patched NeoLAB SDK artifact(s) in neosdk/libs/ (Section C3 supply-chain
+# guard). The build FAILS if a present .aar/.jar here isn't listed below, so a tampered or swapped
+# artifact can't silently enter the build. No-op in CI (the GPL SDK isn't committed, so libs/ is empty).
+#
+# If you intentionally rebuilt the SDK (android/neosdk/patch-and-build-sdk.fish), record the new hash:
+#   sha256sum neosdk/libs/*.aar    # then paste "<hash>  <filename>" below
+796bf4a229a2e16876a63245af4a11621863468b41ed62adfa06fb5002cfc02e  app-release.aar

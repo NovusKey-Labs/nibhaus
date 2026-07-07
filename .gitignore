@@ -1,0 +1,21 @@
+
+# Python bytecode cache (from local tool runs)
+__pycache__/
+*.pyc
+
+# Vendored GPL NeoLAB SDK binaries — user-provided, not committed.
+# See android/neosdk/THIRD_PARTY_NOTICES.md (drop the SDK .aar/.jar in locally to build :neosdk).
+android/neosdk/libs/*.aar
+android/neosdk/libs/*.jar
+android/penspike/libs/*.aar
+android/penspike/libs/*.jar
+
+# Local research notes — never commit (public repo)
+research/
+.playwright-mcp/
+
+# codebase-memory-mcp local knowledge-graph artifact (regenerated on reindex; not committed)
+.codebase-memory/
+
+# Private premium module — cloned in from github.com/NovusKey-Labs/nibhaus-premium, never tracked here
+android/premium/

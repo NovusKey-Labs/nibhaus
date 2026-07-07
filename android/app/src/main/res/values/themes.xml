@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compose draws the UI; this base theme just hosts the activity. -->
+    <style name="Theme.Nibhaus" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Branded launch splash (Android 12 SplashScreen, compat down to minSdk 24): the vault logo on
+         the brand navy, held until the saved palette loads so the first real frame renders in the
+         user's own theme (kills the default-palette flash), then a smooth fade handoff. -->
+    <style name="Theme.Nibhaus.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0B1630</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Nibhaus</item>
+    </style>
+</resources>

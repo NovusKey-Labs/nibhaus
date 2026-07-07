@@ -1,0 +1,48 @@
+version: 2
+updates:
+  # Keep the CI action versions current (this is what surfaced the "Node 20 deprecated" warnings).
+  # Safe to auto-bump — it doesn't touch the app's dependency graph.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    cooldown:
+      default-days: 7
+
+  # Gradle version-updates (STANDARDS.md §9: Security owns this gate). Scoped via `ignore` below to
+  # protect the deliberate lockstep pins instead of excluding Gradle entirely (the prior approach):
+  # every Dependabot PR still runs the full android.yml CI (build + unit tests + the freemium
+  # variant build) before it can merge, so a bad bump fails CI rather than reaching master. This
+  # also gives GitHub's dependency graph the resolved Gradle tree, so Dependabot *security* updates
+  # (a separate, already-enabled repo setting: Settings -> Code security -> "Dependabot security
+  # updates") can react to a transitive CVE too — e.g. the okhttp 3.12.1 / CVE-2021-0341 (CVSS 7.5)
+  # finding from the 2026-07-06 SBOM audit, which isn't a directly declared dependency.
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "build"
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    ignore:
+      # AGP + Kotlin + KSP move together on purpose (KSP only tracks specific Kotlin releases; AGP
+      # pins the required Gradle/JDK/compileSdk floor — see android/build.gradle.kts). Bump as one
+      # coordinated, reviewed change, not a Dependabot drive-by.
+      - dependency-name: "com.android.application"
+      - dependency-name: "com.android.library"
+      - dependency-name: "org.jetbrains.kotlin.android"
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
+      - dependency-name: "org.jetbrains.kotlin.plugin.serialization"
+      - dependency-name: "com.google.devtools.ksp"
+      # Compose BOM + the Material 3 1.5.0-alpha override pinned ABOVE the BOM on purpose (Material
+      # 3 Expressive, still pre-stable) — see the comment in android/app/build.gradle.kts.
+      - dependency-name: "androidx.compose:compose-bom"
+      - dependency-name: "androidx.compose.material3:material3"
+      # 16 KB native-page-alignment pins, verified by hand with readelf / check_elf_alignment.sh.
+      # Do not let Dependabot silently jump these; re-verify alignment before any manual bump.
+      - dependency-name: "androidx.datastore:datastore-preferences"
+      - dependency-name: "com.google.mlkit:digital-ink-recognition"

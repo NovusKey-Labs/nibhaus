@@ -1,0 +1,18 @@
+{
+  "name": "Nibhaus Android (build + JVM tests)",
+  "image": "mcr.microsoft.com/devcontainers/java:1-17-bookworm",
+  "comment": "A Codespace can reach dl.google.com / Google Maven, so unlike the web sandbox it can actually build the app and run the JVM unit tests. The emulator (instrumented) tests stay CI-only — Codespaces has no KVM for the AVD.",
+  "containerEnv": {
+    "ANDROID_HOME": "/opt/android-sdk",
+    "ANDROID_SDK_ROOT": "/opt/android-sdk"
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/opt/android-sdk/platform-tools:/opt/android-sdk/cmdline-tools/latest/bin"
+  },
+  "onCreateCommand": "bash .devcontainer/install-android-sdk.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": ["fwcd.kotlin", "vscjava.vscode-gradle"]
+    }
+  }
+}

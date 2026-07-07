@@ -1,0 +1,82 @@
+name: Dependency vulnerability gate (OWASP Dependency-Check)
+
+# Security teammate's SCA CI gate (STANDARDS.md §6/§9). Scans the FREEMIUM ship artifact's resolved
+# dependency graph (-Pnibhaus.premium=false — the :premium module and its vendored llama.cpp tree
+# are absent from that build's project graph entirely) and fails on any CVSS >= 7.0 finding. See
+# android/gradle/dependency-check.init.gradle.kts for the gate config and rationale.
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+  schedule:
+    # Weekly independent of any push, since the NVD feed grows even when the app's deps don't move.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: android
+
+jobs:
+  dependency-check:
+    name: OWASP Dependency-Check (freemium build, CVSS >= 7 fails)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        continue-on-error: true
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+
+      - name: Ensure SDK platform + licenses
+        run: |
+          sdkm="$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")"
+          yes | "$sdkm" --licenses >/dev/null 2>&1 || true
+          "$sdkm" "platform-tools" "platforms;android-37" || echo "android-37 not in channel; AGP will auto-download"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      # The local NVD CVE cache (~350-500MB) is the expensive part of a first run — without a
+      # cache, every CI run re-syncs it. Path must match `data.directory` in the init script.
+      - name: Cache the local NVD data directory
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.dependency-check-data
+          key: dependency-check-nvd-${{ github.run_id }}
+          restore-keys: |
+            dependency-check-nvd-
+
+      - name: Dependency-Check analyze (freemium build)
+        env:
+          # Set as a repo secret. Free key: https://nvd.nist.gov/developers/request-an-api-key
+          # Without it the NVD API rate-limits hard enough that a cold cache can take 1h+ and may
+          # intermittently 403 — request the key before relying on this gate at merge time.
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          ./gradlew --no-configuration-cache \
+            --init-script gradle/dependency-check.init.gradle.kts \
+            :app:dependencyCheckAnalyze \
+            -Pnibhaus.premium=false \
+            --stacktrace
+
+      - name: Upload Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: android/app/build/reports/dependency-check-report.*
+          if-no-files-found: warn
