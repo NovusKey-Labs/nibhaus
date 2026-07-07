@@ -14,7 +14,9 @@ about Nibhaus is the same: we never receive your data at all.
   SDKs of any kind.
 - **Pen details.** The app remembers which pens you've paired (name and Bluetooth identity) and,
   only if you turn on "Remember password," your pen's unlock password. That password is encrypted
-  with hardware-backed keys on your device and automatically forgotten after 30 days.
+  with a hardware-backed key that requires a recently unlocked device to use, and it is
+  automatically forgotten after 30 days. Turning off "Remember password" erases both the stored
+  password and its encryption key at once.
 - **Settings.** Your preferences (theme, handwriting size, sync configuration) are stored locally.
 
 ## What leaves your device, only at your explicit request

@@ -49,8 +49,7 @@ class SecretStore(context: Context, private val name: String) {
                 String(doFinal(ct), Charsets.UTF_8)
             }
         } catch (e: KeyPermanentlyInvalidatedException) {
-            clear()
-            runCatching { KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.deleteEntry(alias) }
+            clear() // full wipe: drops the stored blob and the now-dead key alias
             null
         } catch (e: UserNotAuthenticatedException) {
             null
@@ -68,8 +67,12 @@ class SecretStore(context: Context, private val name: String) {
         prefs.edit().putString(name, blob).putLong(atKey, System.currentTimeMillis()).apply()
     }
 
-    /** Forget the secret (e.g. the user disabled it, or turned off "remember"). */
-    fun clear() = prefs.edit().remove(name).remove(atKey).apply()
+    /** Forget the secret AND destroy its Keystore key — a full wipe (user disabled it, or turned off
+     *  "remember"). Deleting the alias means no empty key lingers in the Keystore after a Forget. */
+    fun clear() {
+        prefs.edit().remove(name).remove(atKey).apply()
+        runCatching { KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.deleteEntry(alias) }
+    }
 
     /** Whether a secret is currently stored — cheap, no decryption. */
     fun has(): Boolean = prefs.contains(name)
