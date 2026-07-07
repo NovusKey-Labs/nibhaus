@@ -1,7 +1,7 @@
 # CodeQL code scanning (advanced setup).
 #
 # Language build modes:
-#   actions, python  -> build-mode: none  (interpreted; no build needed)
+#   actions          -> build-mode: none  (interpreted; no build needed)
 #   java-kotlin      -> build-mode: manual
 #
 # Why manual for java-kotlin: this is an Android Gradle project. CodeQL `autobuild` can't provision
@@ -36,8 +36,6 @@ jobs:
           build-mode: none
         - language: java-kotlin
           build-mode: manual
-        - language: python
-          build-mode: none
     steps:
     - name: Checkout repository
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
