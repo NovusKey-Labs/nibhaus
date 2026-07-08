@@ -181,7 +181,7 @@ dependencies {
     // language-id + translate ML Kit deps moved to :premium (Translator) — open-core split.
     // Languages picker data stays in :app, decoupled (static code list); see translate/Languages.kt.
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     // Opt-in biometric/device-credential app-lock for the vault (Section C1). The AndroidX wrapper
@@ -198,7 +198,7 @@ dependencies {
     // implementation(files("libs/neosmartpen-sdk-2.1.10.jar"))
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
     testImplementation("com.google.truth:truth:1.4.4")
     testImplementation("androidx.room:room-testing:2.8.4")
 
@@ -206,7 +206,7 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:core-ktx:1.6.1")
     androidTestImplementation("com.google.truth:truth:1.4.4")
-    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 }
 
 // --- Privacy guardrail: no telemetry, enforced at build time (DESIGN.md hard rule) ---
