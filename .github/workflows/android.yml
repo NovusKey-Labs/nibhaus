@@ -76,7 +76,7 @@ jobs:
           exit $bad
 
       - name: Upload debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
@@ -84,7 +84,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unit-test-reports
           path: android/app/build/reports/tests/
@@ -128,7 +128,7 @@ jobs:
 
       - name: Upload detekt reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: detekt-reports
           path: android/*/build/reports/detekt/
@@ -201,7 +201,7 @@ jobs:
         continue-on-error: true
         run: semgrep scan --config auto --sarif --output semgrep.sarif || true
       - name: Upload semgrep report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: semgrep-report
           path: semgrep.sarif
