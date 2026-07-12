@@ -11,3 +11,7 @@ libs/*.jar
 *.jks
 *.keystore
 keystore.properties
+# …except the shared DEBUG key: committed on purpose so every debug/sideload build (any machine,
+# CI included) carries the same signature and installs over the previous one. Debug-only — it
+# signs nothing shipped as a release. See signingConfigs in app/build.gradle.kts.
+!config/shared-debug.keystore

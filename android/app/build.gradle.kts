@@ -51,6 +51,19 @@ android {
     }
 
     signingConfigs {
+        // Shared, committed debug key (android/config/shared-debug.keystore): every debug build —
+        // any machine, CI included — carries the same signature, so a newer sideloaded build
+        // installs over the older one instead of failing with a certificate mismatch. Without it,
+        // each CI runner generates a fresh throwaway debug key per run. Debug/sideload only; the
+        // credentials below are the stock Android debug-key convention and deliberately not secret.
+        // Anyone can sign a matching APK, which is fine for debug and disqualifying for release —
+        // release signing stays keyed from the gitignored keystore.properties below.
+        getByName("debug") {
+            storeFile = rootProject.file("config/shared-debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
         if (keystoreProps != null) {
             create("release") {
                 storeFile = File(keystoreProps.getProperty("storeFile"))

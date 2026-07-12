@@ -1,0 +1,73 @@
+name: Sideload release APK
+
+# Publishes the debug APK to a rolling GitHub Release ("sideload" tag) so a phone can always
+# grab the newest build from one stable URL:
+#   https://github.com/NovusKey-Labs/nibhaus/releases/download/sideload/nibhaus-debug.apk
+# The APK is signed with the shared committed debug key (android/config/shared-debug.keystore),
+# so each new build installs OVER the previous sideload — no uninstall, no data wipe.
+
+on:
+  push:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Only the newest master build matters for the rolling release; drop superseded runs.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: android
+
+jobs:
+  publish:
+    name: Build debug APK + publish rolling release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        continue-on-error: true # setup-android@v3's sdkmanager flakes intermittently; the next step recovers
+        uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3.2.2
+
+      - name: Ensure SDK platform + licenses (resilient; retries the flaky sdkmanager)
+        run: |
+          sdkm="$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")"
+          yes | "$sdkm" --licenses >/dev/null 2>&1 || true
+          for i in 1 2 3; do
+            "$sdkm" "platform-tools" "platforms;android-37" && break
+            echo "sdkmanager attempt $i failed; retrying in $((i * 5))s"; sleep $((i * 5))
+          done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+
+      - name: Assemble debug APK (shared debug key)
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Publish to the rolling "sideload" release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          version=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          cp app/build/outputs/apk/debug/app-debug.apk nibhaus-debug.apk
+          # Recreate the release so its tag tracks the commit that was actually built.
+          gh release delete sideload --yes --cleanup-tag || true
+          gh release create sideload nibhaus-debug.apk \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Nibhaus sideload build (v$version)" \
+            --notes "Debug-signed build of \`${GITHUB_SHA}\` for direct install. Signed with the shared debug key (\`android/config/shared-debug.keystore\`), so it installs over previous sideload builds without uninstalling. Stable download link: https://github.com/${GITHUB_REPOSITORY}/releases/download/sideload/nibhaus-debug.apk"
