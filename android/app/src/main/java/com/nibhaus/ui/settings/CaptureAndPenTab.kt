@@ -70,7 +70,7 @@ internal fun LazyListScope.captureAndPenTab(
     // Capture lab is diagnostics tooling (coordinate-scale measurement, raw data recording) that
     // most people never open — collapsed behind Advanced (§18) instead of always taking up space.
     item {
-        AdvancedSection {
+        AdvancedSection(label = "Diagnostics and other power-user tools") {
             SettingsCard {
                 Column(Modifier.padding(vertical = 14.dp)) {
                     Text("Capture lab", style = MaterialTheme.typography.titleMedium)

@@ -57,9 +57,16 @@ internal fun SectionLabel(text: String) {
  * expand/collapse; [content] renders below when expanded. The expanded state is
  * `rememberSaveable` — it survives rotation but resets to collapsed on the next app open or tab
  * switch away and back, since it isn't persisted to DataStore.
+ *
+ * [label] is the tappable header row's text — it must describe what the caller actually puts
+ * inside. The default fits the Sync & Text tab (BYO servers); tabs whose advanced content is
+ * something else pass their own.
  */
 @Composable
-internal fun AdvancedSection(content: @Composable ColumnScope.() -> Unit) {
+internal fun AdvancedSection(
+    label: String = "Self-hosted servers and other power-user settings",
+    content: @Composable ColumnScope.() -> Unit,
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     SectionLabel("Advanced")
     Column(Modifier.fillMaxWidth()) {
@@ -72,7 +79,7 @@ internal fun AdvancedSection(content: @Composable ColumnScope.() -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                "Self-hosted servers and other power-user settings",
+                label,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
