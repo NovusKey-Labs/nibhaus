@@ -121,4 +121,60 @@ class NeoDotDecodeTest {
         val dot = bytes(0x00, 0xFF, 0x03, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) // force=0x03FF=1023 > 852
         assertThat(d.decode(NeoDotDecoder.EVT_DOT_DATA, dot)!!.pressure).isEqualTo(1f)
     }
+
+    @Test fun `every truncated event payload is ignored without corrupting the next frame`() {
+        val d = NeoDotDecoder()
+        for (size in 0 until 12) {
+            assertThat(d.decode(NeoDotDecoder.EVT_DOT_ID, ByteArray(size))).isNull()
+        }
+        for (size in 0 until 9) {
+            assertThat(d.decode(NeoDotDecoder.EVT_DOT_DATA, ByteArray(size))).isNull()
+        }
+        assertThat(d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, byteArrayOf())).isNull()
+
+        d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, bytes(0))
+        val dot = d.decode(NeoDotDecoder.EVT_DOT_DATA, bytes(1, 1, 0, 2, 0, 3, 0, 0, 0))!!
+        assertThat(dot.phase).isEqualTo(PenDot.Phase.DOWN)
+        assertThat(dot.x).isEqualTo(2f)
+    }
+
+    @Test fun `coordinate fields decode their full unsigned wire range`() {
+        val d = NeoDotDecoder()
+        val dot = d.decode(
+            NeoDotDecoder.EVT_DOT_DATA,
+            bytes(0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 99, 99),
+        )!!
+        assertThat(dot.x).isWithin(0.01f).of(65_535.99f)
+        assertThat(dot.y).isWithin(0.01f).of(65_535.99f)
+    }
+
+    @Test fun `a repeated down arms the next sample as a new DOWN phase`() {
+        val d = NeoDotDecoder()
+        d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, bytes(0))
+        assertThat(d.decode(NeoDotDecoder.EVT_DOT_DATA, bytes(0, 1, 0, 1, 0, 1, 0, 0, 0))!!.phase)
+            .isEqualTo(PenDot.Phase.DOWN)
+        d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, bytes(0))
+        assertThat(d.decode(NeoDotDecoder.EVT_DOT_DATA, bytes(0, 1, 0, 2, 0, 2, 0, 0, 0))!!.phase)
+            .isEqualTo(PenDot.Phase.DOWN)
+    }
+
+    @Test fun `section owner and book switch closes old address before accepting new address`() {
+        val d = NeoDotDecoder()
+        d.decode(NeoDotDecoder.EVT_DOT_ID, bytes(1, 0, 0, 2, 3, 0, 0, 0, 4, 0, 0, 0))
+        d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, bytes(0))
+        d.decode(NeoDotDecoder.EVT_DOT_DATA, bytes(0, 1, 0, 5, 0, 6, 0, 0, 0))
+
+        val closing = d.decode(
+            NeoDotDecoder.EVT_DOT_ID,
+            bytes(9, 0, 0, 8, 7, 0, 0, 0, 6, 0, 0, 0),
+        )!!
+        assertThat(listOf(closing.owner, closing.section, closing.book, closing.page))
+            .containsExactly(1, 2, 3, 4).inOrder()
+        assertThat(closing.phase).isEqualTo(PenDot.Phase.UP)
+
+        d.decode(NeoDotDecoder.EVT_PEN_UPDOWN, bytes(0))
+        val next = d.decode(NeoDotDecoder.EVT_DOT_DATA, bytes(0, 1, 0, 1, 0, 1, 0, 0, 0))!!
+        assertThat(listOf(next.owner, next.section, next.book, next.page))
+            .containsExactly(9, 8, 7, 6).inOrder()
+    }
 }

@@ -303,6 +303,28 @@ class PenConnectionManagerTest {
         }
 
     @Test
+    fun `forgetPen currently leaves the persisted password and Keystore alias intact`() =
+        runTest(UnconfinedTestDispatcher()) {
+            val sdk = FakeNeoPenSdk(); val prefs = InMemoryPenPrefs()
+            var secretClearCalls = 0
+            val mgr = PenConnectionManager(
+                sdk = sdk,
+                prefs = prefs,
+                scope = backgroundScope,
+                onDot = {},
+                onPasswordCleared = { secretClearCalls++ },
+            )
+            mgr.connect(PenTarget("9C:7B:D2:01", "RANDOM:LE", PenProtocol.V2))
+
+            mgr.forgetPen("9C:7B:D2:01")
+
+            // H2 audit gap characterization: Forget removes the saved-pen tile but does not invoke
+            // SecretStore.clear(), so the stored password and its AndroidKeyStore alias survive.
+            // This intentionally passes today and should fail when H2 is fixed later.
+            assertThat(secretClearCalls).isEqualTo(0)
+        }
+
+    @Test
     fun `a failed connect on a never-paired pen never writes lastPenMac (no false saved-pen tile)`() =
         runTest(UnconfinedTestDispatcher()) {
             // Brand-new device: no prior lastPenMac, no savedPens — mirrors a fresh install that has

@@ -30,4 +30,20 @@ class ActionZoneMatchTest {
         assertThat(matchZone(zones, book = 0, x = 15f, y = 15f)).isEqualTo(zones[0])
         assertThat(matchZone(zones, book = -1, x = 15f, y = 15f)).isEqualTo(zones[0])
     }
+
+    @Test fun `overlapping zones use list order including on a shared edge`() {
+        val first = zone(438)
+        val second = ActionZone("second", ZoneAction.EMAIL_PDF, 20f, 10f, 30f, 20f, book = 438)
+
+        assertThat(matchZone(listOf(first, second), book = 438, x = 20f, y = 15f)).isEqualTo(first)
+        assertThat(matchZone(listOf(second, first), book = 438, x = 20f, y = 15f)).isEqualTo(second)
+    }
+
+    @Test fun `wrong-book overlap is skipped before choosing a later eligible zone`() {
+        val wrongBook = zone(438)
+        val anyBook = zone(0).copy(id = "legacy")
+
+        assertThat(matchZone(listOf(wrongBook, anyBook), book = 554, x = 15f, y = 15f))
+            .isEqualTo(anyBook)
+    }
 }
