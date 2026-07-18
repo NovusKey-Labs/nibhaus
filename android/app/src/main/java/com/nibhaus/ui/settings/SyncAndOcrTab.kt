@@ -224,7 +224,7 @@ internal fun LazyListScope.syncAndOcrTab(
 
     // Power-user-only overrides (§18): self-hosted OCR/translation servers and the on-device VLM
     // overrides. Collapsed by default so the common path (on-device tiers, no BYO server) isn't
-    // cluttered by fields most people never touch. Final-review fix (2026-07-05): all three are
+    // cluttered by fields most people never touch. all three are
     // premium surfaces (native/BYO transcription, translation, VLM tuning), and a not-entitled user
     // gets one honest cleared-register line per capability instead of editable fields that promise
     // server-backed behavior the app won't actually run for them.
@@ -243,7 +243,7 @@ internal fun LazyListScope.syncAndOcrTab(
     }
 }
 
-/** Exact cleared-register sentence (final-review fix, 2026-07-05) for a premium capability that
+/** Exact cleared-register sentence for a premium capability that
  *  isn't available to a not-entitled user yet. Pure so every call site uses identical copy. */
 internal fun plannedPremiumFeatureLine(capability: String): String =
     "$capability is a planned Premium feature and is not available yet."
@@ -461,23 +461,10 @@ private fun OcrSettingsCard(vm: InkViewModel) {
 @Composable
 private fun OcrAdvancedOverrides(vm: InkViewModel) {
     val cs = MaterialTheme.colorScheme
-    val allowMetered by vm.vlmAllowMetered.collectAsStateWithLifecycle()
     val forceOnDevice by vm.vlmForceOnDevice.collectAsStateWithLifecycle()
     SettingsCard {
         Column(Modifier.padding(vertical = 14.dp)) {
             Text("On-device conversion overrides", style = MaterialTheme.typography.titleMedium)
-            Row(
-                Modifier.fillMaxWidth().padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                    Text("Allow downloading over mobile data", style = MaterialTheme.typography.titleSmall)
-                    Text("Off: keeps the on-device model download off your mobile data plan. Wi-Fi only.", style = MaterialTheme.typography.bodySmall,
-                        color = cs.onSurfaceVariant)
-                }
-                NibToggle(checked = allowMetered, onCheckedChange = vm::setVlmAllowMetered)
-            }
             Row(
                 Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,

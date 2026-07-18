@@ -9,6 +9,10 @@ import com.nibhaus.data.Point
 import com.nibhaus.data.StrokeDao
 import com.nibhaus.data.StrokeEntity
 import com.nibhaus.data.SyncState
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CancellationException
 
 /**
  * Phase 3 export core. Drains the durable outbox (strokes captured but not yet exported) by writing
@@ -46,23 +50,29 @@ class ExportEngine(
     /** A page's tags, for the Markdown frontmatter. Default empty so the engine stays framework-free. */
     private val tagsFor: suspend (String) -> List<String> = { emptyList() },
 ) {
+    private val pageExportLocks = ConcurrentHashMap<String, Mutex>()
+
     /** @return true if everything pending was exported (or already up to date); false → retry. */
     suspend fun exportPending(provider: StorageProvider): Boolean {
         val pending = outboxDao.peek(Int.MAX_VALUE)
         if (pending.isEmpty()) return true
 
-        val pendingByPage = strokeDao.byUuids(pending.map { it.strokeUuid })
+        val pendingByPage = pending.map { it.strokeUuid }
+            .chunked(MAX_UUID_QUERY_SIZE)
+            .flatMap { strokeDao.byUuids(it) }
             .groupBy { it.pageId }
 
         var allOk = true
         for ((pageId, pendingStrokes) in pendingByPage) {
             val uuids = pendingStrokes.map { it.uuid }
-            val ok = runCatching { exportPage(pageId, provider) }.isSuccess
-            if (ok) {
+            val ok = runCatching {
+                exportPageLocked(pageId, provider)
                 strokeDao.markSync(uuids, SyncState.SYNCED)
                 outboxDao.remove(uuids)
-            } else {
-                outboxDao.bumpAttempts(uuids)
+            }.onFailure { if (it is CancellationException) throw it }.isSuccess
+            if (!ok) {
+                runCatching { outboxDao.bumpAttempts(uuids) }
+                    .onFailure { if (it is CancellationException) throw it }
                 allOk = false
             }
         }
@@ -78,7 +88,8 @@ class ExportEngine(
      *   and the strokes stay queued for the automatic retry.
      */
     suspend fun exportSingle(pageId: String, provider: StorageProvider): Boolean {
-        val ok = runCatching { exportPage(pageId, provider) }.isSuccess
+        val ok = runCatching { exportPageLocked(pageId, provider) }
+            .onFailure { if (it is CancellationException) throw it }.isSuccess
         if (ok) {
             val uuids = strokeDao.strokesForPage(pageId).map { it.uuid }
             if (uuids.isNotEmpty()) {
@@ -87,6 +98,12 @@ class ExportEngine(
             }
         }
         return ok
+    }
+
+    private suspend fun exportPageLocked(pageId: String, provider: StorageProvider) {
+        pageExportLocks.computeIfAbsent(pageId) { Mutex() }.withLock {
+            exportPage(pageId, provider)
+        }
     }
 
     private suspend fun exportPage(pageId: String, provider: StorageProvider) {
@@ -205,6 +222,8 @@ class ExportEngine(
     }
 
     companion object {
+        // Leave headroom below SQLite's commonly configured 999 bind-variable limit.
+        private const val MAX_UUID_QUERY_SIZE = 900
         /** Every artifact extension one page's export can produce — shared by [deleteRemote]'s
          *  immediate best-effort delete and [RemoteDeleteQueue]'s durable retry drain. .txt is written
          *  by the NAS OCR watcher, not the app, but it's this page's artifact too; .bak.json must go

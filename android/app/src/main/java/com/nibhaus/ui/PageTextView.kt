@@ -57,7 +57,7 @@ fun PageTextView(
     translateError: String?,
     onTranslate: (source: String?, target: String) -> Unit,
     onShowOriginal: () -> Unit,
-    /** Feature 9: persist a manual correction to the transcript — routed through the caller into the
+    /** persist a manual correction to the transcript — routed through the caller into the
      *  FTS-indexing funnel, so the edit is both stored and made searchable. */
     onSaveTranscript: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -65,7 +65,7 @@ fun PageTextView(
     val cs = MaterialTheme.colorScheme
     var source by remember { mutableStateOf<String?>(null) }      // null = auto-detect
     var target by remember(defaultTarget) { mutableStateOf(defaultTarget) }
-    // Feature 9: editing the ORIGINAL transcript only — a translation is a derived, unsaved view.
+    // editing the ORIGINAL transcript only — a translation is a derived, unsaved view.
     var editing by remember { mutableStateOf(false) }
     var draft by remember(transcript, editing) { mutableStateOf(transcript.orEmpty()) }
 

@@ -6,7 +6,7 @@ import com.nibhaus.ui.InkViewModel
 import org.junit.Test
 
 /**
- * Feature 15's [InkViewModel.favoritePages] and Feature 9's [InkViewModel.normalizeTranscriptEdit] —
+ * [InkViewModel.favoritePages] and [InkViewModel.normalizeTranscriptEdit] —
  * both pure, so exercised directly without constructing an [InkViewModel] (see [EagerTranscribeTest]
  * for why VM construction is deliberately avoided in these pure-logic suites).
  */

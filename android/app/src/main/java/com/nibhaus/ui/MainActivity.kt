@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -45,12 +46,21 @@ import com.nibhaus.security.AppLock
 import com.nibhaus.ui.theme.LocalPaperTemplate
 import com.nibhaus.widget.WIDGET_PAGE_ID_EXTRA
 import kotlinx.coroutines.launch
+import java.util.UUID
+
+internal fun validatedWidgetPageId(raw: String?): String? {
+    if (raw == null || raw.length != UUID_TEXT_LENGTH) return null
+    return raw.takeIf { runCatching { UUID.fromString(it).toString() }.getOrNull() == it }
+}
+
+private const val UUID_TEXT_LENGTH = 36
 
 // FragmentActivity (not bare ComponentActivity) so the AndroidX BiometricPrompt can attach — see AppLock.
 class MainActivity : FragmentActivity() {
 
     // Nib unlocked for this foreground session (Section C1); re-locked in onStop when backgrounded.
     private var unlocked by mutableStateOf(false)
+    private var appLockEnabled = false
 
     private val viewModel: InkViewModel by viewModels {
         val sl = ServiceLocator.from(applicationContext)
@@ -84,6 +94,8 @@ class MainActivity : FragmentActivity() {
                         transcribeOnDevice = sl::transcribeOnDevice,
                         saveTranscriptOp = sl::saveTranscript,
                         vlmState = sl.vlmModelStateFlow,
+                        vlmDisclosure = sl.vlmDownloadDisclosure,
+                        downloadVlmModel = sl::downloadVlmModel,
                         isMetered = { cm.isActiveNetworkMetered },
                         premiumPresent = sl.premiumPresent,
                     ),
@@ -138,7 +150,7 @@ class MainActivity : FragmentActivity() {
         // Keep the screen awake while the app is foreground so the pen connection / capture isn't
         // interrupted during use (and you don't have to keep tapping the screen while testing).
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        // Bluetooth rationale pre-prompt (#3): only relevant the first time BLE permission actually
+        // Bluetooth rationale: only relevant the first time BLE permission actually
         // needs asking — already-granted (or not-yet-relevant-SDK) skips straight to the old
         // eager-start behavior, same as before this feature existed.
         val needsBleRationale = blePermissions().any { checkSelfPermission(it) != android.content.pm.PackageManager.PERMISSION_GRANTED }
@@ -149,6 +161,14 @@ class MainActivity : FragmentActivity() {
             val lightPaper by viewModel.lightPaper.collectAsStateWithLifecycle()
             val paperTemplate by viewModel.paperTemplate.collectAsStateWithLifecycle()
             val lockEnabled by viewModel.appLockEnabled.collectAsStateWithLifecycle()
+            SideEffect {
+                appLockEnabled = lockEnabled
+                if (lockEnabled) {
+                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                }
+            }
             NibhausTheme(palette, lightPaper) {
                 CompositionLocalProvider(LocalPaperTemplate provides paperTemplate) {
                     Surface(Modifier.fillMaxSize()) {
@@ -184,6 +204,13 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    // Hide note content before Android captures the task snapshot; FLAG_SECURE remains set while
+    // app lock is enabled, blocking both screenshots and recents imagery.
+    override fun onPause() {
+        if (appLockEnabled && !isChangingConfigurations) unlocked = false
+        super.onPause()
+    }
+
     // Re-lock when the app is genuinely backgrounded — but not on a rotation/config change.
     override fun onStop() {
         super.onStop()
@@ -203,7 +230,8 @@ class MainActivity : FragmentActivity() {
      *  its notebook, via [InkViewModel.openSearchHit]) off the main thread through the existing
      *  repository — no navigation code duplicated here, just the intent → id → page lookup. */
     private fun handleWidgetDeepLink(intent: Intent) {
-        val pageId = intent.getStringExtra(WIDGET_PAGE_ID_EXTRA) ?: return
+        val rawPageId = runCatching { intent.getStringExtra(WIDGET_PAGE_ID_EXTRA) }.getOrNull()
+        val pageId = validatedWidgetPageId(rawPageId) ?: return
         lifecycleScope.launch {
             ServiceLocator.from(applicationContext).repository.pageById(pageId)?.let { viewModel.openSearchHit(it) }
         }
@@ -310,11 +338,11 @@ internal fun ZoneShareChooser() {
     val sl = androidx.compose.runtime.remember(context) { ServiceLocator.from(context.applicationContext) }
     val pending by sl.pendingZoneShare.collectAsStateWithLifecycle()
     val p = pending ?: return
-    // Feature 5: this IS "the user tapped a printed button" — recorded the moment the pen's tap is
+    // this IS "the user tapped a printed button" — recorded the moment the pen's tap is
     // recognized, not once the PNG/PDF pick resolves, so it still counts even if they dismiss the
     // dialog without picking a format. Drives the printed-buttons tip card's eligibility.
     LaunchedEffect(p) { sl.settings.markZoneTapped() }
-    // Feature 20a: a confirm tick the moment this chooser appears — the pen tapping a printed
+    // a confirm tick the moment this chooser appears — the pen tapping a printed
     // button is otherwise a silent event until the dialog itself renders.
     val haptics = com.nibhaus.ui.common.rememberHaptics()
     LaunchedEffect(p) { haptics.confirm() }
@@ -335,7 +363,7 @@ internal fun ZoneShareChooser() {
     )
 }
 
-/** Bluetooth rationale pre-prompt (#3): one friendly line explaining WHY the system BLE dialogs are
+/** Bluetooth rationale: one friendly line explaining WHY the system BLE dialogs are
  *  about to fire, shown once ever before they do. Dismissing (tap outside / Back) counts the same as
  *  Continue — this is an explanation the user needs to see once, not a gate that can strand them. */
 @Composable

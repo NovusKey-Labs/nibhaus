@@ -1,7 +1,7 @@
 package com.nibhaus.pen
 
 /**
- * Feature 2 refinement — the "READY" live dot on the Pens home saved-pen tiles: pure sightings+clock
+ * — the "READY" live dot on the Pens home saved-pen tiles: pure sightings+clock
  * mapping, unit-testable without a real BLE scanner or wall clock (see [InkViewModel.readyPens] for
  * the reactive wiring that maintains [sightings] from [PenScanner.results]).
  *

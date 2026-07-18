@@ -15,19 +15,20 @@ import java.util.concurrent.TimeUnit
 /**
  * Runs the export off the UI/capture path and survives process death (WorkManager). On failure it
  * returns retry → WorkManager re-runs it with exponential backoff, which is exactly the
- * "unreachable endpoint → queue + retry, never drop" behavior the brief asks for.
+ * "unreachable endpoint → queue + retry, never drop" behavior.
  */
 class ExportWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
         val sl = ServiceLocator.from(applicationContext)
+        val locallyCleaned = sl.localDeleteCleanupQueue.drain()
         // Missing/!configured target (including a sync method entitlement now blocks, such as a
         // relock, or a Tailscale endpoint predating this check): nothing was drained, so this must
         // NOT report success; that would leave the outbox silently queued forever with WorkManager
         // believing the job is done. Retrying (with the class's normal backoff) keeps it honest and
         // self-heals the moment the target becomes resolvable again, same as a real drain failure below.
         val provider = sl.currentStorageProvider()
-            ?: return exportWorkResult(providerAvailable = false, exported = false, deleted = false)
+            ?: return exportWorkResult(providerAvailable = false, exported = false, deleted = locallyCleaned)
         // Both queues share this one worker's cadence/backoff (a durable delete queue mirroring the
         // durable export outbox — see RemoteDeleteQueue's kdoc). Run both even if the first needs a
         // retry, so one backlog stalling the other never happens.
@@ -37,14 +38,14 @@ class ExportWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         // loss. Delete-then-export makes the collision self-heal in one cycle (stale gone, fresh rewritten).
         val deleted = sl.remoteDeleteQueue.drain(provider)
         val exported = sl.exportEngine.exportPending(provider)
-        return exportWorkResult(providerAvailable = true, exported = exported, deleted = deleted)
+        return exportWorkResult(providerAvailable = true, exported = exported, deleted = deleted && locallyCleaned)
     }
 
     companion object {
         private const val UNIQUE = "export"
 
         /**
-         * Enqueue a drain. Coalesced so a burst of strokes (perf audit P1-2: a 200-stroke burst
+         * Enqueue a drain. Coalesced so a burst of strokes (a 200-stroke burst
          * under the old `APPEND_OR_REPLACE` chained up to 200 runs — each commit's request queued
          * up *behind* the currently-running one instead of merging with it) doesn't spawn redundant
          * runs.
@@ -84,7 +85,7 @@ class ExportWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 }
 
 /**
- * Pure decision behind [ExportWorker.doWork]'s return value (final-review fix, 2026-07-05): a run
+ * Pure decision behind [ExportWorker.doWork]'s return value: a run
  * that never got a usable provider drained nothing, so it must never report success. Only a real
  * success (provider resolved AND both queues drained clean) does. Framework-free so it's directly
  * unit-testable without constructing a real CoroutineWorker.

@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import org.junit.Test
 
-/** Feature 24: human-readable, filesystem-safe names for shared page/replay artifacts. */
+/** human-readable, filesystem-safe names for shared page/replay artifacts. */
 class ShareFilenameTest {
 
     private fun date(s: String) = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(s)!!

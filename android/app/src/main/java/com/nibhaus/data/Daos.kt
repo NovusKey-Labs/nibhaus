@@ -32,7 +32,7 @@ interface NotebookDao {
     @Query("UPDATE notebooks SET title = :title WHERE id = :id")
     suspend fun rename(id: String, title: String)
 
-    /** Drop the notebook row itself (Feature 18 delete) — callers must first clear its pages/strokes/etc. */
+    /** Drop the notebook row itself; callers must first clear its pages, strokes, and related data. */
     @Query("DELETE FROM notebooks WHERE id = :id")
     suspend fun delete(id: String)
 
@@ -60,7 +60,7 @@ interface PageDao {
     fun observeByNotebook(notebookId: String): Flow<List<PageEntity>>
 
     /** Every captured page across all notebooks, newest-inked first — the base for cross-notebook
-     *  views like Favorites (Feature 15). */
+     *  views like Favorites. */
     @Query("SELECT * FROM pages ORDER BY lastInkAt DESC")
     fun observeAll(): Flow<List<PageEntity>>
 
@@ -147,7 +147,7 @@ interface PageDao {
 
     /**
      * Ids of pages in [notebookId] that have at least one stroke — feeds the Library "hide blank
-     * pages" filter (Feature 16) with ONE query instead of one stroke-observer per page. Reactive:
+     * pages" filter with ONE query instead of one stroke-observer per page. Reactive:
      * Room re-runs this whenever `pages` or `strokes` changes.
      */
     @Query(
@@ -159,7 +159,7 @@ interface PageDao {
     /**
      * Ids of every page (any notebook) with at least one stroke — the same predicate as
      * [observeNonBlankPageIds] but unscoped, for cross-notebook views like the Pens home "Recent"
-     * section (Feature 1: one row per notebook, its 3 most recently EDITED pages). ONE query shared
+     * section (one row per notebook, its 3 most recently EDITED pages). ONE query shared
      * across every notebook's row instead of a per-notebook subscription.
      */
     @Query("SELECT p.id FROM pages p WHERE EXISTS (SELECT 1 FROM strokes s WHERE s.pageId = p.id)")
@@ -167,10 +167,10 @@ interface PageDao {
 
     /**
      * Page counts for every notebook, one grouped query — the library grid's per-card "N pages"
-     * metadata (Feature 19) used to `SELECT * FROM pages WHERE notebookId = :id` (the whole page
+     * metadata used to `SELECT * FROM pages WHERE notebookId = :id` (the whole page
      * list) just to read its `.size`, once per visible NotebookThumb/NotebookListRow. Same batching
      * idea as [observeNonBlankPageIds]: ONE query shared across every visible card instead of one
-     * per card (perf audit P1-1).
+     * per card.
      */
     @MapInfo(keyColumn = "notebookId", valueColumn = "pageCount")
     @Query("SELECT notebookId, COUNT(*) AS pageCount FROM pages GROUP BY notebookId")
@@ -257,13 +257,13 @@ interface RecordingDao {
      * this as one EXISTS observer per visible PageThumb, so any recording write re-ran it for every
      * card on screen. Joined via addressKey (not the raw `recordings.pageId` column), matching how
      * [observeByPage] resolves recordings, so a voice note still counts after its page row is
-     * recreated (e.g. after a recovery) (perf audit P1-1).
+     * recreated (e.g. after a recovery).
      */
     @Query("SELECT DISTINCT p.id FROM recordings r INNER JOIN pages p ON r.addressKey = p.addressKey")
     fun observePagesWithAudio(): Flow<List<String>>
 
     /** Ids of every notebook with at least one page carrying a voice note, one query — same batching
-     *  as [observePagesWithAudio] but for the notebook-level badge (perf audit P1-1). */
+     *  as [observePagesWithAudio] but for the notebook-level badge. */
     @Query("SELECT DISTINCT p.notebookId FROM recordings r INNER JOIN pages p ON r.addressKey = p.addressKey")
     fun observeNotebooksWithAudio(): Flow<List<String>>
 
@@ -340,6 +340,70 @@ interface PendingRemoteDeleteDao {
     fun observeBacklog(): Flow<Int>
 }
 
+data class PageDeletionPlan(
+    val pageId: String,
+    val remoteDelete: PendingRemoteDelete?,
+    val cleanups: List<PendingLocalDeleteCleanup>,
+    val deleteAudio: Boolean,
+)
+
+/** Owns the complete Room boundary for destructive page/notebook deletion. */
+@Dao
+@Suppress("TooManyFunctions") // The transaction deliberately owns every delete and queue statement.
+abstract class DeleteDao {
+    @Query("DELETE FROM outbox WHERE strokeUuid IN (SELECT uuid FROM strokes WHERE pageId = :pageId)")
+    protected abstract suspend fun deleteOutbox(pageId: String)
+    @Query("DELETE FROM strokes WHERE pageId = :pageId")
+    protected abstract suspend fun deleteStrokes(pageId: String)
+    @Query("DELETE FROM page_fts WHERE pageId = :pageId")
+    protected abstract suspend fun deleteFts(pageId: String)
+    @Query("DELETE FROM export_records WHERE pageId = :pageId")
+    protected abstract suspend fun deleteExport(pageId: String)
+    @Query("DELETE FROM page_tags WHERE pageId = :pageId")
+    protected abstract suspend fun deleteTags(pageId: String)
+    @Query("DELETE FROM recordings WHERE addressKey IN (SELECT addressKey FROM pages WHERE id = :pageId)")
+    protected abstract suspend fun deleteRecordings(pageId: String)
+    @Query("DELETE FROM pages WHERE id = :pageId")
+    protected abstract suspend fun deletePage(pageId: String)
+    @Query("DELETE FROM notebooks WHERE id = :notebookId")
+    protected abstract suspend fun deleteNotebook(notebookId: String)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    protected abstract suspend fun enqueueRemote(entry: PendingRemoteDelete)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    protected abstract suspend fun enqueueCleanups(entries: List<PendingLocalDeleteCleanup>)
+
+    @Transaction
+    open suspend fun deletePages(
+        plans: List<PageDeletionPlan>,
+        notebookId: String? = null,
+        extraCleanups: List<PendingLocalDeleteCleanup> = emptyList(),
+    ) {
+        if (extraCleanups.isNotEmpty()) enqueueCleanups(extraCleanups)
+        plans.forEach { plan ->
+            plan.remoteDelete?.let { enqueueRemote(it) }
+            if (plan.cleanups.isNotEmpty()) enqueueCleanups(plan.cleanups)
+            deleteOutbox(plan.pageId)
+            deleteStrokes(plan.pageId)
+            deleteFts(plan.pageId)
+            deleteExport(plan.pageId)
+            deleteTags(plan.pageId)
+            if (plan.deleteAudio) deleteRecordings(plan.pageId)
+            deletePage(plan.pageId)
+        }
+        notebookId?.let { deleteNotebook(it) }
+    }
+}
+
+@Dao
+interface PendingLocalDeleteCleanupDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun enqueue(entry: PendingLocalDeleteCleanup)
+    @Query("SELECT * FROM pending_local_delete_cleanup ORDER BY enqueuedAt ASC LIMIT :limit")
+    suspend fun peek(limit: Int): List<PendingLocalDeleteCleanup>
+    @Query("DELETE FROM pending_local_delete_cleanup WHERE id = :id")
+    suspend fun remove(id: String)
+}
+
 @Dao
 interface ExportDao {
     @Query("SELECT * FROM export_records WHERE pageId = :pageId LIMIT 1")
@@ -354,7 +418,7 @@ interface ExportDao {
 
 /**
  * The atomic write that guarantees an ingested stroke is never lost AND is
- * always queued for upload — both in one transaction (complaints #1 + #2).
+ * always queued for upload — both in one transaction.
  */
 @Dao
 abstract class IngestDao {

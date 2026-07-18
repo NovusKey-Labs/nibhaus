@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.nibhaus.export.NotebookAccent
 import org.junit.Test
 
-/** Feature 18: per-notebook accent color palette — key round-trip + default fallback. */
+/** per-notebook accent color palette — key round-trip + default fallback. */
 class NotebookAccentTest {
 
     @Test fun `accent key round-trips, unknown falls back to default`() {

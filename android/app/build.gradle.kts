@@ -9,6 +9,13 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val keystoreProps = sequenceOf(
+    rootProject.file("keystore.properties"),
+    File(System.getProperty("user.home"), "keystores/inkvault/keystore.properties"),
+).firstOrNull { it.exists() }?.let { f ->
+    Properties().apply { f.inputStream().use { load(it) } }
+}
+
 android {
     namespace = "com.nibhaus"
     compileSdk = 37
@@ -38,18 +45,15 @@ android {
         // dependencies-block condition below; lets tests assert the reflective seam matches the variant
         // (bundle present in the full build, absent in the public clone / -Pnibhaus.premium=false).
         buildConfigField("Boolean", "PREMIUM_LINKED", (rootProject.findProject(":premium") != null).toString())
+        // Cleartext export is opt-in for explicitly trusted WireGuard/tailnet deployments. It is
+        // disabled in every build by default so bearer tokens cannot silently cross plaintext HTTP.
+        buildConfigField("Boolean", "ALLOW_CLEARTEXT_SYNC_ENDPOINT",
+            (project.findProperty("nibhaus.allowCleartextSync") == "true").toString())
     }
 
     // Release signing: reads android/keystore.properties (gitignored) or, failing that, the
     // developer's ~/keystores/inkvault/keystore.properties. Absent both (CI, fresh clones), the
-    // release build stays unsigned rather than failing — signing is a local, key-holder concern.
-    val keystoreProps = sequenceOf(
-        rootProject.file("keystore.properties"),
-        File(System.getProperty("user.home"), "keystores/inkvault/keystore.properties"),
-    ).firstOrNull { it.exists() }?.let { f ->
-        Properties().apply { f.inputStream().use { load(it) } }
-    }
-
+    // release task fails clearly below rather than emitting an unsigned artifact.
     signingConfigs {
         if (keystoreProps != null) {
             create("release") {
@@ -273,6 +277,18 @@ tasks.register("verifyGplFree") {
         logger.lifecycle("verifyGplFree: clean — release is GPL-free (:penble, no :neosdk / NeoLAB SDK).")
     }
 }
+val verifyReleaseSigning by tasks.registering {
+    group = "verification"
+    description = "Fail release builds when no signing configuration is available."
+    if (keystoreProps == null) {
+        doLast {
+            throw GradleException(
+                "Release signing configuration is missing. Add android/keystore.properties or " +
+                    "~/keystores/inkvault/keystore.properties; refusing to produce an unsigned release artifact.",
+            )
+        }
+    }
+}
 tasks.matching { it.name == "assembleRelease" || it.name == "bundleRelease" }.configureEach {
-    dependsOn("verifyGplFree")
+    dependsOn("verifyGplFree", "verifyNoTelemetry", verifyReleaseSigning)
 }

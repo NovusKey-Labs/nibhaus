@@ -6,7 +6,7 @@ import com.nibhaus.pen.forgetSavedPen
 import com.nibhaus.pen.upsertSavedPen
 import org.junit.Test
 
-/** Feature 2 (Pens screen saved-pen tiles): the pure list-editing logic behind [PenPrefs.savedPens]. */
+/** (Pens screen saved-pen tiles): the pure list-editing logic behind [PenPrefs.savedPens]. */
 class PenPrefsTest {
 
     @Test fun `upsert adds a new pen to the front`() {

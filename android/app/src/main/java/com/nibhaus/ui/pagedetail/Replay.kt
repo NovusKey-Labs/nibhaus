@@ -89,7 +89,7 @@ internal fun ReplayScreen(strokes: List<StrokeEntity>, vm: InkViewModel, onClose
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var exportingGif by remember { mutableStateOf(false) }
-    // Feature 24: a human name for the exported GIF — "Nibhaus — {notebook} p{page} replay — {date}".
+    // a human name for the exported GIF — "Nibhaus — {notebook} p{page} replay — {date}".
     val pageEntity by vm.selectedPageEntity.collectAsStateWithLifecycle()
     val notebooks by vm.notebooks.collectAsStateWithLifecycle()
     val gifBaseName = ShareFilename.forReplay(

@@ -105,7 +105,7 @@ object NeoOfflineDecoder {
         }
         out.toByteArray()
     } catch (e: Exception) {
-        Log.w(tag, "inflate failed: ${e.message}")
+        Log.w(tag, "offline pen data inflate failed (${e.javaClass.simpleName})")
         ByteArray(0)
     }
 

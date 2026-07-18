@@ -255,7 +255,7 @@ private fun PasswordOpDialog(
 }
 
 /**
- * Capture reliability (brief FIX #2). The pen foreground service keeps capture alive in the
+ * The pen foreground service keeps capture alive in the
  * background, but the OS can still throttle or kill it unless the app is battery-exempt — One UI is
  * the most aggressive. Surface the exemption status, route to the OS setting in one tap, and (on
  * Samsung) name the "Never sleeping apps" path. Re-checks on resume so the status refreshes when the
@@ -331,4 +331,3 @@ private fun CaptureReliabilityCard() {
         }
     }
 }
-

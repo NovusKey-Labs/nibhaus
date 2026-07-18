@@ -22,6 +22,19 @@ sealed class VlmDownloadState {
     data class Failed(val reason: String) : VlmDownloadState()
 }
 
+data class DownloadDisclosure(
+    val host: String,
+    val approxSizeBytes: Long,
+    val pinnedRevisionOrChecksum: String,
+)
+
+enum class DownloadConsentChoice { WifiOnly, AllowMetered }
+
+data class DownloadConsent(
+    val choice: DownloadConsentChoice,
+    val disclosedMetadataShown: Boolean,
+)
+
 /**
  * The premium feature bundle. :app's ServiceLocator resolves the impl
  * (`com.nibhaus.premium.PremiumServicesImpl`) reflectively — present ⇒ full suite, absent ⇒ freemium
@@ -33,13 +46,19 @@ interface PremiumServices {
      *  instant tier (ML Kit OnDeviceInk) lives in :app and is free; :app composes
      *  RoutedInk(instant, accurateChain()) itself. Entitlement is enforced at :app call sites. */
     fun accurateChain(): List<InkOcr>
-    fun translator(endpoint: suspend () -> String, model: suspend () -> String): InkTranslator
+    fun translator(
+        endpoint: suspend () -> String,
+        model: suspend () -> String,
+        allowCleartextEndpoints: Boolean = false,
+    ): InkTranslator
     fun pushProvider(endpoint: String, token: String): StorageProvider
     fun transcriptSource(endpoint: String, token: String): TranscriptSource
     /** Download/readiness state of the on-device VLM model. Nullable so a freemium-safe caller can
      *  hold this behind `premium?.` without a compile-time :premium dependency; a real premium
      *  implementation is expected to return a flow independent of whether [accurateChain] has run. */
     fun vlmModelState(): Flow<VlmDownloadState>?
+    fun vlmDownloadDisclosure(): DownloadDisclosure
+    suspend fun downloadVlmModel(consent: DownloadConsent): Boolean
 
     /** Release heavy caches (the on-device VLM native context's non-evictable KV/compute buffers)
      *  under memory pressure. Called from NibhausApp.onTrimMemory. No-op by default. */

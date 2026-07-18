@@ -1,6 +1,6 @@
 # On-Device VLM OCR (Tier 1) — Manual Validation Procedure
 
-Run this on a real device **before** enabling Tier-1 (`VlmInk`) for ship. Everything in Task 9 is
+Run this on a real device **before** enabling Tier-1 (`VlmInk`) for ship. Everything in is
 unit-tested + the native `.so` builds in CI, but the things below can only be proven on hardware:
 real inference, the ~3.2 GB download, latency UX, and out-of-memory behavior.
 

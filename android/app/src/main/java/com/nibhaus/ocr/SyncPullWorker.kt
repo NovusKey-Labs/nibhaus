@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.nibhaus.di.ServiceLocator
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CancellationException
 
 /**
  * Periodically pulls the watcher-written transcripts back into the page DB — the inbound half of
@@ -21,6 +22,7 @@ class SyncPullWorker(context: Context, params: WorkerParameters) : CoroutineWork
     override suspend fun doWork(): Result {
         val sl = ServiceLocator.from(applicationContext)
         return runCatching { sl.transcriptImporter.importPending() }
+            .onFailure { if (it is CancellationException) throw it }
             .fold(onSuccess = { Result.success() }, onFailure = { Result.retry() })
     }
 

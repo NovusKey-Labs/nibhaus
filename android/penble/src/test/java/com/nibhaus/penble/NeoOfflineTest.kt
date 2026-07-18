@@ -106,4 +106,51 @@ class NeoOfflineTest {
         // force 900 > 852 → dropped → no points → stroke omitted
         assertThat(NeoOfflineDecoder.parse(blob, maxPress = 852)).isEmpty()
     }
+
+    @Test fun `truncated blob header and truncated stroke header are ignored`() {
+        for (size in 0 until 17) assertThat(NeoOfflineDecoder.parse(ByteArray(size))).isEmpty()
+        assertThat(NeoOfflineDecoder.parse(rawBlob(1, 2, 3, 1, ByteArray(26)))).isEmpty()
+    }
+
+    @Test fun `truncated final dot returns the complete prefix without throwing`() {
+        val header = ByteArray(27).also {
+            le64(100).copyInto(it, 4)
+            le64(200).copyInto(it, 12)
+            le16(2).copyInto(it, 25)
+        }
+        val body = header + dot(1, 100, 10, 20, 0, 0) + ByteArray(15)
+
+        val strokes = NeoOfflineDecoder.parse(rawBlob(1, 2, 3, 1, body))
+
+        assertThat(strokes).hasSize(1)
+        assertThat(strokes.single().points).hasSize(1)
+        assertThat(strokes.single().points.single().t).isEqualTo(101L)
+    }
+
+    @Test fun `signed coordinate boundaries are preserved`() {
+        val header = ByteArray(27).also { le16(2).copyInto(it, 25) }
+        val body = header + dot(0, 1, Short.MIN_VALUE.toInt(), Short.MAX_VALUE.toInt(), 0, 99) +
+            dot(0, 1, Short.MAX_VALUE.toInt(), Short.MIN_VALUE.toInt(), 99, 0)
+
+        val points = NeoOfflineDecoder.parse(rawBlob(1, 2, 3, 1, body)).single().points
+
+        assertThat(points[0].x).isEqualTo(-32768f)
+        assertThat(points[0].y).isWithin(0.01f).of(32767.99f)
+        assertThat(points[1].x).isWithin(0.01f).of(32767.99f)
+        assertThat(points[1].y).isEqualTo(-32768f)
+    }
+
+    @Test fun `one blob can switch pages between strokes while retaining section and note`() {
+        fun stroke(page: Int, x: Int) = ByteArray(27).also {
+            le32(page).copyInto(it, 0)
+            le16(1).copyInto(it, 25)
+        } + dot(0, 1, x, 1, 0, 0)
+        val blob = rawBlob(27, 3, 438, 2, stroke(9, 10) + stroke(10, 20))
+
+        val strokes = NeoOfflineDecoder.parse(blob)
+
+        assertThat(strokes.map { it.page }).containsExactly(9, 10).inOrder()
+        assertThat(strokes.map { it.section }).containsExactly(3, 3)
+        assertThat(strokes.map { it.note }).containsExactly(438, 438)
+    }
 }

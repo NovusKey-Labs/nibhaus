@@ -11,10 +11,15 @@ import com.nibhaus.export.ExportEngine
 import com.nibhaus.export.NotebookType
 import com.nibhaus.export.StorageProvider
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.yield
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import java.io.IOException
+import kotlinx.coroutines.CancellationException
 
 /** A target that records writes (and can be told to fail), so the export engine is tested for real. */
 private class FakeStorageProvider(override val id: String = "fake") : StorageProvider {
@@ -74,6 +79,23 @@ class ExportEngineTest {
         assertThat(provider.writes.keys).containsExactly("P1.svg", "P1.inkml", "P1.md", "P1.json", "P1.bak.json")
         assertThat(outbox.peek(10)).isEmpty()                       // drained
         assertThat(strokeDao.byId["s1"]!!.syncState).isEqualTo(SyncState.SYNCED)
+    }
+
+    @Test fun `drain cancellation propagates without bumping attempts`() = runTest {
+        pageDao.insert(page("P1"))
+        seedStroke("s1", "P1", pts)
+        val cancelling = object : StorageProvider {
+            override val id = "cancel"
+            override suspend fun write(name: String, bytes: ByteArray): Unit =
+                throw CancellationException("replaced")
+            override suspend fun delete(name: String) = Unit
+        }
+
+        var propagated = false
+        try { engine.exportPending(cancelling) } catch (_: CancellationException) { propagated = true }
+
+        assertThat(propagated).isTrue()
+        assertThat(outbox.rows.getValue("s1").attempts).isEqualTo(0)
     }
 
     @Test fun `decodes each stroke's points once and reuses them across svg, inkml and backup`() = runTest {
@@ -164,6 +186,137 @@ class ExportEngineTest {
         // Retry with a healthy provider completes it.
         assertThat(engine.exportPending(provider)).isTrue()
         assertThat(outbox.peek(10)).isEmpty()
+    }
+
+    @Test fun `empty outbox is a successful no-op`() = runTest {
+        val provider = FakeStorageProvider()
+
+        assertThat(engine.exportPending(provider)).isTrue()
+
+        assertThat(provider.writeCount).isEqualTo(0)
+        assertThat(exportDao.byPage).isEmpty()
+    }
+
+    @Test fun `duplicate pending rows for one stroke export and remove idempotently`() = runTest {
+        pageDao.insert(page("P1"))
+        seedStroke("s1", "P1", pts)
+        val duplicateOutbox = object : com.nibhaus.data.OutboxDao {
+            private var drained = false
+            override suspend fun enqueue(entry: OutboxEntry) = Unit
+            override suspend fun peek(limit: Int) = if (drained) emptyList() else
+                listOf(OutboxEntry("s1", 1), OutboxEntry("s1", 2))
+            override suspend fun remove(uuids: List<String>) { drained = true }
+            override suspend fun bumpAttempts(uuids: List<String>) = Unit
+            override fun observeBacklog() = kotlinx.coroutines.flow.MutableStateFlow(2)
+        }
+        val duplicateEngine = ExportEngine(
+            strokeDao, pageDao, notebookDao, duplicateOutbox, exportDao,
+            decode = { json.decodeFromString(ListSerializer(Point.serializer()), it.pointsJson) },
+            penId = { "AA:BB:CC" }, now = { 1_000L },
+        )
+        val provider = FakeStorageProvider()
+
+        assertThat(duplicateEngine.exportPending(provider)).isTrue()
+
+        assertThat(provider.writeCount).isEqualTo(5)
+        assertThat(duplicateOutbox.peek(10)).isEmpty()
+        assertThat(strokeDao.byId.getValue("s1").syncState).isEqualTo(SyncState.SYNCED)
+    }
+
+    @Test fun `failure on one page does not block another page and retry only drains failure`() = runTest {
+        pageDao.insert(page("P1"))
+        pageDao.insert(page("P2").copy(page = 2, addressKey = "3.27.603.2"))
+        seedStroke("s1", "P1", pts)
+        seedStroke("s2", "P2", pts)
+        val provider = object : StorageProvider {
+            override val id = "partial"
+            val writes = mutableListOf<String>()
+            var failP1 = true
+            override suspend fun write(name: String, bytes: ByteArray) {
+                if (failP1 && name.startsWith("P1.")) throw IOException("P1 unavailable")
+                writes += name
+            }
+            override suspend fun delete(name: String) = Unit
+        }
+
+        assertThat(engine.exportPending(provider)).isFalse()
+        assertThat(outbox.peek(10).map { it.strokeUuid }).containsExactly("s1")
+        assertThat(outbox.rows.getValue("s1").attempts).isEqualTo(1)
+        assertThat(strokeDao.byId.getValue("s1").syncState).isEqualTo(SyncState.PENDING)
+        assertThat(strokeDao.byId.getValue("s2").syncState).isEqualTo(SyncState.SYNCED)
+
+        val successfulPageWrites = provider.writes.size
+        provider.failP1 = false
+        assertThat(engine.exportPending(provider)).isTrue()
+        assertThat(outbox.peek(10)).isEmpty()
+        assertThat(provider.writes.size).isEqualTo(successfulPageWrites + 5)
+    }
+
+    @Test fun `drains more than one thousand pending strokes using bounded uuid lookups`() = runTest {
+        strokeDao.maxUuidQuerySize = 900
+        repeat(1_005) { index ->
+            val pageId = "P${index / 335}"
+            pageDao.insert(page(pageId).copy(page = index / 335 + 1))
+            seedStroke("s$index", pageId, pts)
+        }
+
+        assertThat(engine.exportPending(FakeStorageProvider())).isTrue()
+
+        assertThat(outbox.peek(Int.MAX_VALUE)).isEmpty()
+        assertThat(strokeDao.byId.values.map { it.syncState }.distinct()).containsExactly(SyncState.SYNCED)
+        assertThat(strokeDao.uuidQuerySizes).containsExactly(900, 105).inOrder()
+    }
+
+    @Test fun `a bad page remains queued while later pages still drain`() = runTest {
+        pageDao.insert(page("bad"))
+        pageDao.insert(page("good").copy(page = 2))
+        seedStroke("bad-stroke", "bad", pts)
+        seedStroke("good-stroke", "good", pts)
+        val provider = object : StorageProvider {
+            override val id = "page-isolation"
+            override suspend fun write(name: String, bytes: ByteArray) {
+                if (name.startsWith("bad.")) throw IOException("bad page")
+            }
+            override suspend fun delete(name: String) = Unit
+        }
+
+        assertThat(engine.exportPending(provider)).isFalse()
+
+        assertThat(outbox.peek(Int.MAX_VALUE).map { it.strokeUuid }).containsExactly("bad-stroke")
+        assertThat(strokeDao.byId.getValue("good-stroke").syncState).isEqualTo(SyncState.SYNCED)
+        assertThat(outbox.rows.getValue("bad-stroke").attempts).isEqualTo(1)
+    }
+
+    @Test fun `concurrent drains converge on an empty synced outbox`() = runTest {
+        pageDao.insert(page("P1"))
+        seedStroke("s1", "P1", pts)
+        val firstWriteStarted = CompletableDeferred<Unit>()
+        val allowFirstWrite = CompletableDeferred<Unit>()
+        val provider = object : StorageProvider {
+            override val id = "concurrent"
+            var writeCount = 0
+            override suspend fun write(name: String, bytes: ByteArray) {
+                if (name == "P1.svg") {
+                    firstWriteStarted.complete(Unit)
+                    allowFirstWrite.await()
+                }
+                writeCount++
+            }
+            override suspend fun delete(name: String) = Unit
+        }
+
+        val first = async { engine.exportPending(provider) }
+        firstWriteStarted.await()
+        val second = async { engine.exportPending(provider) }
+        yield() // let the second drain take its own pending snapshot while the first is mid-write
+        allowFirstWrite.complete(Unit)
+        val results = listOf(first, second).awaitAll()
+
+        assertThat(results).containsExactly(true, true)
+        assertThat(outbox.peek(10)).isEmpty()
+        assertThat(strokeDao.byId.getValue("s1").syncState).isEqualTo(SyncState.SYNCED)
+        assertThat(exportDao.byPage.keys).containsExactly("P1")
+        assertThat(provider.writeCount).isEqualTo(5)
     }
 
     @Test fun `a registered notebook exports under its type-and-label path`() = runTest {

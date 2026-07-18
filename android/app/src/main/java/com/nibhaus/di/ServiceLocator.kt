@@ -3,6 +3,7 @@ package com.nibhaus.di
 import android.content.Context
 import android.net.Uri
 import androidx.room.Room
+import androidx.room.withTransaction
 import com.nibhaus.BuildConfig
 import com.nibhaus.audio.RecordingController
 import com.nibhaus.data.InkDatabase
@@ -14,6 +15,10 @@ import com.nibhaus.data.MIGRATION_8_9
 import com.nibhaus.data.MIGRATION_9_10
 import com.nibhaus.data.MIGRATION_10_11
 import com.nibhaus.data.MIGRATION_11_12
+import com.nibhaus.data.MIGRATION_12_13
+import com.nibhaus.data.PageDeletionPlan
+import com.nibhaus.data.PendingLocalDeleteCleanup
+import com.nibhaus.data.PendingRemoteDelete
 import com.nibhaus.data.Point
 import com.nibhaus.export.ExportEngine
 import com.nibhaus.export.ExportWorker
@@ -25,10 +30,13 @@ import com.nibhaus.premiumapi.InkPt
 import com.nibhaus.premiumapi.PremiumDeps
 import com.nibhaus.premiumapi.PremiumServices
 import com.nibhaus.premiumapi.VlmDownloadState
+import com.nibhaus.premiumapi.DownloadConsent
+import com.nibhaus.premiumapi.DownloadDisclosure
 import kotlinx.coroutines.flow.Flow
 import com.nibhaus.translate.InkTranslator
 import com.nibhaus.export.LocalFolderProvider
 import com.nibhaus.export.LocalOnlyProvider
+import com.nibhaus.export.LocalDeleteCleanupQueue
 import com.nibhaus.export.SafetyBackup
 import com.nibhaus.export.SettingsStore
 import com.nibhaus.export.StorageProvider
@@ -47,6 +55,7 @@ import com.nibhaus.pen.SharedPrefsPenPrefs
 import com.nibhaus.repo.NoteRepository
 import com.nibhaus.security.SecretStore
 import com.nibhaus.edit.StrokeEditor
+import com.nibhaus.edit.StrokeEditorHooks
 import com.nibhaus.export.ExportOutcome
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +77,7 @@ import kotlinx.serialization.json.Json
  * and avoids kapt/Hilt build complexity. Swap [FakeNeoPenSdk] for
  * the `:neosdk` module's NeoSdkAdapter (real pen) to go live — see android/STRANGLER.md.
  *
- * NOTE (post-brief): there is intentionally NO cloud sync here. This app is
+ * There is intentionally no cloud sync here. This app is
  * local-first/self-hosted — export → NAS (Syncthing/Tailscale) is Phase 3, and
  * OCR hand-off is Phase 4. See android/DESIGN.md.
  */
@@ -91,7 +100,7 @@ class ServiceLocator private constructor(context: Context) {
         // migration tests before ship) instead of silently wiping the source-of-truth DB; destructive
         // fallback is limited to downgrades (installing an older build), and the always-on .bak.json
         // ring (SafetyBackup) recovers captures even from that.
-        .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
+        .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
         .fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
         .build()
 
@@ -109,8 +118,6 @@ class ServiceLocator private constructor(context: Context) {
     /** In-memory mirror of settings.vlmDisabledOnThisDevice — keeps the lambda synchronous. */
     @Volatile private var isVlmDisabledOnDevice = false
 
-    /** In-memory mirror of settings.vlmAllowMetered — keeps the lambda synchronous. */
-    @Volatile private var isVlmAllowMetered = false
 
     /** In-memory mirror of settings.vlmForceOnDevice — keeps the lambda synchronous. */
     @Volatile private var isVlmUserForced = false
@@ -181,8 +188,8 @@ class ServiceLocator private constructor(context: Context) {
         // newInstance throw and null out premium.
         val richCtor = cls.declaredConstructors
             .filter { !it.isSynthetic }
-            .maxByOrNull { it.parameterCount }
-            ?.takeIf { it.parameterCount > 1 }
+            .maxByOrNull { it.parameterTypes.size }
+            ?.takeIf { it.parameterTypes.size > 1 }
 
         if (richCtor != null) {
             richCtor.isAccessible = true
@@ -196,7 +203,7 @@ class ServiceLocator private constructor(context: Context) {
             val deps = PremiumDeps(
                 byoEndpoint = { byoOcrEndpointMirror.ifBlank { null } },
                 byoToken = { byoOcrTokenMirror.ifBlank { null } },
-                allowMetered = { isVlmAllowMetered },
+                allowCleartextEndpoints = BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
                 isMetered = { cm.isActiveNetworkMetered },
                 userForcedVlm = { isVlmUserForced },
                 vlmDisabledOnDevice = vlmDisabledFn,
@@ -254,9 +261,6 @@ class ServiceLocator private constructor(context: Context) {
             settings.vlmDisabledOnThisDevice.collect { isVlmDisabledOnDevice = it }
         }
         appScope.launch {
-            settings.vlmAllowMetered.collect { isVlmAllowMetered = it }
-        }
-        appScope.launch {
             settings.vlmForceOnDevice.collect { isVlmUserForced = it }
         }
         appScope.launch {
@@ -299,7 +303,13 @@ class ServiceLocator private constructor(context: Context) {
             when (method) {
                 com.nibhaus.export.SyncMethod.TAILSCALE_PUSH -> {
                     val token = settings.syncToken.first()
-                    resolveNativeSync(premiumEntitledNow(), endpoint) { premium?.transcriptSource(it, token) }
+                    resolveNativeSync(premiumEntitledNow(), endpoint) {
+                        val target = com.nibhaus.export.ExportEndpoint.parse(
+                            it,
+                            BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
+                        )
+                        premium?.transcriptSource(target.origin, token)
+                    }
                 }
                 com.nibhaus.export.SyncMethod.LOCAL_ONLY -> null
                 else ->
@@ -317,7 +327,7 @@ class ServiceLocator private constructor(context: Context) {
      *  ENTITLEMENT is enforced at the call sites (accurate requests, translate, native sync). */
     val onDeviceInk: InkOcr = RoutedInk(
         instant = OnDeviceInk(),
-        // Supplier, not a frozen snapshot (final-review fix, 2026-07-05): re-resolved on every accurate
+        // Supplier, not a frozen snapshot: re-resolved on every accurate
         // request so a BYO endpoint (or forced on-device VLM) configured after this ServiceLocator was
         // built takes effect immediately, not only after an app restart.
         accurateChain = { premium?.accurateChain() ?: emptyList() },
@@ -325,15 +335,19 @@ class ServiceLocator private constructor(context: Context) {
 
     /** Live VLM model download/readiness state; null only in freemium builds (no :premium module).
      *  PremiumServicesImpl.vlmModelState() is self-sufficient — it never needs accurateChain() to
-     *  have run first (final-review IMPORTANT fix, 2026-07-05) — so this capture at construction time
+     *  have run first — so this capture at construction time
      *  is safe even though accurateChain() itself is resolved lazily, per request, above. */
     val vlmModelStateFlow: Flow<VlmDownloadState>? = premium?.vlmModelState()
+    val vlmDownloadDisclosure: DownloadDisclosure? = premium?.vlmDownloadDisclosure()
+    suspend fun downloadVlmModel(consent: DownloadConsent): Boolean =
+        premium?.downloadVlmModel(consent) == true
 
     /** Tiered translator: the user's GPU-box translation LLM (quality), ML Kit on-device (offline).
      *  Premium; null in a freemium build. */
     val translator: InkTranslator? = premium?.translator(
         endpoint = { settings.translateEndpoint.first() },
         model = { settings.translateModel.first() },
+        allowCleartextEndpoints = BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
     )
 
     /**
@@ -360,7 +374,7 @@ class ServiceLocator private constructor(context: Context) {
     }
 
     /**
-     * Feature 9: persist a manual transcript edit through the same funnel OCR uses
+     * persist a manual transcript edit through the same funnel OCR uses
      * ([com.nibhaus.data.PageDao.setTranscriptIndexed] — updates the page AND its FTS row), then
      * re-queues the page for export so its `.md` note picks up the correction.
      */
@@ -419,6 +433,19 @@ class ServiceLocator private constructor(context: Context) {
      *  cadence as the export outbox, so a page deleted while the sync target is unreachable still gets
      *  its remote artifacts removed once the target comes back, instead of stranding them forever. */
     val remoteDeleteQueue = RemoteDeleteQueue(db.pendingRemoteDeleteDao())
+
+    val localDeleteCleanupQueue = LocalDeleteCleanupQueue(db.pendingLocalDeleteCleanupDao()) { kind, target ->
+        when (kind) {
+            LocalDeleteCleanupQueue.RECORDING_FILE -> check(
+                java.io.File(target).delete() || !java.io.File(target).exists(),
+            )
+            LocalDeleteCleanupQueue.SAFETY_BACKUP -> settings.backupFolderUri.first().takeIf { it.isNotEmpty() }
+                ?.let { LocalFolderProvider(appContext, Uri.parse(it)).delete("$target.bak.json") }
+            LocalDeleteCleanupQueue.BOOKMARK -> settings.removeBookmarks(setOf(target))
+            LocalDeleteCleanupQueue.NOTEBOOK_ACCENT -> settings.removeAccent(target)
+            else -> error("Unknown local delete cleanup kind: $kind")
+        }
+    }
 
     /** Live ink color the user picks in capture (0 = brand ink). Stamped onto each new stroke. */
     val inkColor = MutableStateFlow(0)
@@ -516,7 +543,7 @@ class ServiceLocator private constructor(context: Context) {
                 strokeScale = strokeScaleState.value.multiplier,
             ) ?: return@launch
             val fmt = if (png) com.nibhaus.share.PageShare.Format.PNG else com.nibhaus.share.PageShare.Format.PDF
-            // Feature 24: a human name for the shared file — "Nibhaus — {notebook} p{page} — {date}"
+            // a human name for the shared file — "Nibhaus — {notebook} p{page} — {date}"
             // instead of the internal page id.
             val notebookTitle = db.notebookDao().byId(page.notebookId)?.title.orEmpty()
             val baseName = com.nibhaus.share.ShareFilename.forPage(notebookTitle, page.page)
@@ -568,7 +595,7 @@ class ServiceLocator private constructor(context: Context) {
                         strokeScale = strokeScaleState.value.multiplier,
                     )
                     if (bmp != null) {
-                        // Feature 24: a human name per page — "Nibhaus — {notebook} p{page} — {date}"
+                        // a human name per page — "Nibhaus — {notebook} p{page} — {date}"
                         // instead of the internal "page-{book}-{page}" id; the page number keeps
                         // multiple pages from the same notebook from colliding in the same batch.
                         val notebookTitle = db.notebookDao().byId(page.notebookId)?.title.orEmpty()
@@ -698,13 +725,13 @@ class ServiceLocator private constructor(context: Context) {
      *  different pens; [SharedPenScanner] supports the same token registering more than once. */
     private object SavedPenScanClient
 
-    /** Feature 2 tap-to-reconnect state for the Pens screen's saved-pen tiles, set only by
+    /** Tap-to-reconnect state for the Pens screen's saved-pen tiles, set only by
      *  [connectSaved] — distinct from [penManager]'s own [com.nibhaus.pen.PenConnState]. */
     private val _savedPenConnectState = MutableStateFlow<SavedPenConnectState>(SavedPenConnectState.Idle)
     val savedPenConnectState: StateFlow<SavedPenConnectState> = _savedPenConnectState.asStateFlow()
 
     /**
-     * Tap-to-reconnect a previously saved pen (Feature 2): scan for its current LE target and connect
+     * Tap-to-reconnect a previously saved pen: scan for its current LE target and connect
      * once found, sharing [scanForSavedPen] with the auto-reconnect path rather than duplicating the
      * scan-filter-connect logic. [savedPenConnectState] drives the tile's "searching…" / "not found"
      * chrome; on success it returns to Idle and hands off to [penManager] (whose PenConnState takes
@@ -732,42 +759,59 @@ class ServiceLocator private constructor(context: Context) {
      *  than calling the sync target inline, so local deletion never blocks on (or is lost to) an
      *  unreachable target; [ExportWorker] drains the queue with retry/backoff (bug #2). */
     suspend fun deletePageNow(pageId: String, alsoRemote: Boolean, alsoAudio: Boolean): Unit = withContext(Dispatchers.IO) {
-        val addressKey = db.pageDao().byId(pageId)?.addressKey
-        if (alsoRemote) {
-            exportEngine.remoteBasePath(pageId)?.let { base -> remoteDeleteQueue.enqueue(pageId, base) }
-            ExportWorker.enqueue(appContext)
+        db.withTransaction {
+            db.deleteDao().deletePages(listOf(deletionPlan(pageId, alsoRemote, alsoAudio)))
         }
-        if (alsoAudio) {
-            db.recordingDao().forPage(pageId).forEach { runCatching { java.io.File(it.path).delete() } }
-            db.recordingDao().deleteForPage(pageId)
-        }
-        val uuids = db.strokeDao().strokesForPage(pageId).map { it.uuid }
-        if (uuids.isNotEmpty()) db.outboxDao().remove(uuids)
-        db.strokeDao().deleteForPage(pageId)
-        db.pageDao().deleteFtsForPage(pageId)
-        db.exportDao().deleteForPage(pageId)
-        db.tagDao().deleteForPage(pageId)
-        db.pageDao().delete(pageId)
-        // Drop the at-ingest safety copy too, or restoreFromFolder would resurrect the deleted page.
-        if (addressKey != null) {
-            safetyBackup.cancel(pageId)
-            settings.backupFolderUri.first().takeIf { it.isNotEmpty() }?.let {
-                runCatching { LocalFolderProvider(appContext, Uri.parse(it)).delete("$addressKey.bak.json") }
-            }
-        }
-        // Drop the orphaned DataStore bookmark key too — otherwise it lingers forever (favorites
-        // already filters ghost ids defensively, but this actually cleans up).
-        settings.removeBookmarks(setOf(pageId))
+        safetyBackup.cancel(pageId)
+        ExportWorker.enqueue(appContext)
     }
 
-    /** Delete a whole notebook (Feature 18): every one of its pages, cascaded the same way as
+    /** Delete a whole notebook: every one of its pages, cascaded the same way as
      *  [deletePageNow] (optionally also its exported copies + voice notes), then the notebook row
      *  itself. Runs off the main thread. */
-    suspend fun deleteNotebookNow(notebookId: String, alsoRemote: Boolean, alsoAudio: Boolean): Unit = withContext(Dispatchers.IO) {
-        db.pageDao().pagesInNotebook(notebookId).forEach { deletePageNow(it.id, alsoRemote, alsoAudio) }
-        db.notebookDao().delete(notebookId)
-        // Drop the orphaned "notebook.accent.<id>" DataStore key too (this uuid can never be reused).
-        settings.removeAccent(notebookId)
+    suspend fun deleteNotebookNow(
+        notebookId: String,
+        alsoRemote: Boolean,
+        alsoAudio: Boolean,
+    ): Unit = withContext(Dispatchers.IO) {
+        val plans = db.withTransaction {
+            val snapshot = db.pageDao().pagesInNotebook(notebookId).map { deletionPlan(it.id, alsoRemote, alsoAudio) }
+            val accent = PendingLocalDeleteCleanup(
+                "accent:$notebookId",
+                LocalDeleteCleanupQueue.NOTEBOOK_ACCENT,
+                notebookId,
+                System.currentTimeMillis(),
+            )
+            db.deleteDao().deletePages(snapshot, notebookId, listOf(accent))
+            snapshot
+        }
+        plans.forEach { safetyBackup.cancel(it.pageId) }
+        ExportWorker.enqueue(appContext)
+    }
+
+    private suspend fun deletionPlan(pageId: String, alsoRemote: Boolean, alsoAudio: Boolean): PageDeletionPlan {
+        val page = db.pageDao().byId(pageId)
+        val now = System.currentTimeMillis()
+        val cleanups = buildList {
+            add(PendingLocalDeleteCleanup("bookmark:$pageId", LocalDeleteCleanupQueue.BOOKMARK, pageId, now))
+            page?.addressKey?.let {
+                add(PendingLocalDeleteCleanup("backup:$pageId", LocalDeleteCleanupQueue.SAFETY_BACKUP, it, now))
+            }
+            if (alsoAudio) db.recordingDao().forPage(pageId).forEach {
+                add(
+                    PendingLocalDeleteCleanup(
+                        "recording:${it.id}",
+                        LocalDeleteCleanupQueue.RECORDING_FILE,
+                        it.path,
+                        now,
+                    ),
+                )
+            }
+        }
+        val remote = if (alsoRemote) {
+            exportEngine.remoteBasePath(pageId)?.let { PendingRemoteDelete(pageId, it, now) }
+        } else null
+        return PageDeletionPlan(pageId, remote, cleanups, alsoAudio)
     }
 
     /** Resolve the user's selected target at export time, or null if it isn't usable yet. */
@@ -780,7 +824,10 @@ class ServiceLocator private constructor(context: Context) {
                 // Entitlement-gated (spec matrix, Native sync row): null when locked or when the
                 // :premium module is absent, even if an endpoint is configured.
                 val token = settings.syncToken.first()
-                resolveNativeSync(premiumEntitledNow(), endpoint) { premium?.pushProvider(it, token) }
+                resolveNativeSync(premiumEntitledNow(), endpoint) {
+                    val target = com.nibhaus.export.ExportEndpoint.parse(it, BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT)
+                    premium?.pushProvider(target.origin, token)
+                }
             }
             SyncMethod.LOCAL_ONLY -> LocalOnlyProvider(appContext)
         }
@@ -798,7 +845,19 @@ class ServiceLocator private constructor(context: Context) {
     val strokeEditor = StrokeEditor(
         strokeDao = db.strokeDao(),
         outboxDao = db.outboxDao(),
-        onChanged = { id -> ExportWorker.enqueue(appContext); safetyBackup.onPageChanged(id) },
+        pendingRemoteDeleteDao = db.pendingRemoteDeleteDao(),
+        transaction = { block -> db.withTransaction { block() } },
+        hooks = StrokeEditorHooks(
+            artifactDelete = { pageId ->
+                exportEngine.remoteBasePath(pageId)?.let {
+                    PendingRemoteDelete(pageId, it, System.currentTimeMillis())
+                }
+            },
+            onChanged = { id ->
+                ExportWorker.enqueue(appContext)
+                safetyBackup.onPageChanged(id)
+            },
+        ),
     )
 
     val repository = NoteRepository(

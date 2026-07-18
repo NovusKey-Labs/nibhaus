@@ -30,10 +30,10 @@ class PenBleSdk(
 ) : NeoPenSdk {
     private val tag = "PenBle"
 
-    private var listener: PenListener? = null
-    private var dotListener: ((PenDot) -> Unit)? = null
-    private var offlineListener: ((OfflineBatch) -> Unit)? = null
-    private var rssiListener: ((Int) -> Unit)? = null
+    @Volatile private var listener: PenListener? = null
+    @Volatile private var dotListener: ((PenDot) -> Unit)? = null
+    @Volatile private var offlineListener: ((OfflineBatch) -> Unit)? = null
+    @Volatile private var rssiListener: ((Int) -> Unit)? = null
     /** Whether a consumer has asked for RSSI (Find My Pen). Remembered across reconnects so polling
      *  resumes automatically once the new transport is ready — the consumer only calls start/stop
      *  once per screen visit, not per reconnect. */
@@ -48,6 +48,8 @@ class PenBleSdk(
     @Volatile private var target: PenTarget? = null
     @Volatile private var penName = "Neo smartpen"
     private val dotDecoder = NeoDotDecoder()
+    private val decoderLock = Any()
+    private val offlineLock = Any()
 
     // Offline download state: notes are pulled one at a time; each note's chunks accumulate then flush.
     private val offlineNotes = ArrayDeque<NeoOfflineNote>()
@@ -60,9 +62,8 @@ class PenBleSdk(
 
     override fun connect(target: PenTarget) {
         this.target = target
-        dotDecoder.reset()
-        offlineNotes.clear()
-        offlineAccum.clear()
+        synchronized(decoderLock) { dotDecoder.reset() }
+        synchronized(offlineLock) { offlineNotes.clear(); offlineAccum.clear() }
         passwordOpInFlight = false // an interrupted change from a prior session must not misroute this unlock
         timeSetInFlight = false
         awaitingLockPrompt = false
@@ -225,32 +226,37 @@ class PenBleSdk(
     private fun onOfflineNoteList(payload: ByteArray) {
         val notes = parseOfflineNoteList(payload)
         Log.i(tag, "offline note list: ${notes.size} note(s) raw=${hex(payload, 24)}")
-        offlineNotes.clear()
-        offlineNotes.addAll(notes)
-        offlineAccum.clear()
+        synchronized(offlineLock) {
+            offlineNotes.clear()
+            offlineNotes.addAll(notes)
+            offlineAccum.clear()
+        }
         requestNextOfflineNote()
     }
 
     /** Request the next queued note's offline data (delete=false preserves the pen's copy). */
     private fun requestNextOfflineNote() {
-        val n = offlineNotes.firstOrNull() ?: run { Log.i(tag, "offline download complete"); return }
+        val n = synchronized(offlineLock) { offlineNotes.firstOrNull() }
+            ?: run { Log.i(tag, "offline download complete"); return }
         Log.i(tag, "offline request note s=${n.section} o=${n.owner} note=${n.note}")
-        offlineAccum.clear()
+        synchronized(offlineLock) { offlineAccum.clear() }
         send(NeoRequest.offlineData(n.section, n.owner, n.note, delete = false))
     }
 
     /** RES_OfflineChunk: decode this chunk's strokes, ACK it, and flush the note on the last chunk. */
     private fun onOfflineChunk(packetId: Int, payload: ByteArray) {
-        if (payload.size < 17) { Log.w(tag, "offline chunk too short: ${payload.size}"); return }
+        if (payload.size < 17) { Log.w(tag, "invalid offline pen data chunk"); return }
         val position = payload[6].toInt() and 0xFF // 0 = first, 1 = more, 2 = last
         Log.i(tag, "offline chunk pkt=$packetId pos=$position len=${payload.size}")
-        offlineAccum.addAll(NeoOfflineDecoder.parse(payload, maxPress))
+        val decoded = NeoOfflineDecoder.parse(payload, maxPress)
+        synchronized(offlineLock) { offlineAccum.addAll(decoded) }
         send(NeoRequest.offlineChunkAck(packetId, lastChunk = position == 2))
         if (position == 2) {
-            Log.i(tag, "offline note done: ${offlineAccum.size} stroke(s)")
-            offlineListener?.invoke(OfflineBatch(target?.sppAddress ?: "", offlineAccum.toList()))
-            offlineAccum.clear()
-            offlineNotes.removeFirstOrNull()
+            val strokes = synchronized(offlineLock) {
+                offlineAccum.toList().also { offlineAccum.clear(); offlineNotes.removeFirstOrNull() }
+            }
+            Log.i(tag, "offline note done: ${strokes.size} stroke(s)")
+            offlineListener?.invoke(OfflineBatch(target?.sppAddress ?: "", strokes))
             requestNextOfflineNote()
         }
     }
@@ -290,7 +296,8 @@ class PenBleSdk(
                 if (body.size < 3) return
                 val len = (body[1].toInt() and 0xFF) or ((body[2].toInt() and 0xFF) shl 8)
                 val payload = body.copyOfRange(3, minOf(3 + len, body.size))
-                dotDecoder.decode(cmd, payload)?.let { dotListener?.invoke(it) }
+                synchronized(decoderLock) { dotDecoder.decode(cmd, payload) }
+                    ?.let { dotListener?.invoke(it) }
                 return
             }
             if (cmd == NeoCmd.RES_OFFLINE_CHUNK) {

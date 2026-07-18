@@ -5,7 +5,7 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Feature 24: human-readable names for exported/shared page artifacts — "Nibhaus — {notebook
+ * human-readable names for exported/shared page artifacts — "Nibhaus — {notebook
  * title} p{page} — {yyyy-MM-dd}" — instead of the internal "page-3-12" id the renderer used to
  * hand the share sheet. [sanitize] is what makes that safe to write to disk: it drops path
  * separators and other filesystem-hostile characters, strips emoji, collapses whitespace, and caps

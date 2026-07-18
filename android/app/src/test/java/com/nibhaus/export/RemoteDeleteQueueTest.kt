@@ -5,6 +5,7 @@ import com.nibhaus.FakePendingRemoteDeleteDao
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import java.io.IOException
+import kotlinx.coroutines.CancellationException
 
 /**
  * A target whose delete() can be told to fail (simulating a connection-refused/timeout NAS, or an old
@@ -66,6 +67,21 @@ class RemoteDeleteQueueTest {
         assertThat(ok).isFalse()
         assertThat(dao.peek(10).map { it.pageId }).containsExactly("P1")
         assertThat(dao.rows.getValue("P1").attempts).isEqualTo(1)
+    }
+
+    @Test fun `cancellation propagates without bumping attempts`() = runTest {
+        queue.enqueue("P1", "pnb/Work/PNB_Work_Pg038")
+        val cancelling = object : StorageProvider {
+            override val id = "cancel"
+            override suspend fun write(name: String, bytes: ByteArray) = Unit
+            override suspend fun delete(name: String): Unit = throw CancellationException("replaced")
+        }
+
+        var propagated = false
+        try { queue.drain(cancelling) } catch (_: CancellationException) { propagated = true }
+
+        assertThat(propagated).isTrue()
+        assertThat(dao.rows.getValue("P1").attempts).isEqualTo(0)
     }
 
     @Test fun `an old server (501 or 405 for DELETE) is retried, never treated as permanent failure`() = runTest {

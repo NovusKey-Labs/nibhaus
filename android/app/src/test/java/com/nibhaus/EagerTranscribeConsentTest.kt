@@ -26,7 +26,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 /**
- * Final-review CRITICAL fix (2026-07-05): the eager Tier-0 transcription pass (backlog catch-up +
+ * the eager Tier-0 transcription pass (backlog catch-up +
  * settle watcher, both funneled through [InkViewModel.startEagerTranscription]) must honor the SAME
  * first-use on-device-OCR acknowledgement gate the manual "Transcribe on device" flow enforces
  * ([SettingsStore.onDeviceOcrAcknowledged]), and the on-device OCR master switch

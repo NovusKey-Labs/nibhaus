@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 /**
- * Empty state (Feature 4 / v3 §9 first-run surface): a friendly icon over one line of
+ * Empty state for first-run surfaces: a friendly icon over one line of
  * plain-language next-action copy — the same quiet, unhurried voice as [QuietLine], just with a
  * little more visual presence for the screens where "nothing here yet" is the very first thing a
  * new user sees. Not a replacement for [QuietLine] everywhere — plain sub-lists (a notebook with

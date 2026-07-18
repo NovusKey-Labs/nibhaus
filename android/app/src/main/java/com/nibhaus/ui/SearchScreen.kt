@@ -78,7 +78,7 @@ fun SearchScreen(vm: InkViewModel, onBack: () -> Unit) {
             label = { Text("Search notebooks and transcribed pages") }, singleLine = true,
             modifier = Modifier.fillMaxWidth().riseIn(1),
         )
-        // Feature 25: a plain-language example, so an empty search field doesn't feel like a dead end.
+        // a plain-language example, so an empty search field doesn't feel like a dead end.
         if (query.isBlank()) {
             Text(
                 "Try: meeting notes",
@@ -88,7 +88,7 @@ fun SearchScreen(vm: InkViewModel, onBack: () -> Unit) {
             )
         }
 
-        // Feature 4: the two "nothing to show" cases get a friendly icon + one-line next action instead
+        // the two "nothing to show" cases get a friendly icon + one-line next action instead
         // of a plain caption — everything else (recent pages, N match(es)) stays a plain status line.
         if (results.isEmpty()) {
             if (query.isBlank()) {

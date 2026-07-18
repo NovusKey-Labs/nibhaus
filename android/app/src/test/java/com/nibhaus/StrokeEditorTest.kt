@@ -3,7 +3,9 @@ package com.nibhaus
 import com.google.common.truth.Truth.assertThat
 import com.nibhaus.data.StrokeEntity
 import com.nibhaus.data.SyncState
+import com.nibhaus.data.PendingRemoteDelete
 import com.nibhaus.edit.StrokeEditor
+import com.nibhaus.edit.StrokeEditorHooks
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -53,10 +55,57 @@ class StrokeEditorTest {
     fun `recolor reports the changed pageId`() = runTest {
         val strokes = FakeStrokeDao().apply { byId["a"] = stroke("a", color = 0) }
         var changed: String? = null
-        val editor = StrokeEditor(strokes, FakeOutboxDao(), onChanged = { changed = it })
+        val editor = StrokeEditor(
+            strokes,
+            FakeOutboxDao(),
+            hooks = StrokeEditorHooks(onChanged = { changed = it }),
+        )
 
         editor.recolor(listOf("a"), 0xFFFF0000.toInt(), "p1")
 
         assertThat(changed).isEqualTo("p1")
+    }
+
+    @Test fun `failed edit transaction rolls every stroke and outbox change back`() = runTest {
+        val strokes = FakeStrokeDao().apply {
+            byId["a"] = stroke("a", color = 1)
+            byId["b"] = stroke("b", color = 2)
+        }
+        val outbox = FakeOutboxDao()
+        val editor = StrokeEditor(strokes, outbox, transaction = { block ->
+            val strokeSnapshot = LinkedHashMap(strokes.byId)
+            val outboxSnapshot = LinkedHashMap(outbox.rows)
+            try {
+                block()
+                error("injected commit failure")
+            } catch (t: Throwable) {
+                strokes.byId.clear(); strokes.byId.putAll(strokeSnapshot)
+                outbox.rows.clear(); outbox.rows.putAll(outboxSnapshot)
+                throw t
+            }
+        })
+
+        assertThat(runCatching { editor.recolor(listOf("a", "b"), 9, "p1") }.isFailure).isTrue()
+        assertThat(strokes.byId["a"]!!.color).isEqualTo(1)
+        assertThat(strokes.byId["b"]!!.color).isEqualTo(2)
+        assertThat(outbox.rows).isEmpty()
+    }
+
+    @Test fun `deleting last stroke enqueues page artifact deletion`() = runTest {
+        val strokes = FakeStrokeDao().apply { byId["a"] = stroke("a") }
+        val deletes = FakePendingRemoteDeleteDao()
+        val editor = StrokeEditor(
+            strokes,
+            FakeOutboxDao(),
+            pendingRemoteDeleteDao = deletes,
+            hooks = StrokeEditorHooks(
+                artifactDelete = { PendingRemoteDelete(it, "pnb/Test/Page001", 123L) },
+            ),
+        )
+
+        editor.delete(listOf("a"), "p1")
+
+        assertThat(strokes.byId).isEmpty()
+        assertThat(deletes.rows["p1"]!!.basePath).isEqualTo("pnb/Test/Page001")
     }
 }

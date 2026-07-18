@@ -2,41 +2,48 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
-    <ID>ComplexCondition:Screens.kt$revealPageId != null &amp;&amp; !liveGlow &amp;&amp; !reduced &amp;&amp; strokes.size &lt;= REVEAL_STROKE_LIMIT</ID>
+    <ID>ComplexCondition:InkSurface.kt$revealPageId != null &amp;&amp; !liveGlow &amp;&amp; !reduced &amp;&amp; strokes.size &lt;= REVEAL_STROKE_LIMIT</ID>
+    <ID>ComplexCondition:PageDetail.kt$!editing &amp;&amp; !listening &amp;&amp; !textView &amp;&amp; replayTipEligible(strokes.size, replayTipDismissed)</ID>
     <ID>CyclomaticComplexMethod:CaptureLabScreen.kt$@Composable fun CaptureLabScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>CyclomaticComplexMethod:EditListenCanvas.kt$@Composable internal fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>CyclomaticComplexMethod:EditListenCanvas.kt$@Composable internal fun ListenCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
     <ID>CyclomaticComplexMethod:ExportArtifacts.kt$ExportArtifacts$fun renderSvg( strokes: List&lt;StrokeEntity&gt;, decode: (StrokeEntity) -&gt; List&lt;Point&gt;, geometry: PageGeometry? = null, ruling: Ruling? = null, // the notebook's calibrated printed ruling, when known pageNumber: Int? = null, // the printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, ): String</ID>
     <ID>CyclomaticComplexMethod:ExportEngine.kt$ExportEngine$private suspend fun exportPage(pageId: String, provider: StorageProvider)</ID>
-    <ID>CyclomaticComplexMethod:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, onBack: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, smoothedRssiDbm: Float? = null, onBack: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:GifEncoderTest.kt$GifEncoderTest$private fun lzwDecode(data: ByteArray, minCodeSize: Int, expectedPixels: Int): IntArray</ID>
     <ID>CyclomaticComplexMethod:GifEncoderTest.kt$GifEncoderTest$private fun parseGif(bytes: ByteArray): ParsedGif</ID>
+    <ID>CyclomaticComplexMethod:InkSurface.kt$@Composable internal fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
+    <ID>CyclomaticComplexMethod:InkViewModel.kt$InkViewModel$private suspend fun doTranscribe(pageId: String, accurate: Boolean = false)</ID>
+    <ID>CyclomaticComplexMethod:LibraryScreen.kt$@Composable internal fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, onScan: () -&gt; Unit = {}, )</ID>
+    <ID>CyclomaticComplexMethod:LiveCaptureScreen.kt$@Composable internal fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
     <ID>CyclomaticComplexMethod:NotebookSetupWizard.kt$@Composable fun NotebookSetupWizard(vm: InkViewModel, activeBook: Int?, onDone: () -&gt; Unit)</ID>
-    <ID>CyclomaticComplexMethod:PageRender.kt$PageRender$fun renderPage( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Int = 1240, // ~150dpi A4 portrait height: Int = 1754, bounds: PageGeometry? = null, template: PaperTemplate = PaperTemplate.BLANK, // BLANK keeps exports/prints on clean white ruling: Ruling? = null, // calibrated printed ruling — replaces the generic template pageNumber: Int? = null, // printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, // print/share every stroke black regardless of its color ): Bitmap?</ID>
-    <ID>CyclomaticComplexMethod:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, translatorAvailable: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** Feature 9: persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>CyclomaticComplexMethod:PenForegroundService.kt$PenForegroundService$override fun onCreate()</ID>
-    <ID>CyclomaticComplexMethod:ReplayGifRenderer.kt$ReplayGifRenderer$fun renderFrames( strokes: List&lt;StrokeEntity&gt;, pointsOf: (StrokeEntity) -&gt; List&lt;Point&gt;, frameCount: Int = MAX_FRAMES, ): List&lt;Bitmap&gt;</ID>
+    <ID>CyclomaticComplexMethod:PageDetail.kt$@Composable internal fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
+    <ID>CyclomaticComplexMethod:PageRender.kt$PageRender$fun renderPage( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Int = 1240, // ~150dpi A4 portrait height: Int = 1754, bounds: PageGeometry? = null, template: PaperTemplate = PaperTemplate.BLANK, // BLANK keeps exports/prints on clean white ruling: Ruling? = null, // calibrated printed ruling — replaces the generic template pageNumber: Int? = null, // printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, // print/share every stroke black regardless of its color strokeScale: Float = 1f, // the Fine/Normal/Bold handwriting-size preset (#15b) — // matches InkSurface.strokeBaseWidthPx so exports/shares // look like what's on screen, not always the Normal width. ): Bitmap?</ID>
+    <ID>CyclomaticComplexMethod:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>CyclomaticComplexMethod:PenStatus.kt$@Composable internal fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:ReplayGifRenderer.kt$ReplayGifRenderer$fun renderFrames( strokes: List&lt;StrokeEntity&gt;, pointsOf: (StrokeEntity) -&gt; List&lt;Point&gt;, frameCount: Int = MAX_FRAMES, strokeScale: Float = 1f, // the Fine/Normal/Bold handwriting-size preset (#15b) — see PageRender.renderPage. ): List&lt;Bitmap&gt;</ID>
     <ID>CyclomaticComplexMethod:Screens.kt$@Composable fun InkApp(vm: InkViewModel)</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, )</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun ListenCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
-    <ID>CyclomaticComplexMethod:Screens.kt$@Composable private fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:SearchScreen.kt$@Composable fun SearchScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>CyclomaticComplexMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; OCR" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
-    <ID>CyclomaticComplexMethod:SyncAndOcrTab.kt$internal fun LazyListScope.syncAndOcrTab( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; Text" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
+    <ID>CyclomaticComplexMethod:SyncAndOcrTab.kt$internal fun LazyListScope.syncAndOcrTab( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, entitled: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
     <ID>DestructuringDeclarationWithTooManyEntries:StrokeIngestor.kt$StrokeIngestor$(l, t, r, b)</ID>
     <ID>EmptyElseBlock:ExportArtifacts.kt$ExportArtifacts$if (p.x &lt; minX) minX = p.x</ID>
     <ID>EmptyElseBlock:ExportArtifacts.kt$ExportArtifacts$if (p.y &lt; minY) minY = p.y</ID>
-    <ID>EmptyElseBlock:Screens.kt$if (p.x &lt; minX) minX = p.x</ID>
-    <ID>EmptyElseBlock:Screens.kt$if (p.y &lt; minY) minY = p.y</ID>
+    <ID>EmptyElseBlock:InkSurface.kt$if (p.x &lt; minX) minX = p.x</ID>
+    <ID>EmptyElseBlock:InkSurface.kt$if (p.y &lt; minY) minY = p.y</ID>
+    <ID>EmptyElseBlock:OnDeviceInk.kt$OnDeviceInk$if (p.x &lt; minX) minX = p.x</ID>
+    <ID>EmptyElseBlock:OnDeviceInk.kt$OnDeviceInk$if (p.y &lt; minY) minY = p.y</ID>
+    <ID>EmptyElseBlock:RoutedInkTest.kt$Fake$if (boom) error("engine down")</ID>
     <ID>EmptyFunctionBlock:FakeDaos.kt$FakePageDao${}</ID>
     <ID>EmptyFunctionBlock:PageEditor.kt$NoOpPageEditor${}</ID>
+    <ID>EmptyFunctionBlock:RemoteDeleteQueueTest.kt$FakeDeleteProvider${}</ID>
+    <ID>EmptyFunctionBlock:RemoteDeleteQueueTest.kt$RemoteDeleteQueueTest.&lt;no name provided&gt;${}</ID>
     <ID>ExplicitItLambdaParameter:SearchScreen.kt${ _, it -&gt; it.id }</ID>
-    <ID>ForbiddenComment:FindMyPenScreen.kt$// TODO: wire RSSI from the BLE layer</ID>
     <ID>FunctionNaming:ActionZoneUi.kt$@Composable fun ActionZoneSettingsCard(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:AppearanceTab.kt$@Composable private fun DynamicPaletteCard(active: Boolean, pending: Boolean, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:AppearanceTab.kt$@Composable private fun PaletteCard(palette: Palette, active: Boolean, pending: Boolean, onClick: () -&gt; Unit)</ID>
     <ID>FunctionNaming:AppearanceTab.kt$@Composable private fun PaletteRow( title: String, palettes: List&lt;Palette&gt;, activeId: String, pendingId: String?, onTap: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:AppearanceTab.kt$@Composable private fun StrokeScaleRow(current: StrokeScale, onPick: (StrokeScale) -&gt; Unit)</ID>
     <ID>FunctionNaming:CalendarUi.kt$@Composable fun AddEventDialog(vm: InkViewModel, defaultTitle: String, onDismiss: () -&gt; Unit)</ID>
     <ID>FunctionNaming:CalendarUi.kt$@Composable fun CalendarSettingsCard(vm: InkViewModel)</ID>
     <ID>FunctionNaming:CaptureAndPenTab.kt$@Composable private fun CaptureReliabilityCard()</ID>
@@ -45,73 +52,114 @@
     <ID>FunctionNaming:CaptureAndPenTab.kt$@Composable private fun PenSecurityCard(vm: InkViewModel, penState: PenConnState)</ID>
     <ID>FunctionNaming:CaptureLabScreen.kt$@Composable fun CaptureLabScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
     <ID>FunctionNaming:CaptureLabScreen.kt$@Composable private fun LabCard(title: String, desc: String, content: @Composable () -&gt; Unit)</ID>
+    <ID>FunctionNaming:EditListenCanvas.kt$@Composable internal fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>FunctionNaming:EditListenCanvas.kt$@Composable internal fun ListenBar( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:EditListenCanvas.kt$@Composable internal fun ListenCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>FunctionNaming:EditListenCanvas.kt$@OptIn(ExperimentalMaterial3ExpressiveApi::class) @Composable internal fun EditToolbar( lassoMode: Boolean, hasSelection: Boolean, currentColor: Int, currentWidth: Float, onToggleLasso: () -&gt; Unit, onRecolor: (Int) -&gt; Unit, onResize: (Float) -&gt; Unit, onDelete: () -&gt; Unit, onUndo: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:EmptyState.kt$@Composable internal fun EmptyState( icon: ImageVector, text: String, modifier: Modifier = Modifier, headline: String? = null, primaryActionLabel: String? = null, onPrimaryAction: (() -&gt; Unit)? = null, )</ID>
+    <ID>FunctionNaming:FeedbackScreen.kt$@Composable fun FeedbackScreen(bundle: FeedbackBundle, onClose: () -&gt; Unit)</ID>
     <ID>FunctionNaming:FindMyPenScreen.kt$@Composable fun FindMyPenScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, onBack: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, smoothedRssiDbm: Float? = null, onBack: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:FindMyPenScreen.kt$@Preview( name = "Find-My-Pen · dark (connected)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 720, ) @Composable private fun PreviewFindMyPenDark()</ID>
     <ID>FunctionNaming:FindMyPenScreen.kt$@Preview( name = "Find-My-Pen · light (searching)", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 720, ) @Composable private fun PreviewFindMyPenLight()</ID>
+    <ID>FunctionNaming:FirstRunCoach.kt$@Composable fun FirstRunCoach(pen: PenConnState, onDone: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:InkChrome.kt$@Composable internal fun &lt;T&gt; ThumbRow( items: List&lt;T&gt;, cols: Int, thumb: @Composable (item: T, modifier: Modifier) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:InkChrome.kt$@Composable internal fun BrandWordmark(modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:InkChrome.kt$@Composable internal fun InkAppBar(title: String, sub: String? = null, actions: @Composable () -&gt; Unit = {})</ID>
+    <ID>FunctionNaming:InkChrome.kt$@Composable internal fun NibBadge(live: Boolean)</ID>
+    <ID>FunctionNaming:InkChrome.kt$@Composable internal fun QuietLine(text: String)</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable internal fun BatteryBadge(status: BatteryStatus, showEta: Boolean = false, modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable internal fun ExpandingColorPicker( selected: Int, onColor: Color, onSelect: (Int) -&gt; Unit, enabled: Boolean = true, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable internal fun ExpandingSizePicker( selected: Float, onColor: Color, onSelect: (Float) -&gt; Unit, enabled: Boolean = true, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable internal fun RenameDialog( dialogTitle: String, fieldLabel: String, initial: String, onDismiss: () -&gt; Unit, onConfirm: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable private fun ColorDot(color: Int, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:InkControls.kt$@Composable private fun SizeChip(label: String, width: Float, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:InkSurface.kt$@Composable internal fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable internal fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, onScan: () -&gt; Unit = {}, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable private fun AccentColorDialog( current: NotebookAccent, onDismiss: () -&gt; Unit, onPick: (NotebookAccent) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable private fun BatchShareProgressBar(done: Int, total: Int, modifier: Modifier = Modifier, onCancel: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable private fun PageFilmstrip( pages: List&lt;com.nibhaus.data.PageEntity&gt;, highlightedPageId: String?, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpen: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:LibraryScreen.kt$@Composable private fun SelectionShareBar(count: Int, modifier: Modifier = Modifier, onShare: () -&gt; Unit, onCancel: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:LiveCaptureScreen.kt$@Composable internal fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:LiveCaptureScreen.kt$@Composable private fun CaptureStatusLine(live: Boolean, pageNumber: Int?)</ID>
+    <ID>FunctionNaming:LiveCaptureScreen.kt$@Composable private fun LiveIndicator()</ID>
+    <ID>FunctionNaming:LiveCaptureScreen.kt$@Composable private fun RecordingsStrip(pageId: String, vm: InkViewModel)</ID>
+    <ID>FunctionNaming:LiveCaptureScreen.kt$@Composable private fun VoiceRecordButton(enabled: Boolean, recording: Boolean, startedAt: Long?, onTap: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:MainActivity.kt$@Composable internal fun ZoneShareChooser()</ID>
+    <ID>FunctionNaming:MainActivity.kt$@Composable private fun BleRationaleDialog(onContinue: () -&gt; Unit)</ID>
     <ID>FunctionNaming:MainActivity.kt$@Composable private fun LockScreen(onUnlock: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:MainActivity.kt$@Composable private fun ZoneShareChooser()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun BandDivider(modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun Eyebrow( text: String, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun MonoBadge( text: String, modifier: Modifier = Modifier, leadingDot: Boolean = false, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun NibBottomBar( items: List&lt;NavItem&gt;, selected: Int, onSelect: (Int) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun NibFab( onClick: () -&gt; Unit, modifier: Modifier = Modifier, content: @Composable () -&gt; Unit = { Icon( imageVector = Icons.Filled.Add, contentDescription = "Add", tint = Color.White, ) }, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun NibToggle( checked: Boolean, onCheckedChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Composable fun StatusChip( text: String, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "BandDivider · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewBandDivider()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "Eyebrow · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewEyebrow()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "MonoBadge · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewMonoBadge()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "Nib V3 component kit · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewNibComponentKit()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "Nib V3 component kit · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewNibComponentKitLight()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "NibBottomBar · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibBottomBar()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "NibFab · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibFab()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "NibToggle · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibToggle()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "NibToggle · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibToggleLight()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "StatusChip · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChip()</ID>
+    <ID>FunctionNaming:NibComponents.kt$@Preview( name = "StatusChip · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChipLight()</ID>
+    <ID>FunctionNaming:NibFx.kt$@Preview( name = "Nib V3 foundation · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxDark()</ID>
+    <ID>FunctionNaming:NibFx.kt$@Preview( name = "Nib V3 foundation · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxLight()</ID>
+    <ID>FunctionNaming:NibFx.kt$@Preview( name = "Nib V3 foundation · static (no motion)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxStatic()</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable fun NibSplash(onDone: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable fun WordmarkText( fontSize: Int = 30, inkColor: Color = MaterialTheme.colorScheme.onSurface, vaultBrush: Brush = Brush.linearGradient(InkGradientStops), )</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun HaloOrbit(modifier: Modifier)</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun InkSwoosh(modifier: Modifier, drawDelayMs: Int)</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun LogoCradle()</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun SplashAmbient(modifier: Modifier)</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun SplashChip(title: String, sub: String, modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:NibMotion.kt$@Composable private fun SplashProgressBar(fraction: Float, modifier: Modifier)</ID>
+    <ID>FunctionNaming:NibhausGlanceWidget.kt$@Composable private fun PenStatusDot(connected: Boolean)</ID>
+    <ID>FunctionNaming:NibhausGlanceWidget.kt$@Composable private fun WidgetContent( notebookName: String, pageNumber: Int?, tapIntent: Intent?, lastInkAt: Long?, penConnected: Boolean, )</ID>
     <ID>FunctionNaming:NotebookSetupDialog.kt$@Composable fun NotebookSetupDialog( notebook: NotebookEntity, defaultTypeId: String?, onSave: (typeId: String, label: String) -&gt; Unit, onSkip: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:NotebookSetupWizard.kt$@Composable fun NotebookSetupWizard(vm: InkViewModel, activeBook: Int?, onDone: () -&gt; Unit)</ID>
     <ID>FunctionNaming:NotebookSetupWizard.kt$@Composable private fun WizardDemo(step: WizardStep, modifier: Modifier)</ID>
-    <ID>FunctionNaming:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, translatorAvailable: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** Feature 9: persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:PageActions.kt$@Composable internal fun TagRow(pageId: String, vm: InkViewModel)</ID>
+    <ID>FunctionNaming:PageActions.kt$@Composable private fun TextInputDialog( title: String, label: String, initial: String, onDismiss: () -&gt; Unit, onConfirm: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PageDetail.kt$@Composable internal fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
+    <ID>FunctionNaming:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>FunctionNaming:PageTextView.kt$@Composable private fun LanguagePicker( label: String, code: String?, allowAuto: Boolean, modifier: Modifier = Modifier, onPick: (String?) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun ActivityScreen(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun ConnectionDiagnosticScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun CrashReportCard(modifier: Modifier = Modifier, onReview: () -&gt; Unit, onDismiss: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun DiagnosticStepCard(step: ConnectionDiagnostic.Step, isFirstFail: Boolean, modifier: Modifier = Modifier)</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PenStatus.kt$@Composable internal fun SyncStatusCard(vm: InkViewModel, onOpenActivity: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:PensHome.kt$@Composable internal fun PensHome( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PensHome.kt$@Composable private fun RecentNotebookRow( title: String, pages: List&lt;com.nibhaus.data.PageEntity&gt;, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpenNotebook: () -&gt; Unit, onOpenPage: (String) -&gt; Unit, )</ID>
+    <ID>FunctionNaming:PensHome.kt$@Composable private fun SavedPenTile( pen: com.nibhaus.pen.SavedPen, connectState: com.nibhaus.pen.SavedPenConnectState, ready: Boolean, onTap: () -&gt; Unit, onForget: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:PrivacyTab.kt$@Composable private fun AppLockCard(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:PrivacyTab.kt$@Composable private fun SendFeedbackCard(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:Replay.kt$@Composable internal fun ReplayScreen(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, onClose: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:Replay.kt$@Composable private fun ReplayBar( totalMs: Long, positionMs: Long, playing: Boolean, speedIndex: Int, skipMs: Long, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onSkip: (Long) -&gt; Unit, onCycleSpeed: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:ScanScreen.kt$@Composable internal fun ScanScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
     <ID>FunctionNaming:Screens.kt$@Composable fun InkApp(vm: InkViewModel)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun &lt;T&gt; ThumbRow( items: List&lt;T&gt;, cols: Int, thumb: @Composable (item: T, modifier: Modifier) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun AccentColorDialog( current: NotebookAccent, onDismiss: () -&gt; Unit, onPick: (NotebookAccent) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ActivityScreen(vm: InkViewModel)</ID>
     <ID>FunctionNaming:Screens.kt$@Composable private fun BackgroundCaptureNudgeDialog(onAllow: () -&gt; Unit, onDismiss: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun BatteryBadge(status: BatteryStatus, showEta: Boolean = false, modifier: Modifier = Modifier)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun BrandWordmark(modifier: Modifier = Modifier)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ColorDot(color: Int, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ConnectionDiagnosticScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
     <ID>FunctionNaming:Screens.kt$@Composable private fun ExitConfirmDialog(onDismiss: () -&gt; Unit, onConfirm: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ExpandingColorPicker( selected: Int, onColor: Color, onSelect: (Int) -&gt; Unit, enabled: Boolean = true, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ExpandingSizePicker( selected: Float, onColor: Color, onSelect: (Float) -&gt; Unit, enabled: Boolean = true, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun InkAppBar(title: String, sub: String? = null, actions: @Composable () -&gt; Unit = {})</ID>
     <ID>FunctionNaming:Screens.kt$@Composable private fun InkBottomNav(selected: Tab, onSelect: (Tab) -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ListenBar( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ListenCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun LiveIndicator()</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun NibBadge(live: Boolean)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun NotebookListRow( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, onOpen: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun NotebookThumb( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, modifier: Modifier = Modifier, compact: Boolean = false, onOpen: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PageFilmstrip( pages: List&lt;com.nibhaus.data.PageEntity&gt;, highlightedPageId: String?, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpen: (String) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PageThumb( pageId: String, label: String, vm: InkViewModel, hasAudio: Boolean, book: Int?, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, onOpen: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PasswordDialog(onSubmit: (String) -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun PensHome( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun QuietLine(text: String)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun RecentNotebookRow( title: String, pages: List&lt;com.nibhaus.data.PageEntity&gt;, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpenNotebook: () -&gt; Unit, onOpenPage: (String) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun RecordingsStrip(pageId: String, vm: InkViewModel)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun RenameDialog( dialogTitle: String, fieldLabel: String, initial: String, onDismiss: () -&gt; Unit, onConfirm: (String) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ReplayBar( totalMs: Long, positionMs: Long, playing: Boolean, speedIndex: Int, skipMs: Long, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onSkip: (Long) -&gt; Unit, onCycleSpeed: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ReplayScreen(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, onClose: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun SavedPenTile( pen: com.nibhaus.pen.SavedPen, connectState: com.nibhaus.pen.SavedPenConnectState, onTap: () -&gt; Unit, onForget: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ScanScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun SelectionShareBar(count: Int, modifier: Modifier = Modifier, onShare: () -&gt; Unit, onCancel: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun SizeChip(label: String, width: Float, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun SyncStatusCard(vm: InkViewModel, onOpenActivity: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun TagRow(pageId: String, vm: InkViewModel)</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun TextInputDialog( title: String, label: String, initial: String, onDismiss: () -&gt; Unit, onConfirm: (String) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun ThumbBody( label: String, strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, hasAudio: Boolean, pageBounds: PageGeometry? = null, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, meta: String? = null, showLabel: Boolean = true, accentColor: Color? = null, onOpen: () -&gt; Unit, )</ID>
-    <ID>FunctionNaming:Screens.kt$@Composable private fun VoiceRecordButton(enabled: Boolean, recording: Boolean, startedAt: Long?, onTap: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:Screens.kt$@OptIn(ExperimentalMaterial3ExpressiveApi::class) @Composable private fun EditToolbar( lassoMode: Boolean, hasSelection: Boolean, currentColor: Int, currentWidth: Float, onToggleLasso: () -&gt; Unit, onRecolor: (Int) -&gt; Unit, onResize: (Float) -&gt; Unit, onDelete: () -&gt; Unit, onUndo: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>FunctionNaming:Screens.kt$@Composable private fun PasswordDialog( wrongAttempt: Boolean = false, attemptsRemaining: Int? = null, onSubmit: (String) -&gt; Unit, onCancel: () -&gt; Unit, )</ID>
     <ID>FunctionNaming:SearchScreen.kt$@Composable fun SearchScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:SettingsCommon.kt$@Composable internal fun AdvancedSection(content: @Composable ColumnScope.() -&gt; Unit)</ID>
     <ID>FunctionNaming:SettingsCommon.kt$@Composable internal fun InlineField(key: String, value: String, trailing: @Composable () -&gt; Unit)</ID>
     <ID>FunctionNaming:SettingsCommon.kt$@Composable internal fun PersistedTextField( persisted: String, onChange: (String) -&gt; Unit, label: String, placeholder: String, mask: Boolean = false, )</ID>
     <ID>FunctionNaming:SettingsCommon.kt$@Composable internal fun SectionLabel(text: String)</ID>
     <ID>FunctionNaming:SettingsCommon.kt$@Composable internal fun SettingsCard(content: @Composable () -&gt; Unit)</ID>
     <ID>FunctionNaming:SettingsCommon.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun &lt;T&gt; DropdownRow( title: String, desc: String, current: String, options: List&lt;T&gt;, optionLabel: (T) -&gt; String, onPick: (T) -&gt; Unit, )</ID>
-    <ID>FunctionNaming:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; OCR" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
+    <ID>FunctionNaming:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; Text" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
+    <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun OcrAdvancedOverrides(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun OcrServerCard(vm: InkViewModel, byoOcrEndpoint: String, byoOcrToken: String)</ID>
     <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun OcrSettingsCard(vm: InkViewModel)</ID>
+    <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun PlannedPremiumCard(capability: String)</ID>
     <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun PremiumCard(premium: Boolean, onDevUnlock: (Boolean) -&gt; Unit)</ID>
+    <ID>FunctionNaming:SyncAndOcrTab.kt$@Composable private fun TranslationCard(vm: InkViewModel, translateEndpoint: String, translateModel: String)</ID>
     <ID>FunctionNaming:Theme.kt$@Composable fun NibhausTheme(mode: ThemeMode, content: @Composable () -&gt; Unit)</ID>
     <ID>FunctionNaming:Theme.kt$@OptIn(ExperimentalMaterial3ExpressiveApi::class) @Composable fun NibhausTheme(palette: Palette, lightPaper: Boolean, content: @Composable () -&gt; Unit)</ID>
     <ID>FunctionNaming:ThemePreviewScreen.kt$@Composable fun ThemePreviewScreen(palette: Palette, lightPaper: Boolean, onClose: () -&gt; Unit)</ID>
@@ -122,106 +170,87 @@
     <ID>FunctionNaming:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Midnight Electric (dark)", showBackground = true) @Composable private fun ThemePreviewScreenPreview()</ID>
     <ID>FunctionNaming:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Midnight Electric (dark, light paper)", showBackground = true) @Composable private fun ThemePreviewScreenPreviewLightPaper()</ID>
     <ID>FunctionNaming:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Porcelain Sapphire (light)", showBackground = true) @Composable private fun ThemePreviewScreenPreviewLight()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun BandDivider(modifier: Modifier = Modifier)</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun Eyebrow( text: String, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun MonoBadge( text: String, modifier: Modifier = Modifier, leadingDot: Boolean = false, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun StatusChip( text: String, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun VaultBottomBar( items: List&lt;NavItem&gt;, selected: Int, onSelect: (Int) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun VaultFab( onClick: () -&gt; Unit, modifier: Modifier = Modifier, content: @Composable () -&gt; Unit = { Icon( imageVector = Icons.Filled.Add, contentDescription = "Add", tint = Color.White, ) }, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Composable fun VaultToggle( checked: Boolean, onCheckedChange: (Boolean) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "BandDivider · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewBandDivider()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "Eyebrow · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewEyebrow()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "MonoBadge · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewMonoBadge()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "StatusChip · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChip()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "StatusChip · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChipLight()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "Vault V3 component kit · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewVaultComponentKit()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "Vault V3 component kit · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewVaultComponentKitLight()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "VaultBottomBar · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultBottomBar()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "VaultFab · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultFab()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "VaultToggle · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultToggle()</ID>
-    <ID>FunctionNaming:VaultComponents.kt$@Preview( name = "VaultToggle · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultToggleLight()</ID>
-    <ID>FunctionNaming:VaultFx.kt$@Preview( name = "Vault V3 foundation · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxDark()</ID>
-    <ID>FunctionNaming:VaultFx.kt$@Preview( name = "Vault V3 foundation · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxLight()</ID>
-    <ID>FunctionNaming:VaultFx.kt$@Preview( name = "Vault V3 foundation · static (no motion)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxStatic()</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable fun DialSpinner(modifier: Modifier = Modifier, size: Dp = 56.dp)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable fun VaultSplash(onDone: () -&gt; Unit)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable fun WordmarkText( fontSize: Int = 30, inkColor: Color = MaterialTheme.colorScheme.onSurface, vaultBrush: Brush = Brush.linearGradient(InkGradientStops), )</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun HaloOrbit(modifier: Modifier)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun InkSwoosh(modifier: Modifier, drawDelayMs: Int)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun LogoCradle()</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun SplashAmbient(modifier: Modifier)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun SplashChip(title: String, sub: String, modifier: Modifier = Modifier)</ID>
-    <ID>FunctionNaming:VaultMotion.kt$@Composable private fun SplashProgressBar(fraction: Float, modifier: Modifier)</ID>
+    <ID>FunctionNaming:Thumbs.kt$@Composable internal fun NotebookListRow( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, onOpen: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:Thumbs.kt$@Composable internal fun NotebookThumb( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, modifier: Modifier = Modifier, compact: Boolean = false, onOpen: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:Thumbs.kt$@Composable internal fun PageThumb( pageId: String, label: String, vm: InkViewModel, hasAudio: Boolean, book: Int?, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, onOpen: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:Thumbs.kt$@Composable private fun ThumbBody( label: String, strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, hasAudio: Boolean, pageBounds: PageGeometry? = null, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, meta: String? = null, showLabel: Boolean = true, accentColor: Color? = null, onOpen: () -&gt; Unit, )</ID>
+    <ID>FunctionNaming:TipCard.kt$@Composable internal fun TipCard(text: String, modifier: Modifier = Modifier, onDismiss: () -&gt; Unit)</ID>
     <ID>FunctionOnlyReturningConstant:PenNotifications.kt$PenNotifications$fun stallText(): String</ID>
     <ID>LargeClass:InkViewModel.kt$InkViewModel : ViewModel</ID>
     <ID>LongMethod:ActionZoneUi.kt$@Composable fun ActionZoneSettingsCard(vm: InkViewModel)</ID>
     <ID>LongMethod:AppearanceTab.kt$internal fun LazyListScope.appearanceTab( vm: InkViewModel, activePalette: Palette, lightPaper: Boolean, paper: PaperTemplate, pendingPalette: String?, onPendingPaletteChange: (String?) -&gt; Unit, onShowThemePreview: () -&gt; Unit, )</ID>
     <ID>LongMethod:CaptureAndPenTab.kt$@Composable private fun CaptureReliabilityCard()</ID>
-    <ID>LongMethod:CaptureAndPenTab.kt$@Composable private fun FirmwareCard(vm: InkViewModel, penState: PenConnState)</ID>
     <ID>LongMethod:CaptureAndPenTab.kt$@Composable private fun PenSecurityCard(vm: InkViewModel, penState: PenConnState)</ID>
     <ID>LongMethod:CaptureLabScreen.kt$@Composable fun CaptureLabScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>LongMethod:EditListenCanvas.kt$@Composable internal fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>LongMethod:EditListenCanvas.kt$@Composable internal fun ListenBar( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:ExportArtifacts.kt$ExportArtifacts$fun renderSvg( strokes: List&lt;StrokeEntity&gt;, decode: (StrokeEntity) -&gt; List&lt;Point&gt;, geometry: PageGeometry? = null, ruling: Ruling? = null, // the notebook's calibrated printed ruling, when known pageNumber: Int? = null, // the printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, ): String</ID>
-    <ID>LongMethod:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:FeedbackScreen.kt$@Composable fun FeedbackScreen(bundle: FeedbackBundle, onClose: () -&gt; Unit)</ID>
+    <ID>LongMethod:FindMyPenScreen.kt$@Composable private fun FindMyPenContent( isConnected: Boolean, smoothedRssiDbm: Float? = null, onBack: () -&gt; Unit, )</ID>
+    <ID>LongMethod:InkSurface.kt$@Composable internal fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
+    <ID>LongMethod:LibraryScreen.kt$@Composable internal fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, onScan: () -&gt; Unit = {}, )</ID>
+    <ID>LongMethod:LiveCaptureScreen.kt$@Composable internal fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
+    <ID>LongMethod:NibComponents.kt$@Composable fun NibBottomBar( items: List&lt;NavItem&gt;, selected: Int, onSelect: (Int) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:NibMotion.kt$@Composable fun NibSplash(onDone: () -&gt; Unit)</ID>
     <ID>LongMethod:NotebookSetupWizard.kt$@Composable fun NotebookSetupWizard(vm: InkViewModel, activeBook: Int?, onDone: () -&gt; Unit)</ID>
-    <ID>LongMethod:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, translatorAvailable: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** Feature 9: persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PageDetail.kt$@Composable internal fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
+    <ID>LongMethod:PageTextView.kt$@Composable fun PageTextView( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PenStatus.kt$@Composable internal fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
+    <ID>LongMethod:PensHome.kt$@Composable internal fun PensHome( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
+    <ID>LongMethod:Replay.kt$@Composable internal fun ReplayScreen(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, onClose: () -&gt; Unit)</ID>
+    <ID>LongMethod:ScanScreen.kt$@Composable internal fun ScanScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
     <ID>LongMethod:Screens.kt$@Composable fun InkApp(vm: InkViewModel)</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun EditableInkCanvas( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun InkSurface( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun LibraryScreen( vm: InkViewModel, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, pages: List&lt;com.nibhaus.data.PageEntity&gt;, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun ListenBar( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun LiveCaptureScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun PageDetail(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel)</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun PenStatusCard( vm: InkViewModel, pen: PenConnState, onScan: () -&gt; Unit, onFindMyPen: () -&gt; Unit, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun PensHome( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
-    <ID>LongMethod:Screens.kt$@Composable private fun ReplayScreen(strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, onClose: () -&gt; Unit)</ID>
     <ID>LongMethod:SearchScreen.kt$@Composable fun SearchScreen(vm: InkViewModel, onBack: () -&gt; Unit)</ID>
-    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; OCR" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen( vm: InkViewModel, onBack: () -&gt; Unit, onOpenCaptureLab: () -&gt; Unit = {}, /** Which tab to open on ("Sync &amp; Text" = 1) — lets callers like the Pens-home pending card deep-link * straight to Sync instead of always landing on "Capture &amp; Pen". */ initialTab: Int = 0, )</ID>
     <ID>LongMethod:SyncAndOcrTab.kt$@Composable private fun OcrSettingsCard(vm: InkViewModel)</ID>
-    <ID>LongMethod:SyncAndOcrTab.kt$internal fun LazyListScope.syncAndOcrTab( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
-    <ID>LongMethod:VaultComponents.kt$@Composable fun VaultBottomBar( items: List&lt;NavItem&gt;, selected: Int, onSelect: (Int) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:VaultMotion.kt$@Composable fun VaultSplash(onDone: () -&gt; Unit)</ID>
+    <ID>LongMethod:SyncAndOcrTab.kt$internal fun LazyListScope.syncAndOcrTab( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, entitled: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
+    <ID>LongMethod:Thumbs.kt$@Composable private fun ThumbBody( label: String, strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, hasAudio: Boolean, pageBounds: PageGeometry? = null, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, meta: String? = null, showLabel: Boolean = true, accentColor: Color? = null, onOpen: () -&gt; Unit, )</ID>
     <ID>LongParameterList:AppearanceTab.kt$( vm: InkViewModel, activePalette: Palette, lightPaper: Boolean, paper: PaperTemplate, pendingPalette: String?, onPendingPaletteChange: (String?) -&gt; Unit, onShowThemePreview: () -&gt; Unit, )</ID>
     <ID>LongParameterList:CalendarGateway.kt$CalendarGateway$( calendarId: Long, title: String, startMs: Long, endMs: Long, allDay: Boolean = false, notes: String? = null, location: String? = null, )</ID>
     <ID>LongParameterList:CalendarUi.kt$( vm: InkViewModel, scope: kotlinx.coroutines.CoroutineScope, context: android.content.Context, title: String, startMs: Long, durationMin: Int, allDay: Boolean, notes: String, onDismiss: () -&gt; Unit, )</ID>
     <ID>LongParameterList:CaptureAndPenTab.kt$( title: String, fields: List&lt;String&gt;, passwordOp: kotlinx.coroutines.flow.StateFlow&lt;PasswordOpState&gt;, onAcknowledge: () -&gt; Unit, onDismiss: () -&gt; Unit, validate: (List&lt;String&gt;) -&gt; String?, onSubmit: (List&lt;String&gt;) -&gt; Unit, )</ID>
     <ID>LongParameterList:ConnectionDiagnosticTest.kt$ConnectionDiagnosticTest$( bt: Boolean = true, scan: Boolean = true, conn: Boolean = true, powered: Boolean = true, gatt: Boolean = true, auth: Boolean = true, dots: Boolean = true, paper: Boolean = true, )</ID>
+    <ID>LongParameterList:EditListenCanvas.kt$( lassoMode: Boolean, hasSelection: Boolean, currentColor: Int, currentWidth: Float, onToggleLasso: () -&gt; Unit, onRecolor: (Int) -&gt; Unit, onResize: (Float) -&gt; Unit, onDelete: () -&gt; Unit, onUndo: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongParameterList:EditListenCanvas.kt$( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongParameterList:EditListenCanvas.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, recording: RecordingEntity, positionMs: Long, future: Color, brandInk: Color, cache: StrokeRenderCache = defaultStrokeRenderCache, )</ID>
+    <ID>LongParameterList:EditListenCanvas.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>LongParameterList:EditListenCanvas.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
+    <ID>LongParameterList:EmptyState.kt$( icon: ImageVector, text: String, modifier: Modifier = Modifier, headline: String? = null, primaryActionLabel: String? = null, onPrimaryAction: (() -&gt; Unit)? = null, )</ID>
     <ID>LongParameterList:ExportArtifacts.kt$ExportArtifacts$( pageId: String, page: PageEntity?, penId: String, strokeCount: Int, contentHash: String, exportedAt: Long, formats: List&lt;String&gt; = emptyList(), notebookType: String? = null, notebookLabel: String? = null, mmPerUnit: Float = MM_PER_UNIT, )</ID>
     <ID>LongParameterList:ExportArtifacts.kt$ExportArtifacts$( pageId: String, page: PageEntity?, transcript: String?, imageName: String = "$pageId.png", notebookType: String? = null, label: String? = null, tags: List&lt;String&gt; = emptyList(), )</ID>
     <ID>LongParameterList:ExportArtifacts.kt$ExportArtifacts$( strokes: List&lt;StrokeEntity&gt;, decode: (StrokeEntity) -&gt; List&lt;Point&gt;, geometry: PageGeometry? = null, ruling: Ruling? = null, // the notebook's calibrated printed ruling, when known pageNumber: Int? = null, // the printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, )</ID>
     <ID>LongParameterList:ExportEngine.kt$ExportEngine$( private val strokeDao: StrokeDao, private val pageDao: PageDao, private val notebookDao: NotebookDao, private val outboxDao: OutboxDao, private val exportDao: ExportDao, private val decode: (StrokeEntity) -&gt; List&lt;Point&gt;, private val penId: () -&gt; String, private val now: () -&gt; Long = System::currentTimeMillis, /** * Optional page rasters, injected by the app (uses Android Bitmap). Returns (extension → bytes) * for each format rendered from one bitmap pass: a `.png` (so the OCR payload is **image + * strokes** — the SOTA HTR input) and a `.pdf` (a portable, printable copy in the sync folder). * Left null in tests so the engine stays framework-free. */ private val renderRasters: ((List&lt;StrokeEntity&gt;, (StrokeEntity) -&gt; List&lt;Point&gt;) -&gt; List&lt;Pair&lt;String, ByteArray&gt;&gt;)? = null, /** * Resolve a book id to its notebook type (geometry + path code). Default = built-ins only; the app * injects one backed by the user's DataStore assignments so a typed-but-unmeasured notebook files * correctly. Suspending because the assignment read is async. */ private val typeForBook: suspend (Int?) -&gt; NotebookType? = { NotebookType.forBook(it) }, /** A page's tags, for the Markdown frontmatter. Default empty so the engine stays framework-free. */ private val tagsFor: suspend (String) -&gt; List&lt;String&gt; = { emptyList() }, )</ID>
+    <ID>LongParameterList:InkControls.kt$(label: String, width: Float, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
+    <ID>LongParameterList:InkSurface.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, base: Color, selected: Set&lt;String&gt; = emptySet(), highlight: Color = base, brandInk: Color = base, glowLast: Color? = null, pageBounds: PageGeometry? = null, revealPhase: Float = 1f, // 0=invisible → 1=fully drawn; staggered per-stroke alpha reveal cache: StrokeRenderCache = defaultStrokeRenderCache, strokeScale: Float = 1f, )</ID>
+    <ID>LongParameterList:InkSurface.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, geometry: PageGeometry, ruling: Ruling, pageNumber: Int?, style: PageStyle, lined: Boolean, color: Color, numberColor: Color = color, // page number legibility: stronger than the faint rule/dot tone zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), )</ID>
+    <ID>LongParameterList:InkSurface.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
+    <ID>LongParameterList:InkSurface.kt$(minX: Float, minY: Float, maxX: Float, maxY: Float, width: Float, height: Float, marginFrac: Float = 0.06f)</ID>
     <ID>LongParameterList:InkViewModel.kt$InkViewModel$( private val repo: NoteRepository, private val settings: SettingsStore, pen: PenDeps, sync: SyncDeps = SyncDeps(), ocr: OcrDeps = OcrDeps(), zones: ZoneDeps = ZoneDeps(), private val editor: PageEditor = NoOpPageEditor, private val inkColor: MutableStateFlow&lt;Int&gt; = MutableStateFlow(0), private val inkWidth: MutableStateFlow&lt;Float&gt; = MutableStateFlow(1f), private val recorder: RecordingController? = null, private val calendar: com.nibhaus.calendar.CalendarGateway? = null, private val captureLog: com.nibhaus.capture.CaptureLog? = null, private val backgroundStore: com.nibhaus.background.BackgroundStore? = null, private val translator: com.nibhaus.translate.InkTranslator? = null, private val notebookProfiles: com.nibhaus.capture.NotebookProfileStore? = null, )</ID>
     <ID>LongParameterList:InkViewModel.kt$InkViewModel$(action: com.nibhaus.zones.ZoneAction, book: Int, left: Float, top: Float, right: Float, bottom: Float)</ID>
+    <ID>LongParameterList:InkViewModelDeps.kt$PenDeps$( val penManager: PenConnectionManager, val scanner: PenScanner, /** Ref-counted facade over [scanner] (bug #2 fix) so the Find-a-pen screen's manual scan and the * Pens home presence scan can both hold it at once without one's stop() killing the other's * still-active scan — see [SharedPenScanner]'s doc. Defaults to a fresh single-owner facade * around [scanner] so existing tests/callers that don't care about ref-counting are unaffected; * production wiring ([com.nibhaus.di.ServiceLocator]) passes the one real shared instance. */ val sharedScanner: SharedPenScanner = SharedPenScanner(startReal = scanner::start, stopReal = scanner::stop), /** Whether the pen unlock password is currently stored (encrypted) for auto-unlock. */ val hasStoredPassword: () -&gt; Boolean = { false }, val signals: CaptureSignals? = null, /** tap-to-reconnect a saved pen by its stable spp identity (scan-filter-connect, * shared with [com.nibhaus.di.ServiceLocator]'s auto-reconnect rescan). Default no-op keeps * existing tests/callers valid. */ val connectSaved: (spp: String) -&gt; Unit = {}, /** Live "searching…" / "not found" state for [connectSaved]'s in-flight scan. */ val savedPenConnectState: StateFlow&lt;SavedPenConnectState&gt; = MutableStateFlow(SavedPenConnectState.Idle), )</ID>
     <ID>LongParameterList:NotebookPaths.kt$NotebookPaths$( type: NotebookType?, label: String, instanceSeq: Int, page: Int, plannerDate: PlannerDate? = null, fallbackId: String, )</ID>
+    <ID>LongParameterList:PageActions.kt$( context: android.content.Context, jobName: String, strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, bounds: PageGeometry? = null, ruling: Ruling? = null, pageNumber: Int? = null, pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, strokeScale: Float = 1f, // the Fine/Normal/Bold handwriting-size preset (#15b) — see PageRender.renderPage. )</ID>
     <ID>LongParameterList:PageRender.kt$PageRender$( canvas: Canvas, geometry: PageGeometry, ruling: Ruling, pageNumber: Int?, pageStyle: PageStyle, width: Int, minX: Float, minY: Float, scale: Float, offX: Float, offY: Float, )</ID>
-    <ID>LongParameterList:PageRender.kt$PageRender$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Int = 1240, // ~150dpi A4 portrait height: Int = 1754, bounds: PageGeometry? = null, template: PaperTemplate = PaperTemplate.BLANK, // BLANK keeps exports/prints on clean white ruling: Ruling? = null, // calibrated printed ruling — replaces the generic template pageNumber: Int? = null, // printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, // print/share every stroke black regardless of its color )</ID>
-    <ID>LongParameterList:PageTextView.kt$( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, translatorAvailable: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** Feature 9: persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongParameterList:Screens.kt$( context: android.content.Context, jobName: String, strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, bounds: PageGeometry? = null, ruling: Ruling? = null, pageNumber: Int? = null, pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, )</ID>
-    <ID>LongParameterList:Screens.kt$( label: String, strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, hasAudio: Boolean, pageBounds: PageGeometry? = null, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, meta: String? = null, showLabel: Boolean = true, accentColor: Color? = null, onOpen: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:Screens.kt$( lassoMode: Boolean, hasSelection: Boolean, currentColor: Int, currentWidth: Float, onToggleLasso: () -&gt; Unit, onRecolor: (Int) -&gt; Unit, onResize: (Float) -&gt; Unit, onDelete: () -&gt; Unit, onUndo: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongParameterList:Screens.kt$( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, modifier: Modifier = Modifier, compact: Boolean = false, onOpen: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:Screens.kt$( pageId: String, label: String, vm: InkViewModel, hasAudio: Boolean, book: Int?, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, onOpen: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:Screens.kt$( recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity, loaded: Boolean, playing: Boolean, positionMs: Long, onSelect: (RecordingEntity) -&gt; Unit, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onRename: () -&gt; Unit, onDelete: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, base: Color, selected: Set&lt;String&gt; = emptySet(), highlight: Color = base, brandInk: Color = base, glowLast: Color? = null, pageBounds: PageGeometry? = null, revealPhase: Float = 1f, // 0=invisible → 1=fully drawn; staggered per-stroke alpha reveal cache: StrokeRenderCache = defaultStrokeRenderCache, )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, geometry: PageGeometry, ruling: Ruling, pageNumber: Int?, style: PageStyle, lined: Boolean, color: Color, numberColor: Color = color, // page number legibility: stronger than the faint rule/dot tone zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, recording: RecordingEntity, positionMs: Long, future: Color, brandInk: Color, cache: StrokeRenderCache = defaultStrokeRenderCache, )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, lassoMode: Boolean, selected: Set&lt;String&gt;, onToggleStroke: (StrokeEntity) -&gt; Unit, onLasso: (List&lt;StrokeEntity&gt;) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, modifier: Modifier = Modifier, background: ImageBitmap? = null, liveGlow: Boolean = false, pageBounds: PageGeometry? = null, ruling: Ruling? = null, pageStyle: PageStyle = PageStyle.LINED, pageNumber: Int? = null, zones: List&lt;com.nibhaus.zones.ActionZone&gt; = emptyList(), // printed-button tap targets to mark revealPageId: String? = null, )</ID>
-    <ID>LongParameterList:Screens.kt$( strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, recordings: List&lt;RecordingEntity&gt;, active: RecordingEntity?, playing: Boolean, positionMs: Long, onTapStroke: (StrokeEntity) -&gt; Unit, onTapMarker: (RecordingEntity, Long) -&gt; Unit, modifier: Modifier = Modifier, background: ImageBitmap? = null, )</ID>
-    <ID>LongParameterList:Screens.kt$( title: String, pages: List&lt;com.nibhaus.data.PageEntity&gt;, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpenNotebook: () -&gt; Unit, onOpenPage: (String) -&gt; Unit, )</ID>
-    <ID>LongParameterList:Screens.kt$( totalMs: Long, positionMs: Long, playing: Boolean, speedIndex: Int, skipMs: Long, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onSkip: (Long) -&gt; Unit, onCycleSpeed: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongParameterList:Screens.kt$( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
-    <ID>LongParameterList:Screens.kt$(label: String, width: Float, onColor: Color, sel: Boolean, enabled: Boolean, onClick: () -&gt; Unit)</ID>
-    <ID>LongParameterList:Screens.kt$(minX: Float, minY: Float, maxX: Float, maxY: Float, width: Float, height: Float, marginFrac: Float = 0.06f)</ID>
+    <ID>LongParameterList:PageRender.kt$PageRender$( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Int = 1240, // ~150dpi A4 portrait height: Int = 1754, bounds: PageGeometry? = null, template: PaperTemplate = PaperTemplate.BLANK, // BLANK keeps exports/prints on clean white ruling: Ruling? = null, // calibrated printed ruling — replaces the generic template pageNumber: Int? = null, // printed 3-digit page number, when known pageStyle: PageStyle = PageStyle.LINED, blackInk: Boolean = false, // print/share every stroke black regardless of its color strokeScale: Float = 1f, // the Fine/Normal/Bold handwriting-size preset (#15b) — // matches InkSurface.strokeBaseWidthPx so exports/shares // look like what's on screen, not always the Normal width. )</ID>
+    <ID>LongParameterList:PageTextView.kt$( transcript: String?, onTranscribe: () -&gt; Unit, canTranscribe: Boolean, defaultTarget: String, translationText: String?, translationOnDevice: Boolean, translating: Boolean, translateError: String?, onTranslate: (source: String?, target: String) -&gt; Unit, onShowOriginal: () -&gt; Unit, /** persist a manual correction to the transcript — routed through the caller into the * FTS-indexing funnel, so the edit is both stored and made searchable. */ onSaveTranscript: (String) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongParameterList:PensHome.kt$( title: String, pages: List&lt;com.nibhaus.data.PageEntity&gt;, vm: InkViewModel, pagesWithAudio: Set&lt;String&gt;, onOpenNotebook: () -&gt; Unit, onOpenPage: (String) -&gt; Unit, )</ID>
+    <ID>LongParameterList:PensHome.kt$( vm: InkViewModel, pen: PenConnState, notebooks: List&lt;com.nibhaus.data.NotebookEntity&gt;, onScan: () -&gt; Unit, onSettings: () -&gt; Unit, onSearch: () -&gt; Unit, onCheckConnection: () -&gt; Unit, onOpenActivity: () -&gt; Unit, onOpenNotebook: (String) -&gt; Unit, onOpenPage: (notebookId: String, pageId: String) -&gt; Unit, onFindMyPen: () -&gt; Unit, onOpenSyncSettings: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:Replay.kt$( totalMs: Long, positionMs: Long, playing: Boolean, speedIndex: Int, skipMs: Long, onPlayPause: () -&gt; Unit, onSeek: (Long) -&gt; Unit, onSkip: (Long) -&gt; Unit, onCycleSpeed: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongParameterList:SettingsCommon.kt$( title: String, desc: String, current: String, options: List&lt;T&gt;, optionLabel: (T) -&gt; String, onPick: (T) -&gt; Unit, )</ID>
     <ID>LongParameterList:StrokeIngestor.kt$StrokeIngestor$( private val ingestDao: IngestDao, private val pendingDao: PendingDotDao, private val pageDao: PageDao, private val organizer: AutoOrganizer, private val scope: CoroutineScope, private val flushEveryNDots: Int = 8, private val now: () -&gt; Long = System::currentTimeMillis, private val newId: () -&gt; String = { UUID.randomUUID().toString() }, /** Current ink color for new strokes (the live color picker). 0 = brand ink (theme primary). */ private val inkColor: () -&gt; Int = { 0 }, /** Current writing width multiplier for new strokes (the live size picker). 1 = base. */ private val inkWidth: () -&gt; Float = { 1f }, /** Invoked after a stroke is durably committed, with the committed page id; the app wires this to * enqueue sync and write the at-ingest safety backup. */ private val onCommitted: (pageId: String) -&gt; Unit = {}, /** The user's calibrated physical action zones (printed icons), synchronous. */ private val actionZones: () -&gt; List&lt;ActionZone&gt; = { emptyList() }, /** Fired when a tap lands in an action zone (instead of becoming ink); carries the page tapped. */ private val onZoneTap: (ActionZone, pageId: String, book: Int) -&gt; Unit = { _, _, _ -&gt; }, )</ID>
     <ID>LongParameterList:StrokeRenderCache.kt$StrokeRenderCache$( uuid: String, strokeWidth: Float, colorArgb: Int, selected: Boolean, baseWidthPx: Float, fit: InkFit, build: () -&gt; Path, )</ID>
     <ID>LongParameterList:StrokeRenderCache.kt$StrokeRenderCache.Companion$( uuid: String, strokeWidth: Float, colorArgb: Int, selected: Boolean, baseWidthPx: Float, fit: InkFit, )</ID>
-    <ID>LongParameterList:SyncAndOcrTab.kt$( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
+    <ID>LongParameterList:SyncAndOcrTab.kt$( vm: InkViewModel, method: SyncMethod, folderUri: String, endpoint: String, syncToken: String, translateEndpoint: String, translateModel: String, byoOcrEndpoint: String, byoOcrToken: String, premium: Boolean, entitled: Boolean, restoreMsg: String?, backupFolder: String, onPickFolder: () -&gt; Unit, onPickRestoreFolder: () -&gt; Unit, onPickBackupFolder: () -&gt; Unit, onShowUpsell: () -&gt; Unit, onReexportPrompt: (SyncMethod) -&gt; Unit, )</ID>
+    <ID>LongParameterList:Thumbs.kt$( label: String, strokes: List&lt;StrokeEntity&gt;, vm: InkViewModel, hasAudio: Boolean, pageBounds: PageGeometry? = null, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, meta: String? = null, showLabel: Boolean = true, accentColor: Color? = null, onOpen: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:Thumbs.kt$( notebook: com.nibhaus.data.NotebookEntity, vm: InkViewModel, pageCount: Int, hasAudio: Boolean, modifier: Modifier = Modifier, compact: Boolean = false, onOpen: () -&gt; Unit, )</ID>
+    <ID>LongParameterList:Thumbs.kt$( pageId: String, label: String, vm: InkViewModel, hasAudio: Boolean, book: Int?, modifier: Modifier = Modifier, selected: Boolean = false, onLongPress: (() -&gt; Unit)? = null, onOpen: () -&gt; Unit, )</ID>
     <ID>LoopWithTooManyJumpStatements:GifEncoderTest.kt$GifEncoderTest$while</ID>
     <ID>LoopWithTooManyJumpStatements:ServiceLocator.kt$ServiceLocator$for</ID>
+    <ID>LoopWithTooManyJumpStatements:StrokeIngestor.kt$StrokeIngestor$for</ID>
     <ID>LoopWithTooManyJumpStatements:TranscriptImporter.kt$TranscriptImporter$for</ID>
     <ID>MagicNumber:ActionZoneUi.kt$3</ID>
     <ID>MagicNumber:ActionZoneUi.kt$4</ID>
+    <ID>MagicNumber:AppLock.kt$AppLock$256</ID>
     <ID>MagicNumber:CalendarGateway.kt$CalendarGateway$3</ID>
     <ID>MagicNumber:CalendarUi.kt$120</ID>
     <ID>MagicNumber:CalendarUi.kt$24</ID>
@@ -229,6 +258,7 @@
     <ID>MagicNumber:CalendarUi.kt$30</ID>
     <ID>MagicNumber:CalendarUi.kt$60</ID>
     <ID>MagicNumber:CalendarUi.kt$60_000L</ID>
+    <ID>MagicNumber:CaptureAndPenTab.kt$4</ID>
     <ID>MagicNumber:CaptureLabScreen.kt$3</ID>
     <ID>MagicNumber:Color.kt$0xFF070D1C</ID>
     <ID>MagicNumber:Color.kt$0xFF081530</ID>
@@ -251,6 +281,22 @@
     <ID>MagicNumber:Color.kt$0xFFEAF0FB</ID>
     <ID>MagicNumber:Color.kt$0xFFF4F6FA</ID>
     <ID>MagicNumber:Color.kt$0xFFFFFFFF</ID>
+    <ID>MagicNumber:CountUp.kt$400</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.10f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.18f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.44f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.46f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.55f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.6f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.70f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.78f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.86f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0.90f</ID>
+    <ID>MagicNumber:DynamicPalette.kt$0xFFFFFF</ID>
+    <ID>MagicNumber:DynamicPalette.kt$255</ID>
+    <ID>MagicNumber:EditListenCanvas.kt$10f</ID>
+    <ID>MagicNumber:EditListenCanvas.kt$12f</ID>
+    <ID>MagicNumber:EditListenCanvas.kt$3</ID>
     <ID>MagicNumber:ExportArtifacts.kt$ExportArtifacts$0.35f</ID>
     <ID>MagicNumber:ExportArtifacts.kt$ExportArtifacts$0.3f</ID>
     <ID>MagicNumber:ExportArtifacts.kt$ExportArtifacts$0xFFFFFF</ID>
@@ -263,6 +309,14 @@
     <ID>MagicNumber:FindMyPenScreen.kt$3</ID>
     <ID>MagicNumber:FindMyPenScreen.kt$3f</ID>
     <ID>MagicNumber:FindMyPenScreen.kt$4</ID>
+    <ID>MagicNumber:FindMyPenScreen.kt$50f</ID>
+    <ID>MagicNumber:FindMyPenScreen.kt$55f</ID>
+    <ID>MagicNumber:FindMyPenScreen.kt$70f</ID>
+    <ID>MagicNumber:FindMyPenScreen.kt$80f</ID>
+    <ID>MagicNumber:FindMyPenScreen.kt$95f</ID>
+    <ID>MagicNumber:FirstRunCoach.kt$3</ID>
+    <ID>MagicNumber:FirstRunCoach.kt$4</ID>
+    <ID>MagicNumber:FirstRunCoach.kt$900</ID>
     <ID>MagicNumber:GifEncoder.kt$GifEncoder$0x03</ID>
     <ID>MagicNumber:GifEncoder.kt$GifEncoder$0x04</ID>
     <ID>MagicNumber:GifEncoder.kt$GifEncoder$0x0B</ID>
@@ -284,8 +338,27 @@
     <ID>MagicNumber:GifEncoder.kt$GifEncoder$8</ID>
     <ID>MagicNumber:GifEncoder.kt$GifEncoder.BitBuffer$0xFF</ID>
     <ID>MagicNumber:GifEncoder.kt$GifEncoder.BitBuffer$8</ID>
+    <ID>MagicNumber:InkChrome.kt$0.5f</ID>
+    <ID>MagicNumber:InkChrome.kt$1900</ID>
+    <ID>MagicNumber:InkChrome.kt$2.6f</ID>
+    <ID>MagicNumber:InkChrome.kt$600</ID>
+    <ID>MagicNumber:InkControls.kt$0.05f</ID>
+    <ID>MagicNumber:InkControls.kt$0.3f</ID>
+    <ID>MagicNumber:InkControls.kt$0.4f</ID>
+    <ID>MagicNumber:InkControls.kt$0.5f</ID>
+    <ID>MagicNumber:InkControls.kt$0.7f</ID>
+    <ID>MagicNumber:InkControls.kt$1.6f</ID>
+    <ID>MagicNumber:InkControls.kt$100</ID>
+    <ID>MagicNumber:InkControls.kt$1000</ID>
+    <ID>MagicNumber:InkControls.kt$100f</ID>
+    <ID>MagicNumber:InkControls.kt$15</ID>
+    <ID>MagicNumber:InkControls.kt$35</ID>
+    <ID>MagicNumber:InkControls.kt$5</ID>
+    <ID>MagicNumber:InkControls.kt$6</ID>
+    <ID>MagicNumber:InkControls.kt$60</ID>
     <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$10</ID>
     <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$11</ID>
+    <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$12</ID>
     <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$4</ID>
     <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$5</ID>
     <ID>MagicNumber:InkDatabase.kt$&lt;no name provided&gt;$6</ID>
@@ -297,10 +370,30 @@
     <ID>MagicNumber:InkPaper.kt$0.5f</ID>
     <ID>MagicNumber:InkPaper.kt$0.7152f</ID>
     <ID>MagicNumber:InkPaper.kt$0xFFF3EBD3</ID>
+    <ID>MagicNumber:InkSurface.kt$0.12f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.14f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.16f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.1f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.22f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.2f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.35f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.55f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.56f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.62f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.72f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.78f</ID>
+    <ID>MagicNumber:InkSurface.kt$0.7f</ID>
+    <ID>MagicNumber:InkSurface.kt$1.2f</ID>
+    <ID>MagicNumber:InkSurface.kt$1.5f</ID>
+    <ID>MagicNumber:InkSurface.kt$1.6f</ID>
+    <ID>MagicNumber:InkSurface.kt$2400</ID>
+    <ID>MagicNumber:InkSurface.kt$3.0f</ID>
+    <ID>MagicNumber:InkSurface.kt$6f</ID>
     <ID>MagicNumber:InkTokens.kt$0.30f</ID>
     <ID>MagicNumber:InkTokens.kt$0.70f</ID>
     <ID>MagicNumber:InkTokens.kt$4</ID>
     <ID>MagicNumber:InkTokens.kt$6f</ID>
+    <ID>MagicNumber:InkViewModel.kt$InkViewModel$1_000L</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$1_500L</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$200</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$299</ID>
@@ -310,10 +403,108 @@
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$4</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$5_000</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$60</ID>
-    <ID>MagicNumber:InkViewModel.kt$InkViewModel$80</ID>
     <ID>MagicNumber:InkViewModel.kt$InkViewModel$8000</ID>
+    <ID>MagicNumber:LibraryScreen.kt$1000</ID>
+    <ID>MagicNumber:LibraryScreen.kt$3</ID>
+    <ID>MagicNumber:LibraryScreen.kt$4</ID>
+    <ID>MagicNumber:LibraryScreen.kt$50</ID>
+    <ID>MagicNumber:LibraryScreen.kt$6</ID>
+    <ID>MagicNumber:LibraryScreen.kt$600</ID>
+    <ID>MagicNumber:LiveCaptureScreen.kt$1000.0</ID>
+    <ID>MagicNumber:LiveCaptureScreen.kt$1800</ID>
+    <ID>MagicNumber:LiveCaptureScreen.kt$500</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity$0xFFFF</ID>
     <ID>MagicNumber:MainActivity.kt$MainActivity$220L</ID>
+    <ID>MagicNumber:NibComponents.kt$0xFF070D1C</ID>
+    <ID>MagicNumber:NibComponents.kt$0xFFF4F6FA</ID>
+    <ID>MagicNumber:NibComponents.kt$50</ID>
+    <ID>MagicNumber:NibFx.kt$0.08f</ID>
+    <ID>MagicNumber:NibFx.kt$0.52f</ID>
+    <ID>MagicNumber:NibFx.kt$0xFF070D1C</ID>
+    <ID>MagicNumber:NibFx.kt$0xFFF4F6FA</ID>
+    <ID>MagicNumber:NibFx.kt$4</ID>
+    <ID>MagicNumber:NibFx.kt$50</ID>
+    <ID>MagicNumber:NibMotion.kt$0.016f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.05f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.07f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.08f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.09f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.100f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.11f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.12f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.16f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.184f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.18f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.20f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.22f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.24f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.263f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.27f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.2f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.342f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.40f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.418f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.42f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.44f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.48f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.503f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.50f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.52f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.53f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.55f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.576f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.5f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.60f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.62f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.639f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.71f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.721f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.73f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.78f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.805f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.80f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.84f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.86f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.889f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.8f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.92f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.96f</ID>
+    <ID>MagicNumber:NibMotion.kt$0.979f</ID>
+    <ID>MagicNumber:NibMotion.kt$0x29C6CFDC</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF03060C</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF040812</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF081224</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF0A1428</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF0B1630</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFF6C7CFF</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFFA05CFF</ID>
+    <ID>MagicNumber:NibMotion.kt$0xFFA3B1CF</ID>
+    <ID>MagicNumber:NibMotion.kt$1.03f</ID>
+    <ID>MagicNumber:NibMotion.kt$128f</ID>
+    <ID>MagicNumber:NibMotion.kt$12_000</ID>
+    <ID>MagicNumber:NibMotion.kt$14f</ID>
+    <ID>MagicNumber:NibMotion.kt$150</ID>
+    <ID>MagicNumber:NibMotion.kt$18_000</ID>
+    <ID>MagicNumber:NibMotion.kt$1_050</ID>
+    <ID>MagicNumber:NibMotion.kt$200</ID>
+    <ID>MagicNumber:NibMotion.kt$28f</ID>
+    <ID>MagicNumber:NibMotion.kt$2_000</ID>
+    <ID>MagicNumber:NibMotion.kt$2_100</ID>
+    <ID>MagicNumber:NibMotion.kt$2_500</ID>
+    <ID>MagicNumber:NibMotion.kt$3</ID>
+    <ID>MagicNumber:NibMotion.kt$360f</ID>
+    <ID>MagicNumber:NibMotion.kt$4</ID>
+    <ID>MagicNumber:NibMotion.kt$450</ID>
+    <ID>MagicNumber:NibMotion.kt$50</ID>
+    <ID>MagicNumber:NibMotion.kt$500</ID>
+    <ID>MagicNumber:NibMotion.kt$550</ID>
+    <ID>MagicNumber:NibMotion.kt$560</ID>
+    <ID>MagicNumber:NibMotion.kt$600</ID>
+    <ID>MagicNumber:NibMotion.kt$64f</ID>
+    <ID>MagicNumber:NibMotion.kt$700</ID>
+    <ID>MagicNumber:NibMotion.kt$7_000</ID>
+    <ID>MagicNumber:NibMotion.kt$900</ID>
+    <ID>MagicNumber:NibhausGlanceWidget.kt$0xFF22E07A</ID>
     <ID>MagicNumber:NotebookPaths.kt$PlannerDate$12</ID>
     <ID>MagicNumber:NotebookSetupWizard.kt$0.14f</ID>
     <ID>MagicNumber:NotebookSetupWizard.kt$0.18f</ID>
@@ -330,6 +521,8 @@
     <ID>MagicNumber:NotebookSetupWizard.kt$7f</ID>
     <ID>MagicNumber:NotebookSetupWizard.kt$8</ID>
     <ID>MagicNumber:NotebookSetupWizard.kt$9f</ID>
+    <ID>MagicNumber:OnDeviceInk.kt$OnDeviceInk$1e-3f</ID>
+    <ID>MagicNumber:PageDetail.kt$3</ID>
     <ID>MagicNumber:PageRender.kt$PageRender$0.0011f</ID>
     <ID>MagicNumber:PageRender.kt$PageRender$0.001f</ID>
     <ID>MagicNumber:PageRender.kt$PageRender$0.0025f</ID>
@@ -353,75 +546,40 @@
     <ID>MagicNumber:PaletteScheme.kt$3</ID>
     <ID>MagicNumber:PenScanner.kt$PenScanner$0xFF</ID>
     <ID>MagicNumber:PenScanner.kt$PenScanner$6</ID>
+    <ID>MagicNumber:PenStatus.kt$1_200</ID>
+    <ID>MagicNumber:PenStatus.kt$3</ID>
+    <ID>MagicNumber:PenStatus.kt$3_000</ID>
+    <ID>MagicNumber:PenStatus.kt$600</ID>
+    <ID>MagicNumber:PensHome.kt$3</ID>
+    <ID>MagicNumber:PensHome.kt$600</ID>
     <ID>MagicNumber:PrivacyTab.kt$0.38f</ID>
     <ID>MagicNumber:RecordingController.kt$RecordingController$100</ID>
     <ID>MagicNumber:RecordingController.kt$RecordingController$44_100</ID>
     <ID>MagicNumber:RecordingController.kt$RecordingController$64_000</ID>
+    <ID>MagicNumber:Replay.kt$10</ID>
+    <ID>MagicNumber:Replay.kt$10_000L</ID>
+    <ID>MagicNumber:Replay.kt$1_000_000L</ID>
+    <ID>MagicNumber:Replay.kt$200L</ID>
+    <ID>MagicNumber:Replay.kt$20_000L</ID>
+    <ID>MagicNumber:Replay.kt$4f</ID>
     <ID>MagicNumber:ReplayGif.kt$ReplayGif$10L</ID>
     <ID>MagicNumber:ReplayGif.kt$ReplayGif$30L</ID>
     <ID>MagicNumber:ReplayGifRenderer.kt$ReplayGifRenderer$0.0025f</ID>
     <ID>MagicNumber:ReplayGifRenderer.kt$ReplayGifRenderer$0.06f</ID>
     <ID>MagicNumber:ReplayGifRenderer.kt$ReplayGifRenderer$1e-3f</ID>
     <ID>MagicNumber:ReplayGifRenderer.kt$ReplayGifRenderer$4</ID>
+    <ID>MagicNumber:ScanScreen.kt$10_000</ID>
+    <ID>MagicNumber:ScanScreen.kt$5</ID>
     <ID>MagicNumber:Screens.kt$0.04f</ID>
-    <ID>MagicNumber:Screens.kt$0.05f</ID>
     <ID>MagicNumber:Screens.kt$0.10f</ID>
-    <ID>MagicNumber:Screens.kt$0.12f</ID>
-    <ID>MagicNumber:Screens.kt$0.14f</ID>
-    <ID>MagicNumber:Screens.kt$0.16f</ID>
-    <ID>MagicNumber:Screens.kt$0.1f</ID>
-    <ID>MagicNumber:Screens.kt$0.22f</ID>
-    <ID>MagicNumber:Screens.kt$0.2f</ID>
-    <ID>MagicNumber:Screens.kt$0.35f</ID>
-    <ID>MagicNumber:Screens.kt$0.3f</ID>
-    <ID>MagicNumber:Screens.kt$0.4f</ID>
-    <ID>MagicNumber:Screens.kt$0.55f</ID>
-    <ID>MagicNumber:Screens.kt$0.56f</ID>
-    <ID>MagicNumber:Screens.kt$0.5f</ID>
-    <ID>MagicNumber:Screens.kt$0.62f</ID>
-    <ID>MagicNumber:Screens.kt$0.72f</ID>
-    <ID>MagicNumber:Screens.kt$0.78f</ID>
-    <ID>MagicNumber:Screens.kt$0.7f</ID>
-    <ID>MagicNumber:Screens.kt$1.05f</ID>
-    <ID>MagicNumber:Screens.kt$1.2f</ID>
-    <ID>MagicNumber:Screens.kt$1.5f</ID>
-    <ID>MagicNumber:Screens.kt$1.6f</ID>
     <ID>MagicNumber:Screens.kt$10</ID>
-    <ID>MagicNumber:Screens.kt$100</ID>
-    <ID>MagicNumber:Screens.kt$1000</ID>
-    <ID>MagicNumber:Screens.kt$1000.0</ID>
-    <ID>MagicNumber:Screens.kt$100f</ID>
-    <ID>MagicNumber:Screens.kt$10_000L</ID>
-    <ID>MagicNumber:Screens.kt$10f</ID>
-    <ID>MagicNumber:Screens.kt$12f</ID>
-    <ID>MagicNumber:Screens.kt$15</ID>
-    <ID>MagicNumber:Screens.kt$1800</ID>
     <ID>MagicNumber:Screens.kt$18f</ID>
-    <ID>MagicNumber:Screens.kt$1900</ID>
-    <ID>MagicNumber:Screens.kt$1_000_000L</ID>
-    <ID>MagicNumber:Screens.kt$1_200</ID>
-    <ID>MagicNumber:Screens.kt$2.6f</ID>
     <ID>MagicNumber:Screens.kt$200</ID>
-    <ID>MagicNumber:Screens.kt$200L</ID>
-    <ID>MagicNumber:Screens.kt$20_000L</ID>
     <ID>MagicNumber:Screens.kt$220</ID>
-    <ID>MagicNumber:Screens.kt$2400</ID>
     <ID>MagicNumber:Screens.kt$24f</ID>
-    <ID>MagicNumber:Screens.kt$3</ID>
-    <ID>MagicNumber:Screens.kt$3.0f</ID>
     <ID>MagicNumber:Screens.kt$300</ID>
-    <ID>MagicNumber:Screens.kt$35</ID>
-    <ID>MagicNumber:Screens.kt$4</ID>
     <ID>MagicNumber:Screens.kt$420</ID>
     <ID>MagicNumber:Screens.kt$4_000</ID>
-    <ID>MagicNumber:Screens.kt$4f</ID>
-    <ID>MagicNumber:Screens.kt$5</ID>
-    <ID>MagicNumber:Screens.kt$50</ID>
-    <ID>MagicNumber:Screens.kt$500</ID>
-    <ID>MagicNumber:Screens.kt$6</ID>
-    <ID>MagicNumber:Screens.kt$60</ID>
-    <ID>MagicNumber:Screens.kt$600</ID>
-    <ID>MagicNumber:Screens.kt$6f</ID>
     <ID>MagicNumber:SearchScreen.kt$120</ID>
     <ID>MagicNumber:SearchScreen.kt$250</ID>
     <ID>MagicNumber:SearchScreen.kt$3</ID>
@@ -437,14 +595,20 @@
     <ID>MagicNumber:ServiceLocator.kt$ServiceLocator$3</ID>
     <ID>MagicNumber:SettingsScreen.kt$3</ID>
     <ID>MagicNumber:SettingsScreen.kt$4</ID>
+    <ID>MagicNumber:SettingsStore.kt$20</ID>
+    <ID>MagicNumber:SettingsStore.kt$3</ID>
+    <ID>MagicNumber:SettingsStore.kt$5</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.AMBER$0xFFDCA54C</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.CORAL$0xFFEF6461</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.SAGE$0xFF6FA287</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.SKY$0xFF5B8DBE</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.SLATE$0xFF6B7280</ID>
     <ID>MagicNumber:SettingsStore.kt$NotebookAccent.VIOLET$0xFF8B6FB0</ID>
+    <ID>MagicNumber:SettingsStore.kt$StrokeScale.BOLD$1.4f</ID>
+    <ID>MagicNumber:SettingsStore.kt$StrokeScale.FINE$0.7f</ID>
     <ID>MagicNumber:StartupProgress.kt$StartupProgress$4</ID>
     <ID>MagicNumber:StrokeIngestor.kt$StrokeIngestor$3</ID>
+    <ID>MagicNumber:StrokeIngestor.kt$StrokeIngestor$4</ID>
     <ID>MagicNumber:StrokeRenderCache.kt$StrokeRenderCache.Companion$10f</ID>
     <ID>MagicNumber:SyncPullWorker.kt$SyncPullWorker.Companion$15</ID>
     <ID>MagicNumber:ThemePreviewScreen.kt$0.08f</ID>
@@ -471,116 +635,28 @@
     <ID>MagicNumber:ThemePreviewScreen.kt$0.80f</ID>
     <ID>MagicNumber:ThemePreviewScreen.kt$0.84f</ID>
     <ID>MagicNumber:ThemePreviewScreen.kt$0.88f</ID>
+    <ID>MagicNumber:Thumbs.kt$1.05f</ID>
     <ID>MagicNumber:Type.kt$400</ID>
     <ID>MagicNumber:Type.kt$500</ID>
     <ID>MagicNumber:Type.kt$600</ID>
     <ID>MagicNumber:Type.kt$700</ID>
     <ID>MagicNumber:Type.kt$800</ID>
-    <ID>MagicNumber:VaultComponents.kt$0xFF070D1C</ID>
-    <ID>MagicNumber:VaultComponents.kt$0xFFF4F6FA</ID>
-    <ID>MagicNumber:VaultComponents.kt$50</ID>
-    <ID>MagicNumber:VaultFx.kt$0.08f</ID>
-    <ID>MagicNumber:VaultFx.kt$0.52f</ID>
-    <ID>MagicNumber:VaultFx.kt$0xFF070D1C</ID>
-    <ID>MagicNumber:VaultFx.kt$0xFFF4F6FA</ID>
-    <ID>MagicNumber:VaultFx.kt$4</ID>
-    <ID>MagicNumber:VaultFx.kt$50</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.016f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.05f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.07f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.08f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.09f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.100f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.11f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.12f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.14f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.16f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.184f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.18f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.20f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.22f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.24f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.263f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.26f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.27f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.2f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.342f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.40f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.418f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.42f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.44f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.48f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.503f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.50f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.52f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.53f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.55f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.576f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.5f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.60f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.62f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.639f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.71f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.721f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.73f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.78f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.805f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.80f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.84f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.86f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.889f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.8f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.92f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.96f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0.979f</ID>
-    <ID>MagicNumber:VaultMotion.kt$0x29C6CFDC</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF03060C</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF040812</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF081224</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF0A1428</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF0B1630</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFF6C7CFF</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFFA05CFF</ID>
-    <ID>MagicNumber:VaultMotion.kt$0xFFA3B1CF</ID>
-    <ID>MagicNumber:VaultMotion.kt$1.03f</ID>
-    <ID>MagicNumber:VaultMotion.kt$128f</ID>
-    <ID>MagicNumber:VaultMotion.kt$12_000</ID>
-    <ID>MagicNumber:VaultMotion.kt$14f</ID>
-    <ID>MagicNumber:VaultMotion.kt$150</ID>
-    <ID>MagicNumber:VaultMotion.kt$18_000</ID>
-    <ID>MagicNumber:VaultMotion.kt$1_050</ID>
-    <ID>MagicNumber:VaultMotion.kt$200</ID>
-    <ID>MagicNumber:VaultMotion.kt$24</ID>
-    <ID>MagicNumber:VaultMotion.kt$2600</ID>
-    <ID>MagicNumber:VaultMotion.kt$28f</ID>
-    <ID>MagicNumber:VaultMotion.kt$2_000</ID>
-    <ID>MagicNumber:VaultMotion.kt$2_100</ID>
-    <ID>MagicNumber:VaultMotion.kt$2_500</ID>
-    <ID>MagicNumber:VaultMotion.kt$3</ID>
-    <ID>MagicNumber:VaultMotion.kt$360.0</ID>
-    <ID>MagicNumber:VaultMotion.kt$360f</ID>
-    <ID>MagicNumber:VaultMotion.kt$4</ID>
-    <ID>MagicNumber:VaultMotion.kt$450</ID>
-    <ID>MagicNumber:VaultMotion.kt$50</ID>
-    <ID>MagicNumber:VaultMotion.kt$500</ID>
-    <ID>MagicNumber:VaultMotion.kt$550</ID>
-    <ID>MagicNumber:VaultMotion.kt$560</ID>
-    <ID>MagicNumber:VaultMotion.kt$6</ID>
-    <ID>MagicNumber:VaultMotion.kt$600</ID>
-    <ID>MagicNumber:VaultMotion.kt$64f</ID>
-    <ID>MagicNumber:VaultMotion.kt$700</ID>
-    <ID>MagicNumber:VaultMotion.kt$7_000</ID>
-    <ID>MagicNumber:VaultMotion.kt$900</ID>
+    <ID>MagicNumber:WidgetFormat.kt$24L</ID>
+    <ID>MagicNumber:WidgetFormat.kt$60L</ID>
+    <ID>MagicNumber:WidgetFormat.kt$60_000L</ID>
+    <ID>MagicNumber:WidgetFormat.kt$7L</ID>
+    <ID>MagicNumber:WidgetUpdateWorker.kt$WidgetUpdateWorker.Companion$30</ID>
     <ID>MatchingDeclarationName:BookmarkedPagesTest.kt$ToggledSetTest</ID>
+    <ID>MatchingDeclarationName:NibComponents.kt$NavItem</ID>
     <ID>MatchingDeclarationName:RecentNotebookRowsTest.kt$GroupRecentByNotebookTest</ID>
     <ID>MatchingDeclarationName:SyncTargetHealth.kt$SyncTargetState</ID>
     <ID>MatchingDeclarationName:TranscriptSource.kt$SafTranscriptSource : TranscriptSource</ID>
-    <ID>MatchingDeclarationName:VaultComponents.kt$NavItem</ID>
     <ID>MaxLineLength:ActionZone.kt$BuiltinZones$ActionZone("builtin-438-email", ZoneAction.EMAIL, left = 54.74f, top = 6.38f, right = 57.70f, bottom = 8.50f, book = 438)</ID>
     <ID>MaxLineLength:ActionZone.kt$BuiltinZones$ActionZone("builtin-438-share", ZoneAction.SHARE, left = 50.73f, top = 6.17f, right = 53.27f, bottom = 8.71f, book = 438)</ID>
     <ID>MaxLineLength:ActionZoneUi.kt$Text("Adds the page's audio to a Share (not Email).", style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)</ID>
     <ID>MaxLineLength:ActionZoneUi.kt$onClick = { vm.addZone(action, capturedBook, box[0], box[1], box[2], box[3]); captured = null }</ID>
     <ID>MaxLineLength:ActionZoneUi.kt$vm.calibrateNextTrace { book, l, t, r, b -&gt; scope.launch { capturedBook = book; captured = listOf(l, t, r, b); waiting = false } }</ID>
+    <ID>MaxLineLength:AppSnackbar.kt$AppSnackbar$val result = hostState.showSnackbar(message, actionLabel = actionLabel, duration = SnackbarDuration.Indefinite)</ID>
     <ID>MaxLineLength:AppearanceTab.kt$.</ID>
     <ID>MaxLineLength:BatteryOptimization.kt$BatteryOptimization$val</ID>
     <ID>MaxLineLength:CalendarUi.kt$OutlinedTextField(value = notes, onValueChange = { notes = it }, label = { Text("Notes (optional)") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp).riseIn(3))</ID>
@@ -592,9 +668,10 @@
     <ID>MaxLineLength:CalendarUi.kt$if (res.values.all { it }) submitEvent(vm, scope, context, title, startMs, durationMin, allDay, notes, onDismiss)</ID>
     <ID>MaxLineLength:CalendarUi.kt$if (targetId &lt; 0) Text("Pick a calendar in Settings first.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))</ID>
     <ID>MaxLineLength:CalendarUi.kt$val start = remember { Calendar.getInstance().apply { add(Calendar.HOUR_OF_DAY, 1); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0) } }</ID>
-    <ID>MaxLineLength:CaptureAndPenTab.kt$"Measure the coordinate scale, record raw Ncode data, or capture planner reference points from the pen."</ID>
+    <ID>MaxLineLength:CaptureAndPenTab.kt$"Measure the coordinate scale, record raw pen tracking data, or capture planner reference points from the pen."</ID>
     <ID>MaxLineLength:CaptureAndPenTab.kt$Button(onClick = onOpenCaptureLab, modifier = Modifier.padding(top = 10.dp)) { Text("Open capture lab") }</ID>
     <ID>MaxLineLength:CaptureAndPenTab.kt$Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))</ID>
+    <ID>MaxLineLength:CaptureAndPenTab.kt$if (ignoring) "Your pen stays connected in the background" else "Your pen may disconnect in the background"</ID>
     <ID>MaxLineLength:CaptureAndPenTab.kt$if (working) Text("Talking to the pen…", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 8.dp))</ID>
     <ID>MaxLineLength:CaptureLabScreen.kt$"planner" -&gt; "1) Trace a known distance. 2) Trace the known object (e.g. a cell border). Then Stop. (Also photograph this page.)"</ID>
     <ID>MaxLineLength:CaptureLabScreen.kt$"scale" -&gt; "On \"${notebookType.ifBlank { "this notebook" }}\", draw ONE straight line exactly $knownCm cm long. Then tap Stop."</ID>
@@ -608,18 +685,61 @@
     <ID>MaxLineLength:CaptureLabScreen.kt$measurements = measurements + Measurement(notebookType.ifBlank { "(unnamed)" }, knownCm.toFloatOrNull() ?: 0f, vm.stopCapture())</ID>
     <ID>MaxLineLength:CaptureLog.kt$CaptureLog$CapturedDot(dot.section, dot.owner, dot.book, dot.page, dot.x, dot.y, dot.pressure, dot.phase.name, dot.timestamp)</ID>
     <ID>MaxLineLength:CaptureLog.kt$append("\"${m.notebook}\",${m.knownCm},$upc,${d.section},${d.owner},${d.book},${d.page},${d.x},${d.y},${d.pressure},${d.phase},${d.t}\n")</ID>
+    <ID>MaxLineLength:ConnectionDiagnostic.kt$ConnectionDiagnostic$"Make sure you are writing on paper made for this pen, like your Neo notebook. Plain paper will not register."</ID>
+    <ID>MaxLineLength:ConnectionDiagnostic.kt$ConnectionDiagnostic$Triple("Receiving ink", p.receivingDots, "Write on paper made for this pen. If nothing arrives, reconnect.")</ID>
     <ID>MaxLineLength:Daos.kt$RecordingDao$@Query("SELECT r.* FROM recordings r JOIN pages p ON r.addressKey = p.addressKey WHERE p.id = :pageId ORDER BY r.startedAt ASC")</ID>
+    <ID>MaxLineLength:EagerTranscribeConsentTest.kt$EagerTranscribeConsentTest$pen = PenDeps(penManager = penMgr(kotlinx.coroutines.CoroutineScope(testDispatcher)), scanner = PenScanner())</ID>
+    <ID>MaxLineLength:EditListenCanvas.kt$ExpandingColorPicker(selected = currentColor, onColor = cs.onSurface, onSelect = onRecolor, enabled = hasSelection)</ID>
+    <ID>MaxLineLength:EditListenCanvas.kt$ExpandingSizePicker(selected = currentWidth, onColor = cs.onSurface, onSelect = onResize, enabled = hasSelection)</ID>
+    <ID>MaxLineLength:EditListenCanvas.kt$drawStrokesPencast(strokes, vm::strokesFlowOf, active, positionMs, cs.onSurfaceVariant.copy(alpha = 0.22f), brandInk = cs.onSurface)</ID>
     <ID>MaxLineLength:ExportEngine.kt$ExportEngine$ExportArtifacts.renderInkML(strokes, cachedDecode, notebookType = type?.displayName, label = notebook?.title)</ID>
     <ID>MaxLineLength:ExportEngine.kt$ExportEngine$private</ID>
+    <ID>MaxLineLength:ExportWorker.kt$if (providerAvailable &amp;&amp; exported &amp;&amp; deleted) androidx.work.ListenableWorker.Result.success() else androidx.work.ListenableWorker.Result.retry()</ID>
+    <ID>MaxLineLength:ExportWorker.kt$internal</ID>
+    <ID>MaxLineLength:FailureDiagnosis.kt$FailureDiagnosis$Diagnosis("Couldn't $operation. No recognizable result. Try again, or add a server in Settings for better accuracy.")</ID>
+    <ID>MaxLineLength:FailureDiagnosisTest.kt$FailureDiagnosisTest$val d = FailureDiagnosis.hostUnreachable("transcribe", "http://100.100.100.100:8090", UnknownHostException("100.100.100.100"))</ID>
     <ID>MaxLineLength:FakeDaos.kt$FakePageDao$override suspend fun setTranscript(id: String, text: String)</ID>
+    <ID>MaxLineLength:FeedbackScreen.kt$cm.setPrimaryClip(android.content.ClipData.newPlainText("Nibhaus feedback", feedbackEmailBody(userText, bundleText)))</ID>
+    <ID>MaxLineLength:FirstRunCoach.kt$Dialog</ID>
+    <ID>MaxLineLength:InkControls.kt$INK_PALETTE.forEach { c -&gt; ColorDot(c, onColor, sel = c == selected, enabled = enabled) { onSelect(c); open = false } }</ID>
+    <ID>MaxLineLength:InkControls.kt$modifier.animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow))</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(bx + bw, by), androidx.compose.ui.geometry.Offset(bx + bw / 2f, by + bh * 0.55f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(bx, by), androidx.compose.ui.geometry.Offset(bx + bw / 2f, by + bh * 0.55f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx + w * 0.16f, topY + h * 0.2f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx - w * 0.16f, topY + h * 0.2f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx, trayY + h * 0.1f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayL, br.y - h * 0.14f), androidx.compose.ui.geometry.Offset(trayR, br.y - h * 0.14f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayL, trayY), androidx.compose.ui.geometry.Offset(trayL, br.y - h * 0.14f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayR, trayY), androidx.compose.ui.geometry.Offset(trayR, br.y - h * 0.14f), strokeWidth = sw)</ID>
+    <ID>MaxLineLength:InkSurface.kt$internal</ID>
+    <ID>MaxLineLength:InkSurfaceZoomTest.kt$InkSurfaceZoomTest$val target = doubleTapZoomTarget(currentScale = 1f, tapPoint = Offset(500f, 400f), boxSize = box, zoomScale = 3f)</ID>
     <ID>MaxLineLength:InkTokens.kt$shadow(elevation, shape, clip = false, ambientColor = glowColor.copy(alpha = 0.45f), spotColor = glowColor.copy(alpha = 0.55f))</ID>
-    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$_exportStatus.value = if (normalized.isBlank()) "Transcript cleared" else "Transcript saved — now searchable"</ID>
-    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$_translateError.value = "Couldn't translate. Set a translation endpoint in Settings for best quality, or pick languages available offline."</ID>
+    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$"Couldn't translate. Set a translation endpoint in Settings for best quality, or pick languages available offline."</ID>
     <ID>MaxLineLength:InkViewModel.kt$InkViewModel$_translation.value = TranslationUi(r.text, r.engine == com.nibhaus.translate.TranslationEngine.ON_DEVICE)</ID>
-    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$fun</ID>
+    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$combine</ID>
+    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$fun acknowledgeCrash(timestampMillis: Long)</ID>
     <ID>MaxLineLength:InkViewModel.kt$InkViewModel$fun back()</ID>
+    <ID>MaxLineLength:InkViewModel.kt$InkViewModel$settings.strokeScale.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), com.nibhaus.export.StrokeScale.DEFAULT)</ID>
     <ID>MaxLineLength:InkViewModel.kt$InkViewModel$settings.transcriptionQuality.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TranscriptionQuality.AUTO)</ID>
     <ID>MaxLineLength:InkViewModelDeps.kt$SyncDeps$val</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$)</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$.</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$LibraryView.GALLERY</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$LibraryView.LIST</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp)</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$NotebookListRow(entry, vm, notebookPageCounts[entry.id] ?: 0, entry.id in notebooksWithAudio) { vm.openNotebook(entry.id) }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$NotebookThumb(entry, vm, notebookPageCounts[entry.id] ?: 0, entry.id in notebooksWithAudio, m) { vm.openNotebook(entry.id) }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$PageThumb(page.id, "Page ${page.page}", vm, page.id in pagesWithAudio, page.book, m) { vm.openPage(page.id) }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$Text("All ${pages.size} pages will be removed, along with their ink and transcripts on this device. You'll have a few seconds to undo.")</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$item { EmptyState(Icons.Outlined.BookmarkBorder, "No favorites yet. Star a page to add it here.") }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$item { QuietLine(if (pages.isEmpty()) "No pages in this notebook yet." else "No pages with ink yet.") }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = cs.error) }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$modifier = Modifier.semantics { stateDescription = if (hideBlank) "Blank pages hidden" else "Blank pages shown" }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$modifier = Modifier.semantics { stateDescription = if (showFavorites) "Showing favorites" else "Not showing favorites" }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$modifier = Modifier.semantics { stateDescription = if (toGallery) "Gallery view" else "List view" }</ID>
+    <ID>MaxLineLength:LibraryScreen.kt$text = "Every page you write lands here automatically, once a pen is paired and writing on the notebook paper made for this pen."</ID>
+    <ID>MaxLineLength:MainActivity.kt$MainActivity$val needsBleRationale = blePermissions().any { checkSelfPermission(it) != android.content.pm.PackageManager.PERMISSION_GRANTED }</ID>
+    <ID>MaxLineLength:NibhausGlanceWidget.kt$val color = if (connected) ColorProvider(androidx.compose.ui.graphics.Color(0xFF22E07A)) else GlanceTheme.colors.outline</ID>
     <ID>MaxLineLength:NotebookPathsTest.kt$NotebookPathsTest$val span = PlannerLayout.monthly(firstPage = 1, pagesPerMonth = 10, startYear = 2026, startMonth = 11, months = 4)</ID>
     <ID>MaxLineLength:NotebookSetupDialog.kt$Text("What kind of notebook is this?", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.riseIn(0))</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$Button(onClick = { br = tapCentre(finishCapture()); if (br != null) step = WizardStep.SHEET }) { Text("Done") }</ID>
@@ -632,8 +752,8 @@
     <ID>MaxLineLength:NotebookSetupWizard.kt$TextButton(onClick = { vm.exportNotebookSetup(activeBook)?.let { shareJson(context, it, "notebook-$activeBook.json") } }) { Text("Export setup") }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$TextButton(onClick = { vm.startCapture() }, modifier = Modifier.padding(top = 4.dp).riseIn(3)) { Text("Draw a calibration line") }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.BOTTOM_RIGHT -&gt; { title = "Tap the bottom-right corner"; body = "Now press the pen on the BOTTOM-RIGHT corner of the page, then tap Done." }</ID>
-    <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.CONFIRM -&gt; { title = "Looks good?"; body = bounds(tl, br)?.let { "Captured page ${"%.1f".format(it.x1 - it.x0)} × ${"%.1f".format(it.y1 - it.y0)} Ncode units on a ${sheetW} × ${sheetH} mm sheet." } ?: "Both corners are needed — go back and capture them." }</ID>
-    <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.INTRO -&gt; { title = "Set up this notebook"; body = "I'll learn your page so capture opens at the right size. You'll tap two corners on the paper with your pen — watch the demo on each step." }</ID>
+    <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.CONFIRM -&gt; { title = "Looks good?"; body = bounds(tl, br)?.let { "Captured page ${"%.1f".format(it.x1 - it.x0)} × ${"%.1f".format(it.y1 - it.y0)} Ncode units on a ${sheetW} × ${sheetH} mm sheet." } ?: "Both corners are needed. Go back and capture them." }</ID>
+    <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.INTRO -&gt; { title = "Set up this notebook"; body = "I'll learn your page so capture opens at the right size. You'll tap two corners on the paper with your pen. Watch the demo on each step." }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.SHEET -&gt; { title = "Page size"; body = "Enter the physical sheet size (with a ruler). Optionally draw a line of the length below to calibrate scale precisely." }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$WizardStep.TOP_LEFT -&gt; { title = "Tap the top-left corner"; body = "Press the pen on the TOP-LEFT corner of the page (inside the dotted area), then tap Done." }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$drawCircle(cs.primary.copy(alpha = 0.25f + 0.25f * t), radius = 10f + 8f * t, center = target, style = Stroke(width = 3f))</ID>
@@ -641,14 +761,16 @@
     <ID>MaxLineLength:NotebookSetupWizard.kt$mmPerUnit?.let { Text("Scale: ${"%.3f".format(it)} mm/unit", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 4.dp)) }</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$private</ID>
     <ID>MaxLineLength:NotebookSetupWizard.kt$vm.saveNotebookGeometry(book!!, b, sheetW.toFloatOrNull() ?: 0f, sheetH.toFloatOrNull() ?: 0f, mmPerUnit)</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = false, isMetered = false)).isFalse()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = false, isMetered = true)).isFalse()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = true, isMetered = false)).isTrue()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = true, isMetered = true)).isTrue()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = false, isMetered = false)).isFalse()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = false, isMetered = true )).isFalse()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = true, isMetered = false)).isTrue()</ID>
-    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = true, isMetered = true )).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$@Test</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = false, isMetered = false, entitled = true)).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = false, isMetered = true, entitled = true)).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = true, isMetered = false, entitled = true)).isTrue()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.ACCURATE, vlmCapable = true, isMetered = true, entitled = true)).isTrue()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = false, isMetered = false, entitled = true)).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = false, isMetered = true, entitled = true )).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = true, isMetered = false, entitled = true)).isTrue()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.AUTO, vlmCapable = true, isMetered = true, entitled = true )).isFalse()</ID>
+    <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$assertThat(InkViewModel.shouldAutoRunAccuratePass(TranscriptionQuality.INSTANT, capable, metered, entitled = true))</ID>
     <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$val vm = makeVm(s, scope = backgroundScope, vlmCapable = true, metered = false) { _, accurate -&gt; calls += accurate; "ok" }</ID>
     <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$val vm = makeVm(s, scope = backgroundScope, vlmCapable = true, metered = true) { _, accurate -&gt; calls += accurate; "ok" }</ID>
     <ID>MaxLineLength:OcrSettingsTest.kt$OcrSettingsTest$vlmState = if (vlmCapable) kotlinx.coroutines.flow.flowOf(com.nibhaus.premiumapi.VlmDownloadState.Ready) else null</ID>
@@ -658,91 +780,90 @@
     <ID>MaxLineLength:OemBattery.kt$OemBattery$val request = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${context.packageName}"))</ID>
     <ID>MaxLineLength:OemBatteryTest.kt$OemBatteryTest$val chosen = OemBattery.chooseAction { action -&gt; action == Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS }</ID>
     <ID>MaxLineLength:OemBatteryTest.kt$OemBatteryTest$val chosen = OemBattery.chooseAction { action -&gt; action == Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS }</ID>
+    <ID>MaxLineLength:OnDeviceInk.kt$OnDeviceInk$override suspend</ID>
+    <ID>MaxLineLength:PageActions.kt$Icon(Icons.Outlined.Add, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(14.dp))</ID>
+    <ID>MaxLineLength:PageActions.kt$Icon(Icons.Outlined.Close, contentDescription = "Remove tag", tint = cs.onSecondaryContainer, modifier = Modifier.size(14.dp))</ID>
+    <ID>MaxLineLength:PageActions.kt$Row</ID>
+    <ID>MaxLineLength:PageActions.kt$text = { OutlinedTextField(value = text, onValueChange = { text = it }, singleLine = true, label = { Text(label) }) }</ID>
+    <ID>MaxLineLength:PageDetail.kt$"You can replay this page's handwriting stroke by stroke, then export it as an animated GIF to share."</ID>
+    <ID>MaxLineLength:PageDetail.kt$Icon(Icons.Outlined.ChevronLeft, contentDescription = "Previous page", tint = cs.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:PageDetail.kt$Icon(Icons.Outlined.ChevronRight, contentDescription = "Next page", tint = cs.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:PageDetail.kt$Icon(Icons.Outlined.MoreVert, contentDescription = "More actions", tint = cs.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:PageDetail.kt$editing = !editing; if (!editing) selected = emptySet() else { listening = false; textView = false; vm.stopPlayback() }</ID>
+    <ID>MaxLineLength:PageDetail.kt$if (textView) { editing = false; selected = emptySet(); listening = false; vm.stopPlayback() }</ID>
+    <ID>MaxLineLength:PageDetail.kt$leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = cs.error) }</ID>
+    <ID>MaxLineLength:PageDetail.kt$modifier = Modifier.semantics { stateDescription = if (bookmarked) "Bookmarked" else "Not bookmarked" }</ID>
+    <ID>MaxLineLength:PageDetail.kt$modifier = Modifier.semantics { stateDescription = if (listening) "Listening" else "Not listening" }</ID>
+    <ID>MaxLineLength:PageDetail.kt$modifier = Modifier.semantics { stateDescription = if (textView) "Showing typed text" else "Showing ink" }</ID>
+    <ID>MaxLineLength:PageDetail.kt$onToggleStroke = { s -&gt; selected = if (s.uuid in selected) selected - s.uuid else selected + s.uuid }</ID>
+    <ID>MaxLineLength:PageDetail.kt$runCatching { context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }</ID>
+    <ID>MaxLineLength:PageDetail.kt$sharedAxisX(forward = pageNumberOf(targetState) &gt; pageNumberOf(initialState), reduced = reducedMotion)</ID>
+    <ID>MaxLineLength:PageDetail.kt$text = { Text(if (bgUri == null) "Set notebook background…" else "Replace notebook background…") }</ID>
+    <ID>MaxLineLength:PageDetail.kt$val branchPage = siblingPages.firstOrNull { it.id == pid } ?: pageEntity?.takeIf { it.id == pid }</ID>
+    <ID>MaxLineLength:PageDetail.kt$val branchStrokes by remember(pid) { vm.pageStrokes(pid.orEmpty()) }.collectAsStateWithLifecycle(emptyList())</ID>
+    <ID>MaxLineLength:PageDetail.kt$val notebookTitle = notebooksForA11y.firstOrNull { it.id == notebookId }?.title?.ifBlank { "Notebook" } ?: "Notebook"</ID>
     <ID>MaxLineLength:PageRender.kt$PageRender$all.forEach { it.forEach { p -&gt; minX = minOf(minX, p.x); minY = minOf(minY, p.y); maxX = maxOf(maxX, p.x); maxY = maxOf(maxY, p.y) } }</ID>
-    <ID>MaxLineLength:PageTextView.kt$"Offline translation (basic quality — configure a translation endpoint in Settings for best results)"</ID>
     <ID>MaxLineLength:PageTextView.kt$IconButton</ID>
     <ID>MaxLineLength:PageTextView.kt$LanguagePicker("To", target, allowAuto = false, modifier = Modifier.weight(1f)) { target = it ?: target }</ID>
+    <ID>MaxLineLength:PenConnectionManagerTest.kt$PenConnectionManagerTest$fun</ID>
     <ID>MaxLineLength:PenForegroundService.kt$PenForegroundService$PenNotifications.ALERT_CHANNEL_ID</ID>
+    <ID>MaxLineLength:PenPresenceTest.kt$PenPresenceTest$@Test</ID>
+    <ID>MaxLineLength:PenStatus.kt$Look</ID>
+    <ID>MaxLineLength:PenStatus.kt$Text("$animatedPending pending · encrypting locally", style = monoData, color = cs.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:PenStatus.kt$android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(PenLinks.LAMY_ANDROID))</ID>
+    <ID>MaxLineLength:PenStatus.kt$android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(com.nibhaus.pen.PenLinks.officialUrl(penName)))</ID>
+    <ID>MaxLineLength:PenStatus.kt$if</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.BondedElsewhere -&gt; Look(false, "Smartpen", "PAIRED ELSEWHERE", cs.error, "Release it to take over", { vm.takeOver(pen.mac) })</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.Connected -&gt; Look(true, pen.penName.ifBlank { "Smartpen" }, "CONNECTED", cs.primary, "Receiving ink", null)</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.Connecting -&gt; Look(false, "Smartpen", "CONNECTING…", cs.onSurfaceVariant, "Hold the pen on and nearby", null)</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.Disconnected -&gt; Look(false, "No pen", "TAP TO CONNECT", cs.onSurfaceVariant, "Find a pen over Bluetooth", onScan)</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.PasswordRequired -&gt; Look(false, "Smartpen", "LOCKED", cs.tertiary, "Enter the pen password", null)</ID>
+    <ID>MaxLineLength:PenStatus.kt$is PenConnState.Reconnecting -&gt; Look(false, "Smartpen", "RECONNECTING (${pen.attempt})", cs.tertiary, "Connection lost, retrying", null)</ID>
+    <ID>MaxLineLength:PensHome.kt$text = "The pen writes its coordinates as it goes, so it only recognizes the notebook made for this pen. A regular notebook will not work."</ID>
     <ID>MaxLineLength:ReplayGifRenderer.kt$ReplayGifRenderer$all.forEach { it.forEach { p -&gt; minX = minOf(minX, p.x); minY = minOf(minY, p.y); maxX = maxOf(maxX, p.x); maxY = maxOf(maxY, p.y) } }</ID>
     <ID>MaxLineLength:ReplayPenSource.kt$ReplayPenSource$*</ID>
     <ID>MaxLineLength:ReplayPipelineTest.kt$ReplayPipelineTest$fun</ID>
-    <ID>MaxLineLength:Screens.kt$)</ID>
-    <ID>MaxLineLength:Screens.kt$.</ID>
-    <ID>MaxLineLength:Screens.kt$ExpandingColorPicker(selected = currentColor, onColor = cs.onSurface, onSelect = onRecolor, enabled = hasSelection)</ID>
-    <ID>MaxLineLength:Screens.kt$ExpandingSizePicker(selected = currentWidth, onColor = cs.onSurface, onSelect = onResize, enabled = hasSelection)</ID>
-    <ID>MaxLineLength:Screens.kt$INK_PALETTE.forEach { c -&gt; ColorDot(c, onColor, sel = c == selected, enabled = enabled) { onSelect(c); open = false } }</ID>
-    <ID>MaxLineLength:Screens.kt$Icon(Icons.Outlined.Add, contentDescription = null, tint = cs.onSurfaceVariant, modifier = Modifier.size(14.dp))</ID>
-    <ID>MaxLineLength:Screens.kt$Icon(Icons.Outlined.Close, contentDescription = "Remove tag", tint = cs.onSecondaryContainer, modifier = Modifier.size(14.dp))</ID>
-    <ID>MaxLineLength:Screens.kt$Icon(Icons.Outlined.MoreVert, contentDescription = "More actions", tint = cs.onSurfaceVariant)</ID>
-    <ID>MaxLineLength:Screens.kt$IconButton</ID>
-    <ID>MaxLineLength:Screens.kt$LibraryView.GALLERY</ID>
-    <ID>MaxLineLength:Screens.kt$Look</ID>
-    <ID>MaxLineLength:Screens.kt$Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp)</ID>
-    <ID>MaxLineLength:Screens.kt$NotebookListRow(entry, vm, notebookPageCounts[entry.id] ?: 0, entry.id in notebooksWithAudio) { vm.openNotebook(entry.id) }</ID>
-    <ID>MaxLineLength:Screens.kt$NotebookThumb(entry, vm, notebookPageCounts[entry.id] ?: 0, entry.id in notebooksWithAudio, m) { vm.openNotebook(entry.id) }</ID>
-    <ID>MaxLineLength:Screens.kt$PageThumb(page.id, "Page ${page.page}", vm, page.id in pagesWithAudio, page.book, m) { vm.openPage(page.id) }</ID>
-    <ID>MaxLineLength:Screens.kt$Row</ID>
-    <ID>MaxLineLength:Screens.kt$Text("${p.mac} · ${p.target.protocol}", style = monoData, color = cs.onSurfaceVariant)</ID>
-    <ID>MaxLineLength:Screens.kt$Text("All ${pages.size} pages — their ink and transcripts on this device — are removed. This can't be undone.")</ID>
-    <ID>MaxLineLength:Screens.kt$Text("This pen is locked. Enter its password to receive ink.", style = MaterialTheme.typography.bodyMedium)</ID>
-    <ID>MaxLineLength:Screens.kt$Text(notebook.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
-    <ID>MaxLineLength:Screens.kt$Text(step.detail, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant)</ID>
-    <ID>MaxLineLength:Screens.kt$ThumbBody(notebook.title, strokes, vm, hasAudio, geometry, modifier, meta = meta, showLabel = !compact, accentColor = accentColor, onOpen = onOpen)</ID>
-    <ID>MaxLineLength:Screens.kt$android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(PenLinks.LAMY_ANDROID))</ID>
-    <ID>MaxLineLength:Screens.kt$android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(com.nibhaus.pen.PenLinks.officialUrl(penName)))</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(bx + bw, by), androidx.compose.ui.geometry.Offset(bx + bw / 2f, by + bh * 0.55f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(bx, by), androidx.compose.ui.geometry.Offset(bx + bw / 2f, by + bh * 0.55f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx + w * 0.16f, topY + h * 0.2f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx - w * 0.16f, topY + h * 0.2f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(cx, topY), androidx.compose.ui.geometry.Offset(cx, trayY + h * 0.1f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayL, br.y - h * 0.14f), androidx.compose.ui.geometry.Offset(trayR, br.y - h * 0.14f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayL, trayY), androidx.compose.ui.geometry.Offset(trayL, br.y - h * 0.14f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawLine(numberColor, androidx.compose.ui.geometry.Offset(trayR, trayY), androidx.compose.ui.geometry.Offset(trayR, br.y - h * 0.14f), strokeWidth = sw)</ID>
-    <ID>MaxLineLength:Screens.kt$drawStrokes(strokes, vm::strokesFlowOf, base = cs.onSurface, brandInk = cs.onSurface, pageBounds = pageBounds)</ID>
-    <ID>MaxLineLength:Screens.kt$drawStrokesPencast(strokes, vm::strokesFlowOf, active, positionMs, cs.onSurfaceVariant.copy(alpha = 0.22f), brandInk = cs.onSurface)</ID>
-    <ID>MaxLineLength:Screens.kt$editing = !editing; if (!editing) selected = emptySet() else { listening = false; textView = false; vm.stopPlayback() }</ID>
-    <ID>MaxLineLength:Screens.kt$if</ID>
-    <ID>MaxLineLength:Screens.kt$internal</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.BondedElsewhere -&gt; Look(false, "Smartpen", "PAIRED ELSEWHERE", cs.error, "Release it to take over", { vm.takeOver(pen.mac) })</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.Connected -&gt; Look(true, pen.penName.ifBlank { "Smartpen" }, "CONNECTED", cs.primary, "Receiving ink", null)</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.Connecting -&gt; Look(false, "Smartpen", "CONNECTING…", cs.secondary, "Hold the pen on and nearby", null)</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.Disconnected -&gt; Look(false, "No pen", "TAP TO CONNECT", cs.secondary, "Find a pen over Bluetooth", onScan)</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.PasswordRequired -&gt; Look(false, "Smartpen", "LOCKED", cs.tertiary, "Enter the pen password", null)</ID>
-    <ID>MaxLineLength:Screens.kt$is PenConnState.Reconnecting -&gt; Look(false, "Smartpen", "RECONNECTING (${pen.attempt})", cs.tertiary, "Lost the link — retrying", null)</ID>
-    <ID>MaxLineLength:Screens.kt$item { Box(Modifier.riseIn(afterSaved + 2)) { QuietLine("Nothing yet — write on Ncode paper with the pen connected.") } }</ID>
-    <ID>MaxLineLength:Screens.kt$item { QuietLine(if (pages.isEmpty()) "No pages in this notebook yet." else "No pages with ink yet.") }</ID>
-    <ID>MaxLineLength:Screens.kt$leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null, tint = cs.error) }</ID>
-    <ID>MaxLineLength:Screens.kt$modifier.animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow))</ID>
-    <ID>MaxLineLength:Screens.kt$onClick = { more = false; if (premium) vm.transcribeCurrentPageOnDevice() else showUpsell = true }</ID>
-    <ID>MaxLineLength:Screens.kt$onToggleStroke = { s -&gt; selected = if (s.uuid in selected) selected - s.uuid else selected + s.uuid }</ID>
-    <ID>MaxLineLength:Screens.kt$onTranslate = { source, target -&gt; if (premium) vm.translateCurrentPage(target, source) else showUpsell = true }</ID>
-    <ID>MaxLineLength:Screens.kt$runCatching { context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }</ID>
+    <ID>MaxLineLength:RoutedInkTest.kt$RoutedInkTest$val r = RoutedInk(instant = Fake("t0"), accurateChain = { listOf(Fake(null, boom = true), Fake(null), Fake("t1")) })</ID>
+    <ID>MaxLineLength:ScanScreen.kt$CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp, color = G1)</ID>
+    <ID>MaxLineLength:ScanScreen.kt$Text("Nearby pen · ends in ${p.mac.takeLast(5)}", style = monoData, color = cs.onSurfaceVariant)</ID>
+    <ID>MaxLineLength:Screens.kt$"Incorrect password. " + (countLine ?: "The pen resets and erases its data after too many wrong tries.")</ID>
     <ID>MaxLineLength:Screens.kt$sharedAxisX(forward = targetState.ordinal &gt; initialState.ordinal, reduced = reduced)</ID>
-    <ID>MaxLineLength:Screens.kt$text = { OutlinedTextField(value = text, onValueChange = { text = it }, singleLine = true, label = { Text(label) }) }</ID>
-    <ID>MaxLineLength:Screens.kt$text = { Text(if (bgUri == null) "Set notebook background…" else "Replace notebook background…") }</ID>
-    <ID>MaxLineLength:Screens.kt$val accent by remember(notebook.id) { vm.notebookAccent(notebook.id) }.collectAsStateWithLifecycle(NotebookAccent.NONE)</ID>
-    <ID>MaxLineLength:Screens.kt$val strokes by remember(notebook.id) { vm.notebookCoverStrokes(notebook.id) }.collectAsStateWithLifecycle(emptyList())</ID>
+    <ID>MaxLineLength:SearchScreen.kt$EmptyState(Icons.Outlined.SearchOff, "No matches. Notebook names match now; page text becomes searchable once transcribed.")</ID>
     <ID>MaxLineLength:SearchScreen.kt$Row</ID>
     <ID>MaxLineLength:SearchScreen.kt$Text(hint, style = MaterialTheme.typography.bodySmall, color = cs.onSurfaceVariant, modifier = Modifier.padding(vertical = 8.dp))</ID>
-    <ID>MaxLineLength:SearchScreen.kt$query.isBlank() -&gt; imported?.takeIf { it &gt; 0 }?.let { "Imported $it new transcript(s). Recent pages:" } ?: "Recent pages:"</ID>
     <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$.</ID>
     <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$// Mirror the VLM too-slow flag so the supplier lambda stays synchronous (avoids DataStore reads on the hot path).</ID>
     <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$android.util.Log.i("NibhausRestore", "tree=${root.name} uri=$treeUri bakFiles=$bakFound restoredStrokes=$restored")</ID>
-    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$appContext</ID>
+    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$onCommitted = { id -&gt; ExportWorker.enqueue(appContext); safetyBackup.onPageChanged(id); com.nibhaus.widget.WidgetUpdateWorker.poke(appContext) }</ID>
+    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$settings.strokeScale.stateIn(appScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, com.nibhaus.export.StrokeScale.DEFAULT)</ID>
+    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$storedPassword = { if (rememberPassword &amp;&amp; penPassword.savedWithinDays(REMEMBER_DAYS)) penPassword.get() else null }</ID>
     <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$suspend</ID>
-    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$val page = organizer.ensurePage(com.nibhaus.pen.NcodeAddress(b.section, b.owner, b.book, b.page), inkAt = inkAt)</ID>
-    <ID>MaxLineLength:SettingsScreen.kt$text = { Text("Only this tab's settings are restored to their defaults — the other tabs are untouched.") }</ID>
+    <ID>MaxLineLength:ServiceLocator.kt$ServiceLocator$val bmp = com.nibhaus.share.PageRender.renderPage(strokes, dec, strokeScale = strokeScaleState.value.multiplier)</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$text = { Text("Only this tab's settings are restored to their defaults. The other tabs are untouched.") }</ID>
     <ID>MaxLineLength:SettingsStore.kt$SettingsStore$if (accent == NotebookAccent.NONE) it.remove(notebookAccentKey(notebookId)) else it[notebookAccentKey(notebookId)] = accent.key</ID>
     <ID>MaxLineLength:StrokeIngestorTest.kt$StrokeIngestorTest$fun</ID>
     <ID>MaxLineLength:StrokeIngestorTest.kt$StrokeIngestorTest$val points = Json.decodeFromString(ListSerializer(Point.serializer()), f.strokeDao.byId.values.first().pointsJson)</ID>
     <ID>MaxLineLength:StrokeRenderCacheTest.kt$StrokeRenderCacheTest$cache.pathFor("s1", 1f, 0, selected = false, baseWidthPx = 4.001f, fit = fit(scale = 2.002f)) { builds++; Path() }</ID>
     <ID>MaxLineLength:StrokeRenderCacheTest.kt$StrokeRenderCacheTest$cache.pathFor("s1", 1f, 0, selected = false, baseWidthPx = 4.004f, fit = fit(scale = 2.004f)) { builds++; Path() }</ID>
     <ID>MaxLineLength:StrokeRenderCacheTest.kt$StrokeRenderCacheTest$val decode: (StrokeEntity) -&gt; List&lt;Point&gt; = { s -&gt; decodes++; listOf(Point(0f, 0f, 1f, s.uuid.hashCode().toLong())) }</ID>
-    <ID>MaxLineLength:SyncAndOcrTab.kt$"Allow the per-page \"Transcribe on device\" action. Off keeps transcription on your NAS/OCR host only."</ID>
+    <ID>MaxLineLength:SyncAndOcrTab.kt$"Lets you convert any page to text right from the page, without waiting on a server. Off: conversion still happens through your own server, if you've set one up below."</ID>
+    <ID>MaxLineLength:SyncAndOcrTab.kt$"On-device conversion isn't available in this version of the app. Pages still convert to text on your own server, if you've set one up."</ID>
+    <ID>MaxLineLength:SyncAndOcrTab.kt$Text</ID>
+    <ID>MaxLineLength:SyncAndOcrTab.kt$TranscriptionQuality.AUTO -&gt; "Uses the accurate version on Wi-Fi; the faster version on mobile data"</ID>
+    <ID>MaxLineLength:SyncAndOcrTab.kt$TranscriptionQuality.INSTANT -&gt; "Fast, done entirely on this device. Tap Improve on a page for better quality later."</ID>
+    <ID>MaxLineLength:SyncTargetHealth.kt$fun</ID>
+    <ID>MaxLineLength:SyncTargetHealthTest.kt$SyncTargetHealthTest$assertThat(syncTargetState(SyncMethod.LOCAL_ONLY, "", "", entitled = false)).isEqualTo(SyncTargetState.LOCAL_ONLY)</ID>
+    <ID>MaxLineLength:SyncTargetHealthTest.kt$SyncTargetHealthTest$assertThat(syncTargetState(SyncMethod.LOCAL_ONLY, "", "", entitled = true)).isEqualTo(SyncTargetState.LOCAL_ONLY)</ID>
     <ID>MaxLineLength:ThemePreviewScreen.kt$Icon(Icons.Outlined.BatteryFull, contentDescription = null, tint = cs.primary, modifier = Modifier.size(18.dp))</ID>
     <ID>MaxLineLength:ThemePreviewScreen.kt$drawPath(inkPath(line1), color = paper.ink.copy(alpha = 0.55f), style = Stroke(width = 2.4.dp.toPx(), cap = StrokeCap.Round))</ID>
     <ID>MaxLineLength:ThemePreviewScreen.kt$drawPath(inkPath(line3), color = paper.ink.copy(alpha = 0.40f), style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round))</ID>
     <ID>MaxLineLength:ThemePreviewScreen.kt$val line2 = listOf(pt(0.10f, 0.52f), pt(0.28f, 0.46f), pt(0.42f, 0.58f), pt(0.58f, 0.48f), pt(0.72f, 0.56f), pt(0.84f, 0.50f))</ID>
+    <ID>MaxLineLength:Thumbs.kt$Text(notebook.title, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)</ID>
+    <ID>MaxLineLength:Thumbs.kt$ThumbBody(notebook.title, strokes, vm, hasAudio, geometry, modifier, meta = meta, showLabel = !compact, accentColor = accentColor, onOpen = onOpen)</ID>
+    <ID>MaxLineLength:Thumbs.kt$drawStrokes(strokes, vm::strokesFlowOf, base = cs.onSurface, brandInk = cs.onSurface, pageBounds = pageBounds)</ID>
+    <ID>MaxLineLength:Thumbs.kt$val accent by remember(notebook.id) { vm.notebookAccent(notebook.id) }.collectAsStateWithLifecycle(NotebookAccent.NONE)</ID>
+    <ID>MaxLineLength:Thumbs.kt$val meta = notebookMetaLine(animatedPageCount, geometry?.pageWidthMm?.roundToInt(), geometry?.pageHeightMm?.roundToInt())</ID>
+    <ID>MaxLineLength:Thumbs.kt$val strokes by remember(notebook.id) { vm.notebookCoverStrokes(notebook.id) }.collectAsStateWithLifecycle(emptyList())</ID>
     <ID>MaxLineLength:Type.kt$bodyLarge = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 15.sp, lineHeight = 22.sp, letterSpacing = 0.1.sp)</ID>
     <ID>MaxLineLength:Type.kt$bodyMedium = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp)</ID>
     <ID>MaxLineLength:Type.kt$bodySmall = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Normal, fontSize = 12.5.sp, lineHeight = 18.sp, letterSpacing = 0.2.sp)</ID>
@@ -755,56 +876,62 @@
     <ID>MaxLineLength:Type.kt$titleLarge = TextStyle(fontFamily = Sora, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, lineHeight = 24.sp, letterSpacing = 0.sp)</ID>
     <ID>MaxLineLength:Type.kt$titleMedium = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp)</ID>
     <ID>MaxLineLength:Type.kt$titleSmall = TextStyle(fontFamily = Inter, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 19.sp, letterSpacing = 0.sp)</ID>
-    <ID>MaxLineLength:VaultMotion.kt$Brush.linearGradient(InkGradientStops, start = Offset(0f, 0f), end = Offset(this.size.width, this.size.height))</ID>
-    <ID>MaxLineLength:VaultMotion.kt$drawLine(if (i == 0) SteelL else SteelM, Offset(sx, sy), Offset(ex, ey), strokeWidth = r * 0.05f, cap = StrokeCap.Round)</ID>
     <ID>ReturnCount:ActionZone.kt$fun tapCentre(pts: List&lt;Pair&lt;Float, Float&gt;&gt;, eps: Float): Pair&lt;Float, Float&gt;?</ID>
+    <ID>ReturnCount:CrashCapture.kt$fun crashReportBody(crashFileContent: String?): String?</ID>
+    <ID>ReturnCount:InkSurface.kt$internal fun doubleTapZoomTarget( currentScale: Float, tapPoint: Offset, boxSize: IntSize, zoomScale: Float = 2.5f, ): ZoomTarget</ID>
+    <ID>ReturnCount:InkSurface.kt$internal fun inkFit( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Float, height: Float, pageBounds: PageGeometry? = null, ): InkFit?</ID>
     <ID>ReturnCount:InkTokens.kt$fun inkPath(points: List&lt;Offset&gt;): Path</ID>
+    <ID>ReturnCount:InkViewModel.kt$InkViewModel$private suspend fun runEagerTranscribe(pageIds: List&lt;String&gt;)</ID>
+    <ID>ReturnCount:LiveCaptureScreen.kt$private fun sampleRate(points: List&lt;Point&gt;): String</ID>
     <ID>ReturnCount:PaperLayout.kt$fun rulingLinesUnits(geometry: PageGeometry, ruling: Ruling): List&lt;Float&gt;</ID>
     <ID>ReturnCount:PenScanner.kt$PenScanner$private fun sppAddressFrom(record: ByteArray): String?</ID>
     <ID>ReturnCount:PenScanner.kt$PenScanner.&lt;no name provided&gt;$override fun onScanResult(callbackType: Int, result: ScanResult)</ID>
-    <ID>ReturnCount:ReplayGifRenderer.kt$ReplayGifRenderer$fun renderFrames( strokes: List&lt;StrokeEntity&gt;, pointsOf: (StrokeEntity) -&gt; List&lt;Point&gt;, frameCount: Int = MAX_FRAMES, ): List&lt;Bitmap&gt;</ID>
+    <ID>ReturnCount:ReplayGifRenderer.kt$ReplayGifRenderer$fun renderFrames( strokes: List&lt;StrokeEntity&gt;, pointsOf: (StrokeEntity) -&gt; List&lt;Point&gt;, frameCount: Int = MAX_FRAMES, strokeScale: Float = 1f, // the Fine/Normal/Bold handwriting-size preset (#15b) — see PageRender.renderPage. ): List&lt;Bitmap&gt;</ID>
     <ID>ReturnCount:ReplayGifRenderer.kt$ReplayGifRenderer$fun tessellate(pts: List&lt;Point&gt;, width: Float): Path?</ID>
     <ID>ReturnCount:ReplayTimeline.kt$fun pointsUpTo(stroke: ReplayStroke, fraction: Float): List&lt;Point&gt;</ID>
-    <ID>ReturnCount:Screens.kt$internal fun inkFit( strokes: List&lt;StrokeEntity&gt;, points: (StrokeEntity) -&gt; List&lt;Point&gt;, width: Float, height: Float, pageBounds: PageGeometry? = null, ): InkFit?</ID>
-    <ID>ReturnCount:Screens.kt$private fun sampleRate(points: List&lt;Point&gt;): String</ID>
     <ID>ReturnCount:SearchScreen.kt$internal fun snippet(text: String, q: String): String</ID>
     <ID>ReturnCount:StrokeIngestor.kt$StrokeIngestor$private suspend fun commit(s: ActiveStroke)</ID>
     <ID>SpreadOperator:CaptureAndPenTab.kt$(*Array(fields.size) { "" })</ID>
     <ID>SwallowedException:InkViewModel.kt$InkViewModel$e: Exception</ID>
+    <ID>SwallowedException:RoutedInkTest.kt$RoutedInkTest$e: CancellationException</ID>
+    <ID>SwallowedException:SecretStore.kt$SecretStore$e: Exception</ID>
+    <ID>SwallowedException:SecretStore.kt$SecretStore$e: KeyPermanentlyInvalidatedException</ID>
+    <ID>SwallowedException:SecretStore.kt$SecretStore$e: UserNotAuthenticatedException</ID>
     <ID>TooGenericExceptionCaught:InkViewModel.kt$InkViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:RecordingController.kt$RecordingController$e: Exception</ID>
+    <ID>TooGenericExceptionCaught:SecretStore.kt$SecretStore$e: Exception</ID>
     <ID>TooManyFunctions:Daos.kt$PageDao</ID>
     <ID>TooManyFunctions:Daos.kt$StrokeDao</ID>
     <ID>TooManyFunctions:GifEncoder.kt$GifEncoder</ID>
     <ID>TooManyFunctions:InkViewModel.kt$InkViewModel : ViewModel</ID>
+    <ID>TooManyFunctions:MainActivity.kt$MainActivity : FragmentActivity</ID>
+    <ID>TooManyFunctions:NibComponents.kt$com.nibhaus.ui.NibComponents.kt</ID>
+    <ID>TooManyFunctions:NibMotion.kt$com.nibhaus.ui.NibMotion.kt</ID>
     <ID>TooManyFunctions:NoteRepository.kt$NoteRepository</ID>
     <ID>TooManyFunctions:PenForegroundService.kt$PenForegroundService : Service</ID>
     <ID>TooManyFunctions:RecordingController.kt$RecordingController</ID>
-    <ID>TooManyFunctions:Screens.kt$com.nibhaus.ui.Screens.kt</ID>
     <ID>TooManyFunctions:ServiceLocator.kt$ServiceLocator</ID>
     <ID>TooManyFunctions:SettingsStore.kt$SettingsStore</ID>
-    <ID>TooManyFunctions:VaultComponents.kt$com.nibhaus.ui.VaultComponents.kt</ID>
-    <ID>TooManyFunctions:VaultMotion.kt$com.nibhaus.ui.VaultMotion.kt</ID>
     <ID>UnusedPrivateMember:FindMyPenScreen.kt$@Preview( name = "Find-My-Pen · dark (connected)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 720, ) @Composable private fun PreviewFindMyPenDark()</ID>
     <ID>UnusedPrivateMember:FindMyPenScreen.kt$@Preview( name = "Find-My-Pen · light (searching)", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 720, ) @Composable private fun PreviewFindMyPenLight()</ID>
-    <ID>UnusedPrivateMember:Screens.kt$@Composable private fun LiveIndicator()</ID>
+    <ID>UnusedPrivateMember:LiveCaptureScreen.kt$@Composable private fun LiveIndicator()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "BandDivider · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewBandDivider()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "Eyebrow · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewEyebrow()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "MonoBadge · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewMonoBadge()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "Nib V3 component kit · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewNibComponentKit()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "Nib V3 component kit · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewNibComponentKitLight()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "NibBottomBar · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibBottomBar()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "NibFab · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibFab()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "NibToggle · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibToggle()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "NibToggle · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewNibToggleLight()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "StatusChip · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChip()</ID>
+    <ID>UnusedPrivateMember:NibComponents.kt$@Preview( name = "StatusChip · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChipLight()</ID>
+    <ID>UnusedPrivateMember:NibFx.kt$@Preview( name = "Nib V3 foundation · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxDark()</ID>
+    <ID>UnusedPrivateMember:NibFx.kt$@Preview( name = "Nib V3 foundation · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxLight()</ID>
+    <ID>UnusedPrivateMember:NibFx.kt$@Preview( name = "Nib V3 foundation · static (no motion)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewNibFxStatic()</ID>
     <ID>UnusedPrivateMember:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Midnight Electric (dark)", showBackground = true) @Composable private fun ThemePreviewScreenPreview()</ID>
     <ID>UnusedPrivateMember:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Midnight Electric (dark, light paper)", showBackground = true) @Composable private fun ThemePreviewScreenPreviewLightPaper()</ID>
     <ID>UnusedPrivateMember:ThemePreviewScreen.kt$@Preview(name = "Theme preview · Porcelain Sapphire (light)", showBackground = true) @Composable private fun ThemePreviewScreenPreviewLight()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "BandDivider · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewBandDivider()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "Eyebrow · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewEyebrow()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "MonoBadge · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewMonoBadge()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "StatusChip · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChip()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "StatusChip · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewStatusChipLight()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "Vault V3 component kit · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewVaultComponentKit()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "Vault V3 component kit · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, heightDp = 680, ) @Composable private fun PreviewVaultComponentKitLight()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "VaultBottomBar · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultBottomBar()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "VaultFab · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultFab()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "VaultToggle · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultToggle()</ID>
-    <ID>UnusedPrivateMember:VaultComponents.kt$@Preview( name = "VaultToggle · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, ) @Composable private fun PreviewVaultToggleLight()</ID>
-    <ID>UnusedPrivateMember:VaultFx.kt$@Preview( name = "Vault V3 foundation · dark", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxDark()</ID>
-    <ID>UnusedPrivateMember:VaultFx.kt$@Preview( name = "Vault V3 foundation · light", showBackground = true, backgroundColor = 0xFFF4F6FA, uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxLight()</ID>
-    <ID>UnusedPrivateMember:VaultFx.kt$@Preview( name = "Vault V3 foundation · static (no motion)", showBackground = true, backgroundColor = 0xFF070D1C, uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL, widthDp = 360, ) @Composable private fun PreviewVaultFxStatic()</ID>
-    <ID>UnusedPrivateProperty:Screens.kt$val pitchU = if (rows.size &gt;= 2) rows[1] - rows[0] else ruling.topMm / ExportArtifacts.MM_PER_UNIT</ID>
+    <ID>UnusedPrivateProperty:InkSurface.kt$val pitchU = if (rows.size &gt;= 2) rows[1] - rows[0] else ruling.topMm / ExportArtifacts.MM_PER_UNIT</ID>
   </CurrentIssues>
 </SmellBaseline>

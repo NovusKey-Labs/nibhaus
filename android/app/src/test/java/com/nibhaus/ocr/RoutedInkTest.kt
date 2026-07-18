@@ -92,7 +92,7 @@ class RoutedInkTest {
     }
 
     // -----------------------------------------------------------------------
-    // Final-review fix (2026-07-05): the accurate chain must be a SUPPLIER resolved fresh on every
+    // the accurate chain must be a SUPPLIER resolved fresh on every
     // accurate request, not a list frozen at construction. Otherwise an entitled user who configures
     // a BYO endpoint (or forces on-device VLM) after the chain was first built gets nothing until an
     // app restart. This is what makes ServiceLocator's `{ premium?.accurateChain() ?: emptyList() }`

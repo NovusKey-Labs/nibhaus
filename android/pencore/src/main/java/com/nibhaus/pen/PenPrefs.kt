@@ -8,15 +8,15 @@ import kotlinx.serialization.json.Json
 
 /**
  * A pen this device has successfully connected to before — drives the Pens screen's saved-pen
- * reconnect tiles (Feature 2). [spp] is the pen's stable NeoLAB identity ([PenTarget.sppAddress]),
+ * reconnect tiles. [spp] is the pen's stable NeoLAB identity ([PenTarget.sppAddress]),
  * NEVER the rotating LE advertising address — that goes stale on power-cycle, so reconnecting a saved
  * pen must re-scan for [spp], not redial a cached address.
  */
 @Serializable
 data class SavedPen(val name: String, val spp: String, val lastConnectedAt: Long)
 
-/** Remembers the last-paired pen so the app can auto-reconnect (complaint #4), plus every pen this
- *  device has ever successfully connected to (Feature 2's saved-pen tiles). */
+/** Remembers the last-paired pen so the app can auto-reconnect, plus every pen this
+ *  device has ever successfully connected to (saved-pen tiles). */
 interface PenPrefs {
     var lastPenMac: String?
     /** Previously connected pens, most-recently-connected first. */

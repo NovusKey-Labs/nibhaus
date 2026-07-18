@@ -54,7 +54,7 @@ class NeoSdkAdapter(
     private var dotCount = 0
     /** Guards against a wrong stored password looping: we auto-answer from storage at most once per
      *  connection, then defer to the user prompt. Reset on every (re)connect and on disconnect. */
-    private var autoTriedPassword = false
+    @Volatile private var autoTriedPassword = false
 
     override fun connect(target: PenTarget) {
         autoTriedPassword = false
@@ -71,7 +71,7 @@ class NeoSdkAdapter(
             }
             pen.connect(target.sppAddress, target.leAddress, uuidVer, 0x1201.toShort(), "2.18")
         } catch (e: Exception) {
-            Log.w(TAG, "connect(${target.sppAddress}) threw ${e.javaClass.simpleName}: ${e.message}")
+            Log.w(TAG, "pen connection failed (${e.javaClass.simpleName})")
             listener?.onMessage(PenMessage.ConnectFailed(PenMessage.FailureReason.UNKNOWN))
         }
     }
@@ -88,14 +88,14 @@ class NeoSdkAdapter(
      *  PEN_SETUP_SUCCESS/FAILURE is the password result. The app issues no other setup ops, so this
      *  gate can't be confused by an unrelated setup reply. Note: if other setup ops are added,
      *  distinguish by the PEN_SETUP_* payload instead of a single in-flight flag. */
-    private var passwordOpInFlight = false
+    @Volatile private var passwordOpInFlight = false
 
     override fun changePassword(oldPassword: String, newPassword: String) {
         Log.i(TAG, "reqSetupPassword(old=${oldPassword.length}, new=${newPassword.length})")
         passwordOpInFlight = true
         runCatching { pen.reqSetupPassword(oldPassword, newPassword) }
             .onFailure {
-                Log.w(TAG, "reqSetupPassword failed: ${it.message}")
+                Log.w(TAG, "pen password setup failed (${it.javaClass.simpleName})")
                 passwordOpInFlight = false
                 listener?.onMessage(PenMessage.PasswordResult(false))
             }
@@ -106,7 +106,7 @@ class NeoSdkAdapter(
         passwordOpInFlight = true
         runCatching { pen.reqSetUpPasswordOff(currentPassword) }
             .onFailure {
-                Log.w(TAG, "reqSetUpPasswordOff failed: ${it.message}")
+                Log.w(TAG, "pen password removal failed (${it.javaClass.simpleName})")
                 passwordOpInFlight = false
                 listener?.onMessage(PenMessage.PasswordResult(false))
             }
@@ -125,7 +125,7 @@ class NeoSdkAdapter(
         Log.i(TAG, "upgradePen(${file.name}, ${file.length()} bytes)")
         runCatching { pen.upgradePen(file) }
             .onFailure {
-                Log.w(TAG, "upgradePen failed: ${it.message}")
+                Log.w(TAG, "pen firmware upgrade failed (${it.javaClass.simpleName})")
                 listener?.onMessage(PenMessage.FirmwareResult(false))
             }
     }
@@ -156,7 +156,7 @@ class NeoSdkAdapter(
                 // is what NeoLAB's own sample does on PEN_AUTHORIZED — without it, writing streams no
                 // ink. Also enable offline-page retrieval here.
                 runCatching { pen.reqAddUsingNoteAll() }
-                    .onFailure { Log.w(TAG, "reqAddUsingNoteAll failed: ${it.message}") }
+                    .onFailure { Log.w(TAG, "pen note registration failed (${it.javaClass.simpleName})") }
                 runCatching { pen.setAllowOfflineData(true) }
                 Log.i(TAG, "authorized → registered all notebooks for live ink")
                 listener?.onMessage(PenMessage.Connected(penAddress ?: "", lastPenName))
@@ -261,7 +261,7 @@ class NeoSdkAdapter(
         val (section, owner, note) = next
         Log.i(TAG, "offline: requesting note s=$section o=$owner n=$note (${offlineQueue.size} queued after)")
         runCatching { pen.reqOfflineData(section, owner, note, false) }
-            .onFailure { Log.w(TAG, "reqOfflineData failed: ${it.message}"); requestNextOfflineNote() }
+            .onFailure { Log.w(TAG, "offline pen data request failed (${it.javaClass.simpleName})"); requestNextOfflineNote() }
     }
     private fun onOfflineNoteComplete() {
         if (currentOfflineNoteDone) return // ignore duplicate / late end-of-note signals for a finished note

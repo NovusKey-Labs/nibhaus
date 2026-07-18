@@ -110,7 +110,7 @@ internal fun LibraryScreen(
     val hideBlank by vm.hideBlankPages.collectAsStateWithLifecycle()
     val nonBlankPageIds by vm.nonBlankPageIds.collectAsStateWithLifecycle()
     val favorites by vm.favorites.collectAsStateWithLifecycle()
-    // Perf audit P1-1: collected ONCE here (not per card) and passed down into every
+    // collected ONCE here (not per card) and passed down into every
     // NotebookThumb/PageThumb below — shares one batched query across the whole grid instead of one
     // subscription per visible card.
     val notebookPageCounts by vm.notebookPageCounts.collectAsStateWithLifecycle()
@@ -133,10 +133,10 @@ internal fun LibraryScreen(
     val inNotebook = notebookId != null
     val currentBook = notebooks.firstOrNull { it.id == notebookId }
     var renamingBook by remember { mutableStateOf(false) }
-    // Feature 18: notebook overflow menu — accent picker + delete confirmation.
+    // notebook overflow menu — accent picker + delete confirmation.
     var showAccentPicker by remember { mutableStateOf(false) }
     var showDeleteNotebook by remember { mutableStateOf(false) }
-    // Feature 15: Favorites — bookmarked pages across every notebook, shown flat like a tag filter.
+    // Favorites — bookmarked pages across every notebook, shown flat like a tag filter.
     // Mutually exclusive with the tag filter (picking one clears the other); lives in the ViewModel
     // (not local `remember`) so it survives navigating into a favorite page and back.
     val showFavorites by vm.showFavoritesState.collectAsStateWithLifecycle()
@@ -148,17 +148,17 @@ internal fun LibraryScreen(
     val cols = thumbColumns()
     val cs = MaterialTheme.colorScheme
     val compact = rememberCompact() // phone-width: icon-only Back so the action row doesn't wrap
-    // Feature 17: which page in the open notebook was most recently opened, so returning from a page
+    // which page in the open notebook was most recently opened, so returning from a page
     // (or jumping via the filmstrip) highlights where you were. Resets when the notebook changes.
     var lastOpenedPageId by rememberSaveable(notebookId) { mutableStateOf<String?>(null) }
     fun openPage(id: String) { lastOpenedPageId = id; vm.openPage(id) }
-    // Feature 16: pages hidden from the open-notebook grid when "hide blank pages" is on.
+    // pages hidden from the open-notebook grid when "hide blank pages" is on.
     val shownPages = visiblePages(pages, hideBlank) { it.id in nonBlankPageIds }.excludingPendingDeletes()
     Box(Modifier.fillMaxSize()) {
     Column(Modifier.fillMaxSize()) {
         BrandWordmark(Modifier.padding(start = 16.dp, top = 14.dp, bottom = 2.dp).riseIn(0))
         Box(Modifier.padding(horizontal = 16.dp).riseIn(1)) {
-            // Feature 22: the header's stat count counts up on first composition rather than snapping in.
+            // the header's stat count counts up on first composition rather than snapping in.
             val subCount = when {
                 inNotebook -> pages.excludingPendingDeletes().size
                 showFavorites -> favorites.excludingPendingDeletes().size
@@ -181,7 +181,7 @@ internal fun LibraryScreen(
                 },
             ) {
                 if (inNotebook) {
-                    // Feature 16: collapse/hide blank pages, next to the page count in the header.
+                    // collapse/hide blank pages, next to the page count in the header.
                     IconButton(
                         onClick = { vm.setHideBlankPages(!hideBlank) },
                         modifier = Modifier.semantics { stateDescription = if (hideBlank) "Blank pages hidden" else "Blank pages shown" },
@@ -191,7 +191,7 @@ internal fun LibraryScreen(
                             contentDescription = if (hideBlank) "Show blank pages" else "Hide blank pages",
                         )
                     }
-                    // Feature 18: rename / accent color / delete, consolidated into one overflow menu
+                    // rename / accent color / delete, consolidated into one overflow menu
                     // (was a standalone rename pencil + a delete action elsewhere).
                     if (currentBook != null) {
                         Box {
@@ -230,7 +230,7 @@ internal fun LibraryScreen(
                     }
                 } else {
                     if (!filtering && !showFavorites) {
-                        // Feature 14: gallery ↔ list toggle for the notebook grid (Library root only).
+                        // gallery ↔ list toggle for the notebook grid (Library root only).
                         val toGallery = libraryView == LibraryView.GALLERY
                         IconButton(
                             onClick = { vm.setLibraryView(if (toGallery) LibraryView.LIST else LibraryView.GALLERY) },
@@ -242,7 +242,7 @@ internal fun LibraryScreen(
                             )
                         }
                     }
-                    // Feature 15: Favorites — bookmarked pages across every notebook, available from
+                    // Favorites — bookmarked pages across every notebook, available from
                     // the Library root regardless of tag-filter state (picking one clears the other).
                     IconButton(
                         onClick = { vm.setShowFavorites(!showFavorites) },
@@ -284,7 +284,7 @@ internal fun LibraryScreen(
                 }
             }
         }
-        // Feature 17: a compact horizontal page-jumper above the grid, for notebooks with enough
+        // a compact horizontal page-jumper above the grid, for notebooks with enough
         // pages that scanning them one row at a time gets slow. Highlights the page most recently
         // opened from this notebook (a session-local "you are here", since the grid itself has no
         // single "open" page). Reuses PageThumb — no new thumbnail chrome.
@@ -297,7 +297,7 @@ internal fun LibraryScreen(
             transitionSpec = { sharedAxisX(forward = targetState != null) },
             label = "drill",
         ) { nb ->
-            // Feature 23: pull-to-refresh. The Room flows behind this grid are already live, so the
+            // pull-to-refresh. The Room flows behind this grid are already live, so the
             // gesture itself is mostly reassurance — a brief spinner acknowledging the pull, styled
             // with the app's own ink-primary color rather than the Material default.
             var refreshing by remember { mutableStateOf(false) }
@@ -319,7 +319,7 @@ internal fun LibraryScreen(
             ) {
             LazyColumn(Modifier.fillMaxSize().padding(horizontal = 16.dp)) {
                 if (nb == null && showFavorites) {
-                    // Feature 15: bookmarked pages across every notebook — same flat-grid treatment
+                    // bookmarked pages across every notebook — same flat-grid treatment
                     // as the tag filter above, reusing PageThumb.
                     val shownFavorites = favorites.excludingPendingDeletes()
                     if (shownFavorites.isEmpty()) {
@@ -357,7 +357,7 @@ internal fun LibraryScreen(
                         }
                     }
                     else {
-                    // Feature 5 tip card: nudge toward transcription once there's enough captured to be
+                    // Nudge toward transcription once there's enough captured to be
                     // worth searching, and only if the user hasn't already discovered it on their own.
                     if (transcribeTipEligible(totalPages, everTranscribed, transcribeTipDismissed)) {
                         item {
@@ -369,8 +369,8 @@ internal fun LibraryScreen(
                         }
                     }
                     when (libraryView) {
-                        // Feature 14: GALLERY is the existing cover grid (unchanged); LIST is a
-                        // denser row-per-notebook layout (Feature 19 metadata lives in both).
+                        // GALLERY is the existing cover grid (unchanged); LIST is a
+                        // denser row-per-notebook layout; metadata is shown in both.
                         LibraryView.GALLERY -> itemsIndexed(visibleNotebooks.chunked(cols), key = { _, row -> row.first().id }) { idx, row ->
                             Box(Modifier.riseIn(2 + idx)) {
                                 ThumbRow(row, cols) { entry, m ->
@@ -500,9 +500,9 @@ internal fun LibraryScreen(
     }
 }
 
-/** Feature 17: a small horizontal strip of page thumbs to jump around a notebook quickly — the grid
+/** a small horizontal strip of page thumbs to jump around a notebook quickly — the grid
  *  below already shows every page, so this earns its place only once there are enough to make
- *  scrolling the grid slow (see [showPageFilmstrip]). Reuses [PageThumb]; ~72dp tall per the brief. */
+ *  scrolling the grid slow (see [showPageFilmstrip]). Reuses [PageThumb] at roughly 72dp tall. */
 @Composable
 private fun PageFilmstrip(
     pages: List<com.nibhaus.data.PageEntity>,
@@ -525,11 +525,11 @@ private fun PageFilmstrip(
     }
 }
 
-/** Feature 17: the filmstrip only earns its keep once the grid needs real scrolling to reach a page —
+/** the filmstrip only earns its keep once the grid needs real scrolling to reach a page —
  *  below that, it would just duplicate the grid. Pure, so it's unit-testable without Compose. */
 internal fun showPageFilmstrip(pageCount: Int): Boolean = pageCount > 6
 
-/** Feature 18: pick one of a small fixed accent palette for a notebook's card tint, or clear it by
+/** pick one of a small fixed accent palette for a notebook's card tint, or clear it by
  *  tapping the currently-selected swatch again. */
 @Composable
 private fun AccentColorDialog(
@@ -574,7 +574,7 @@ private fun thumbColumns(): Int = when {
     else -> 2
 }
 
-/** Feature 19: notebook metadata line for a library card/row — page count is always shown; the
+/** notebook metadata line for a library card/row — page count is always shown; the
  *  physical size is appended only when it's actually known (a captured/measured profile). Never
  *  fabricates a size. Pure, so it's unit-testable without Compose. */
 internal fun notebookMetaLine(pageCount: Int, widthMm: Int?, heightMm: Int?): String {
@@ -582,7 +582,7 @@ internal fun notebookMetaLine(pageCount: Int, widthMm: Int?, heightMm: Int?): St
     return if (widthMm != null && heightMm != null) "$pages · $widthMm × $heightMm mm" else pages
 }
 
-/** Feature 16: the pages to render in the open-notebook grid. When [hideBlank] is on, pages [hasStrokes]
+/** the pages to render in the open-notebook grid. When [hideBlank] is on, pages [hasStrokes]
  *  says have no ink are dropped; otherwise every page is shown. Pure, so it's unit-testable without Compose. */
 internal fun visiblePages(
     pages: List<com.nibhaus.data.PageEntity>,

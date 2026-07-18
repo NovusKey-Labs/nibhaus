@@ -9,6 +9,7 @@ import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.os.ParcelUuid
 import android.util.Log
+import com.nibhaus.penble.ScannedBluetoothDevices
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +22,7 @@ data class ScannedPen(val target: PenTarget, val name: String, val rssi: Int) {
 }
 
 /**
- * Feature 2 (Pens screen saved-pen tiles): tap-to-reconnect state, set only by
+ * (Pens screen saved-pen tiles): tap-to-reconnect state, set only by
  * [com.nibhaus.di.ServiceLocator.connectSaved] — distinct from [PenConnState], which tracks the
  * actual pen link once a target is found and handed to [PenConnectionManager]. Drives a saved-pen
  * tile's transient "searching…" / "not found — is the pen on?" chrome while the reconnect scan runs.
@@ -63,6 +64,7 @@ class PenScanner(context: Context? = null) {
         val s = scanner ?: return
         stop()
         found.clear()
+        ScannedBluetoothDevices.clear()
         _results.value = emptyList()
         val cb = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -72,6 +74,7 @@ class PenScanner(context: Context? = null) {
                 // this packet (e.g. a bare scan response) isn't actionable — wait for the next one.
                 val spp = sppAddressFrom(raw) ?: return
                 val protocol = protocolOf(record.serviceUuids) ?: return
+                ScannedBluetoothDevices.remember(result.device)
                 val name = record.deviceName ?: result.device.name ?: "Neo smartpen"
                 val target = PenTarget(spp, result.device.address, protocol)
                 found[spp] = ScannedPen(target, name, result.rssi)

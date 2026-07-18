@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-/** Tests for the reconnect state machine (brief FIX #2/#4). */
+/** Tests for the reconnect state machine. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PenConnectionManagerTest {
 
@@ -300,6 +300,28 @@ class PenConnectionManagerTest {
 
             assertThat(prefs.savedPens).isEmpty()
             assertThat(mgr.savedPens.value).isEmpty()
+        }
+
+    @Test
+    fun `forgetPen currently leaves the persisted password and Keystore alias intact`() =
+        runTest(UnconfinedTestDispatcher()) {
+            val sdk = FakeNeoPenSdk(); val prefs = InMemoryPenPrefs()
+            var secretClearCalls = 0
+            val mgr = PenConnectionManager(
+                sdk = sdk,
+                prefs = prefs,
+                scope = backgroundScope,
+                onDot = {},
+                onPasswordCleared = { secretClearCalls++ },
+            )
+            mgr.connect(PenTarget("9C:7B:D2:01", "RANDOM:LE", PenProtocol.V2))
+
+            mgr.forgetPen("9C:7B:D2:01")
+
+            // H2 audit gap characterization: Forget removes the saved-pen tile but does not invoke
+            // SecretStore.clear(), so the stored password and its AndroidKeyStore alias survive.
+            // This intentionally passes today and should fail when H2 is fixed later.
+            assertThat(secretClearCalls).isEqualTo(0)
         }
 
     @Test

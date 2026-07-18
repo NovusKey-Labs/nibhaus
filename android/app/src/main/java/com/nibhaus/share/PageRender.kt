@@ -59,7 +59,7 @@ object PageRender {
         val offX = (width - spanX * scale) / 2f
         val offY = (height - spanY * scale) / 2f
 
-        // Perf audit P1-4: this ran ARGB_8888 (~8.7MB at the default 1240x1754), one bitmap per page
+        // this ran ARGB_8888 (~8.7MB at the default 1240x1754), one bitmap per page
         // per export, with reexportAllPages() looping it across the whole notebook. RGB_565 halves
         // that (~4.2MB) and is safe here: the page is always fully opaque (white background filled
         // below, ink drawn solid on top — never a transparent pixel), so the dropped alpha channel is

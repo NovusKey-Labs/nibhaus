@@ -43,11 +43,19 @@ object AppLock {
 
     /** Show the system unlock prompt; [onResult] is true on success, false on error/cancel. */
     fun prompt(activity: FragmentActivity, onResult: (Boolean) -> Unit) {
+        val requiresCrypto = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+        val cipher = if (requiresCrypto) gateCipher() else null
+        if (requiresCrypto && cipher == null) {
+            onResult(false)
+            return
+        }
         val prompt = BiometricPrompt(
             activity,
             ContextCompat.getMainExecutor(activity),
             object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) = onResult(true)
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    onResult(cryptoUnlockSucceeded(requiresCrypto, result.cryptoObject?.cipher))
+                }
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) = onResult(false)
                 // onAuthenticationFailed = one bad attempt; the prompt stays up, so we don't act on it.
             },
@@ -62,7 +70,6 @@ object AppLock {
         // CryptoObject + DEVICE_CREDENTIAL is only legal on API 30+ (the platform throws
         // IllegalArgumentException below that level). Below 30, fall back to the boolean-only
         // prompt so the device-credential path this screen depends on keeps working.
-        val cipher = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) gateCipher() else null
         if (cipher != null) {
             prompt.authenticate(info, BiometricPrompt.CryptoObject(cipher))
         } else {
@@ -70,9 +77,15 @@ object AppLock {
         }
     }
 
+    /** Complete the authenticated operation; API 30+ unlocks fail closed without a usable cipher. */
+    internal fun cryptoUnlockSucceeded(requiresCrypto: Boolean, cipher: Cipher?): Boolean {
+        if (!requiresCrypto) return true
+        return cipher != null && runCatching { cipher.doFinal(ByteArray(0)) }.isSuccess
+    }
+
     /**
      * A fresh [Cipher] over the gate-only Keystore key (API 30+ only), or null if it couldn't be
-     * prepared — the caller falls back to the boolean-only prompt in that case. The key requires
+     * prepared — the caller fails closed in that case. The key requires
      * authentication for every use (no validity window: see [generateGateKey]) so each call demands
      * a real biometric/device-credential check, not a cached unlock from an earlier prompt.
      */

@@ -50,7 +50,7 @@ class SyncTargetHealthTest {
             .isEqualTo(SyncTargetState.NO_ENDPOINT)
     }
 
-    // ---- Entitlement gating (final-review fix, 2026-07-05) ----
+    // ---- Entitlement gating ----
     // A Tailscale endpoint that was configured before a relock (or by an app version predating this
     // gate) must classify as NOT configured, never CONFIGURED, so the home card's copy stays honest
     // about why the outbox isn't draining, instead of promising a sync that entitlement blocks.

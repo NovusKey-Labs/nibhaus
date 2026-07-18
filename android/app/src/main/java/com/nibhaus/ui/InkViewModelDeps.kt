@@ -29,7 +29,7 @@ class PenDeps(
     /** Whether the pen unlock password is currently stored (encrypted) for auto-unlock. */
     val hasStoredPassword: () -> Boolean = { false },
     val signals: CaptureSignals? = null,
-    /** Feature 2: tap-to-reconnect a saved pen by its stable spp identity (scan-filter-connect,
+    /** tap-to-reconnect a saved pen by its stable spp identity (scan-filter-connect,
      *  shared with [com.nibhaus.di.ServiceLocator]'s auto-reconnect rescan). Default no-op keeps
      *  existing tests/callers valid. */
     val connectSaved: (spp: String) -> Unit = {},
@@ -42,7 +42,7 @@ class SyncDeps(
     val exportPageNow: suspend (pageId: String) -> ExportOutcome = { ExportOutcome.NO_TARGET },
     val reexportAll: suspend () -> Unit = {},
     val deletePageOp: suspend (pageId: String, alsoRemote: Boolean, alsoAudio: Boolean) -> Unit = { _, _, _ -> },
-    /** Feature 18: cascade-delete a whole notebook (every page's local data, optionally its exported
+    /** cascade-delete a whole notebook (every page's local data, optionally its exported
      *  copies + voice notes), then the notebook row. Default no-op keeps existing tests/callers valid. */
     val deleteNotebookOp: suspend (notebookId: String, alsoRemote: Boolean, alsoAudio: Boolean) -> Unit = { _, _, _ -> },
     val restoreBackup: suspend (android.net.Uri) -> Int = { 0 },
@@ -52,16 +52,19 @@ class SyncDeps(
 )
 
 /** On-device / server OCR + transcript dependencies. */
+@Suppress("LongParameterList") // dependency aggregator (a holder, not a call site)
 class OcrDeps(
     val transcripts: com.nibhaus.ocr.TranscriptImporter? = null,
     /** On-device handwriting OCR of a page → stored transcript (or null). ML Kit Digital Ink.
      *  accurate=true → best-available quality tier (may be slower); false → fast/instant tier. */
     val transcribeOnDevice: (suspend (pageId: String, accurate: Boolean) -> String?)? = null,
-    /** Feature 9: persist a manually edited transcript through the same DB funnel OCR uses (updates
+    /** persist a manually edited transcript through the same DB funnel OCR uses (updates
      *  the page's transcript AND its FTS row). Default no-op keeps existing tests/callers valid. */
     val saveTranscriptOp: suspend (pageId: String, text: String) -> Unit = { _, _ -> },
     /** Live VLM model download/readiness state from ServiceLocator; null in freemium builds. */
     val vlmState: kotlinx.coroutines.flow.Flow<VlmDownloadState>? = null,
+    val vlmDisclosure: com.nibhaus.premiumapi.DownloadDisclosure? = null,
+    val downloadVlmModel: (suspend (com.nibhaus.premiumapi.DownloadConsent) -> Boolean)? = null,
     /**
      * Synchronous check: is the active network connection metered (mobile data)?
      * Used by the Auto quality tier to skip the accurate pass when on mobile data.

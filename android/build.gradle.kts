@@ -10,16 +10,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.21" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21" apply false
     id("com.google.devtools.ksp") version "2.2.21-2.0.5" apply false
-    // Static analysis, report-only (see :app etc. below) — 1.23.8 is the newest stable release and
+    // Static analysis — 1.23.8 is the newest stable release and
     // the first line to declare Gradle configuration-cache support; detekt 2.x is still alpha.
     id("io.gitlab.arturbosch.detekt") version "1.23.8" apply false
 }
 
-// Report-only static analysis: every Kotlin/Android module gets `detekt` wired to the default
-// ruleset + a per-module baseline (config/detekt/baseline-<module>.xml, generated once from the
-// code as it stood when this was added) so existing findings don't fail the task. New findings
-// still fail `detekt` itself (useful signal locally), but CI runs it with continue-on-error so it
-// never blocks a merge — see .github/workflows/android.yml. Skips :premium: it vendors llama.cpp
+// Every Kotlin/Android module gets `detekt` wired to the default ruleset + a per-module baseline
+// (config/detekt/baseline-<module>.xml). The baseline freezes existing debt while new findings fail
+// both the local task and CI. Skips :premium: it vendors llama.cpp
 // (native C/C++, see android/premium/src/main/cpp/) and mirrors the .cbmignore precedent of
 // keeping vendored/native code out of source-analysis tooling.
 subprojects {

@@ -84,7 +84,7 @@ class SecretStore(context: Context, private val name: String) {
         return System.currentTimeMillis() - savedAt < days * 24L * 60 * 60 * 1000
     }
 
-    // Hardened (Aikido, 2026-07-07): the key now requires a recently-authenticated device (biometric
+    // the key now requires a recently-authenticated device (biometric
     // or device-credential) via setUserAuthenticationRequired(true) — it's no longer usable off an
     // unlocked-but-idle device indefinitely. AUTH_VALIDITY_SECONDS below gives a window so the
     // "remember for 30 days" silent auto-reconnect flow still works: the pen foreground service can

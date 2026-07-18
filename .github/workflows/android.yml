@@ -90,11 +90,10 @@ jobs:
           path: android/app/build/reports/tests/
 
   detekt:
-    name: Detekt static analysis (report-only)
+    name: Detekt static analysis (new violations fail)
     runs-on: ubuntu-latest
-    # Findings never gate CI: continue-on-error on the run step below, plus a per-module baseline
-    # (config/detekt/baseline-*.xml) so existing findings don't even surface as new. This job exists
-    # to publish the report artifact for browsing, not to block merges.
+    # Per-module baselines freeze the existing debt. Detekt still exits non-zero for any finding
+    # introduced after the baseline, so new violations block the job while reports remain available.
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -123,8 +122,10 @@ jobs:
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
       - name: detekt
-        continue-on-error: true
-        run: ./gradlew detekt --continue --stacktrace
+        run: ./gradlew detekt -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
+
+      - name: Android lint
+        run: ./gradlew lintDebug :penble:lintDebug :pencore:lintDebug -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
 
       - name: Upload detekt reports
         if: always()
@@ -190,8 +191,8 @@ jobs:
   semgrep:
     name: Semgrep SAST (report-only)
     runs-on: ubuntu-latest
-    # Same philosophy as detekt above: publish findings, never gate. Runs the community rulesets
-    # offline (no SEMGREP_APP_TOKEN); add the token later to upload results to the platform.
+    # Publish findings without enforcing an unreviewed community-ruleset policy. Runs offline
+    # (no SEMGREP_APP_TOKEN); add the token later to upload results to the platform.
     container: semgrep/semgrep
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1

@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.nibhaus.export.toggledSet
 import org.junit.Test
 
-/** Feature 15: the pure add/remove step behind [com.nibhaus.export.SettingsStore.setBookmarked]. */
+/** the pure add/remove step behind [com.nibhaus.export.SettingsStore.setBookmarked]. */
 class ToggledSetTest {
 
     @Test fun `on true adds the id`() {

@@ -112,13 +112,15 @@ class FakePageDao : PageDao {
      *  [observeNonBlankPageIds] above): returns every page id rather than only the ones with ink. */
     override fun observeAllNonBlankPageIds(): Flow<List<String>> = MutableStateFlow(byId.keys.toList())
 
-    /** Mirrors the real `GROUP BY notebookId` @Query (Feature 19 / P1-1 library-grid batching). */
+    /** Mirrors the real batched `GROUP BY notebookId` query used by the library grid. */
     override fun observePageCounts(): Flow<Map<String, Int>> =
         MutableStateFlow(byId.values.groupingBy { it.notebookId }.eachCount())
 }
 
 class FakeStrokeDao : StrokeDao {
     val byId = LinkedHashMap<String, StrokeEntity>()
+    var maxUuidQuerySize = Int.MAX_VALUE
+    val uuidQuerySizes = mutableListOf<Int>()
     override suspend fun insert(stroke: StrokeEntity) { byId.putIfAbsent(stroke.uuid, stroke) }
     override fun observeByPage(pageId: String): Flow<List<StrokeEntity>> =
         MutableStateFlow(byId.values.filter { it.pageId == pageId }.sortedBy { it.startedAt })
@@ -127,7 +129,11 @@ class FakeStrokeDao : StrokeDao {
     override suspend fun deleteForPage(pageId: String) {
         byId.keys.filter { byId[it]?.pageId == pageId }.forEach { byId.remove(it) }
     }
-    override suspend fun byUuids(uuids: List<String>) = uuids.mapNotNull { byId[it] }
+    override suspend fun byUuids(uuids: List<String>): List<StrokeEntity> {
+        uuidQuerySizes += uuids.size
+        check(uuids.size <= maxUuidQuerySize) { "too many SQL variables: ${uuids.size}" }
+        return uuids.mapNotNull { byId[it] }
+    }
     override suspend fun markSync(uuids: List<String>, state: SyncState) {
         uuids.forEach { u -> byId[u]?.let { byId[u] = it.copy(syncState = state) } }
     }

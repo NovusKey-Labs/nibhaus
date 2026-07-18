@@ -19,6 +19,8 @@ import com.nibhaus.export.PaperTemplate
 import com.nibhaus.export.TranscriptionQuality
 import com.nibhaus.health.SyncTargetState
 import com.nibhaus.premiumapi.VlmDownloadState
+import com.nibhaus.premiumapi.DownloadConsent
+import com.nibhaus.premiumapi.DownloadConsentChoice
 import com.nibhaus.pen.PenConnState
 import com.nibhaus.pen.ScannedPen
 import com.nibhaus.repo.NoteRepository
@@ -87,7 +89,10 @@ class InkViewModel(
     private val transcribeOnDevice = ocr.transcribeOnDevice
     private val saveTranscriptOp = ocr.saveTranscriptOp
     private val vlmState = ocr.vlmState
+    val vlmDownloadDisclosure = ocr.vlmDisclosure
+    private val downloadVlmModel = ocr.downloadVlmModel
     private val isMetered = ocr.isMetered
+    fun isConnectionMetered(): Boolean = isMetered()
     private val premiumPresent = ocr.premiumPresent
 
     private val actionZones = zones.actionZones
@@ -303,7 +308,7 @@ class InkViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
     fun completeOnboardingCoach() = viewModelScope.launch { settings.setOnboardingCoachDone() }
 
-    /** Bluetooth rationale pre-prompt (#3): same nullable-until-loaded gating as [onboardingCoachDone],
+    /** Bluetooth rationale state: same nullable-until-loaded gating as [onboardingCoachDone],
      *  so MainActivity can tell "still reading DataStore" apart from "loaded, never shown". */
     val bleRationaleShown: StateFlow<Boolean?> =
         settings.bleRationaleShown.map<Boolean, Boolean?> { it }
@@ -354,7 +359,10 @@ class InkViewModel(
         _syncTest.value = SyncTest.Testing
         _syncTest.value = withContext(Dispatchers.IO) {
             try {
-                val conn = (java.net.URL(endpoint.trimEnd('/') + "/_index").openConnection()
+                val target = com.nibhaus.export.ExportEndpoint.parse(
+                    endpoint, com.nibhaus.BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
+                )
+                val conn = (target.resolve("_index").openConnection()
                     as java.net.HttpURLConnection).apply {
                     requestMethod = "GET"
                     connectTimeout = 8000
@@ -389,17 +397,17 @@ class InkViewModel(
     fun startRssiPolling() = penManager.startRssiPolling()
     fun stopRssiPolling() = penManager.stopRssiPolling()
 
-    /** Feature 2: previously connected pens, most-recently-connected first — the Pens screen's
+    /** previously connected pens, most-recently-connected first — the Pens screen's
      *  saved-pen reconnect tiles (shown while not connected). */
     val savedPens: StateFlow<List<com.nibhaus.pen.SavedPen>> = penManager.savedPens
 
     /** Live "searching…" / "not found" state for an in-flight [connectSaved] scan. */
     val savedPenConnectState: StateFlow<com.nibhaus.pen.SavedPenConnectState> = pen.savedPenConnectState
 
-    /** Tap-to-reconnect a saved pen by its stable spp identity (Feature 2). */
+    /** Tap-to-reconnect a saved pen by its stable spp identity. */
     fun connectSaved(spp: String) = connectSavedFn(spp)
 
-    /** Forget a saved pen (Feature 2's long-press "forget" affordance). */
+    /** Forget a saved pen (long-press "forget" affordance). */
     fun forgetSavedPen(spp: String) = penManager.forgetPen(spp)
 
     /**
@@ -436,7 +444,7 @@ class InkViewModel(
     private fun clearPresence() { _presenceSightings.value = emptyMap() }
 
     /**
-     * Feature 2 refinement — per-spp "ready" (currently advertising nearby) presence for the saved-pen
+     * — per-spp "ready" (currently advertising nearby) presence for the saved-pen
      * tiles' live dot. Purely reactive to whatever [scanner] is currently reporting; this flow never
      * starts a scan itself — that's the Pens screen's job (visible + Disconnected + saved pens exist,
      * via [startPresenceScan]/[stopPresenceScan] in a DisposableEffect), so a pen never appears "ready"
@@ -527,7 +535,7 @@ class InkViewModel(
     fun skipNotebookSetup(notebookId: String) =
         viewModelScope.launch { settings.acknowledgeNotebook(notebookId) }
 
-    /** Feature 18: the notebook's chosen accent (NONE = unset) — for the library card tint + picker. */
+    /** the notebook's chosen accent (NONE = unset) — for the library card tint + picker. */
     fun notebookAccent(notebookId: String): Flow<NotebookAccent> = settings.notebookAccent(notebookId)
     fun setNotebookAccent(notebookId: String, accent: NotebookAccent) =
         viewModelScope.launch { settings.setNotebookAccent(notebookId, accent) }
@@ -551,7 +559,7 @@ class InkViewModel(
     val pendingDeletedNotebookIds: StateFlow<Set<String>> = _pendingDeletedNotebookIds
     private val notebookDeleteJobs = HashMap<String, Job>()
 
-    /** Delete a whole notebook (Feature 18) — mirrors [deleteCurrentPage] but cascades every page in
+    /** Delete a whole notebook — mirrors [deleteCurrentPage] but cascades every page in
      *  the notebook, then drops the notebook row itself. Local-only unless [alsoRemote]. Soft: hides
      *  immediately and leaves the notebook if it's open; the real cascade runs after the undo window
      *  (see the "Soft delete + UNDO" block above) unless [undoDeleteNotebook] cancels it first. */
@@ -640,7 +648,7 @@ class InkViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /** Ids of pages in the open notebook that have at least one stroke — feeds the Library "hide
-     *  blank pages" filter (Feature 16). Only subscribed while [hideBlankPages] is on (when it's off,
+     *  blank pages" filter. Only subscribed while [hideBlankPages] is on (when it's off,
      *  [visiblePages] ignores this entirely, so there's no reason to run the query) and backed by
      *  ONE query ([com.nibhaus.repo.NoteRepository.nonBlankPageIds]) rather than one stroke-observer
      *  per page of the open notebook. */
@@ -664,7 +672,7 @@ class InkViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     /**
-     * Feature 9: persist a manual correction to [pageId]'s transcript. Routes through
+     * persist a manual correction to [pageId]'s transcript. Routes through
      * [saveTranscriptOp] (the same [com.nibhaus.data.PageDao.setTranscriptIndexed] funnel OCR
      * uses), so the edit is both stored AND re-indexed for full-text search. A blank edit clears the
      * transcript — the funnel handles that as an ordinary (empty) write, not an error.
@@ -702,7 +710,7 @@ class InkViewModel(
     fun pageStrokes(pageId: String): Flow<List<StrokeEntity>> = repo.strokes(pageId)
 
     /**
-     * Library grid batching (perf audit P1-1): each visible NotebookThumb/PageThumb used to open its
+     * Library grid batching: each visible NotebookThumb/PageThumb used to open its
      * own `notebookPageCount`/`notebookHasAudio`/`pageHasAudio` Flow — Room invalidates per TABLE, so
      * any stroke write re-ran those queries for every card on screen, and `notebookPageCount` loaded
      * a notebook's whole page list just to read its `.size`. These three are app-scoped, shared, and
@@ -717,7 +725,7 @@ class InkViewModel(
         repo.notebookPageCounts().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
 
     /** Total pages ever captured, across every notebook — the "N pages captured" gate the tip cards
-     *  (Feature 5) and the empty Activity feed (Feature 4) use. Derived from [notebookPageCounts]
+     * and the empty Activity feed use. Derived from [notebookPageCounts]
      *  rather than a second query, per the perf-audit batching discipline above. */
     val totalPageCount: StateFlow<Int> =
         notebookPageCounts.map { it.values.sum() }
@@ -732,11 +740,11 @@ class InkViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
 
     /**
-     * Feature 1 (Pens home "Recent" section): one row per notebook (newest-edited first), each up to
+     * (Pens home "Recent" section): one row per notebook (newest-edited first), each up to
      * 3 of its most recently edited pages, newest→oldest. ONE combined flow — [repo.allPages] (already
      * newest-inked-first) and the batched cross-notebook non-blank-id set — grouped once here via the
      * pure [groupRecentByNotebook], so PensHome collects a single StateFlow instead of opening a
-     * subscription per notebook row (perf audit P1-1 discipline, same as [notebookPageCounts] et al).
+     * subscription per notebook row, following the same batching used by [notebookPageCounts].
      */
     val recentByNotebook: StateFlow<List<Pair<String, List<PageEntity>>>> =
         combine(repo.allPages(), repo.allNonBlankPageIds().map { it.toSet() }) { pages, nonBlank ->
@@ -744,12 +752,12 @@ class InkViewModel(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /** Whether any page, anywhere, has a transcript yet — the "transcribe to search" tip card
-     *  (Feature 5) hides itself once the user has already discovered transcription on their own. */
+     * hides itself once the user has already discovered transcription on their own. */
     val everTranscribed: StateFlow<Boolean> =
         repo.allPages().map { pages -> pages.any { !it.transcript.isNullOrBlank() } }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    /** "Did you know" tip cards (Feature 5) — dismissed independently and forever. See
+    /** "Did you know" tip cards — dismissed independently and forever. See
      *  [com.nibhaus.export.replayTipEligible] / [com.nibhaus.export.printedButtonTipEligible] /
      *  [com.nibhaus.export.transcribeTipEligible] for the eligibility rule each one uses. */
     val tipReplayDismissed: StateFlow<Boolean> =
@@ -789,7 +797,7 @@ class InkViewModel(
     fun removeTag(pageId: String, tag: String) = viewModelScope.launch { repo.removeTag(pageId, tag) }
 
     /** Library tag filter: when a tag is selected, the Library shows that tag's pages flat. Picking
-     *  a tag drops out of the Favorites view (Feature 15) — the two flat-page filters are exclusive. */
+     *  a tag drops out of the Favorites view — the two flat-page filters are exclusive. */
     private val selectedTag = MutableStateFlow<String?>(null)
     val selectedTagState: StateFlow<String?> = selectedTag
     fun selectTag(tag: String?) {
@@ -801,7 +809,7 @@ class InkViewModel(
             .flatMapLatest { t -> if (t == null) flowOf(emptyList()) else repo.pagesWithTag(t) }
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    // --- Feature 15: bookmarked pages / Favorites ---
+    // --- bookmarked pages / Favorites ---
 
     /** Ids of pages the user has starred — persisted in DataStore, not a Room column (no migration). */
     val bookmarkedPageIds: StateFlow<Set<String>> =
@@ -886,10 +894,6 @@ class InkViewModel(
     val transcriptionQuality: StateFlow<TranscriptionQuality> =
         settings.transcriptionQuality.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TranscriptionQuality.AUTO)
     fun setTranscriptionQuality(q: TranscriptionQuality) = viewModelScope.launch { settings.setTranscriptionQuality(q) }
-
-    val vlmAllowMetered: StateFlow<Boolean> =
-        settings.vlmAllowMetered.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-    fun setVlmAllowMetered(on: Boolean) = viewModelScope.launch { settings.setVlmAllowMetered(on) }
 
     val vlmForceOnDevice: StateFlow<Boolean> =
         settings.vlmForceOnDevice.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
@@ -1036,7 +1040,7 @@ class InkViewModel(
     private suspend fun runEagerTranscribe(pageIds: List<String>) {
         val run = transcribeOnDevice ?: return
         if (pageIds.isEmpty()) return
-        // Privacy gate (final-review CRITICAL fix, 2026-07-05): the eager pass must never trigger the
+        // Privacy gate: the eager pass must never trigger the
         // ML Kit model download without the SAME first-use acknowledgement the manual "Transcribe on
         // device" flow requires, and never while the on-device OCR switch is off. Read fresh on every
         // call (backlog pass AND settle watcher both funnel through here) so acknowledging later via
@@ -1156,13 +1160,39 @@ class InkViewModel(
     /**
      * Routes an accurate ("Improve transcription") request through the SAME on-device-OCR (ML Kit
      * download) consent gate the instant tier uses, before ever calling [startTranscribe] with
-     * accurate=true (final-review CRITICAL fix, 2026-07-05): [RoutedInk]'s accurate chain falls back
+     * accurate=true: [RoutedInk]'s accurate chain falls back
      * to the instant ML Kit engine whenever no accurate engine is configured or all of them fail, so
      * the accurate tier must never bypass this disclosure just because the (separate) accuracy
      * disclaimer was already shown. Read fresh, same as [transcribeCurrentPageOnDevice], so
      * acknowledging via either flow unblocks the other with no app restart needed.
      */
-    private suspend fun startAccurateTranscribe(pageId: String) = startTranscribeGated(pageId, accurate = true)
+    private val _showVlmDownloadDisclosure = MutableStateFlow(false)
+    val showVlmDownloadDisclosure: StateFlow<Boolean> = _showVlmDownloadDisclosure
+    private var pendingVlmPageId: String? = null
+
+    private suspend fun startAccurateTranscribe(pageId: String) {
+        if (vlmDownloadDisclosure != null && vlmModelState.value !is VlmDownloadState.Ready) {
+            pendingVlmPageId = pageId
+            _showVlmDownloadDisclosure.value = true
+            return
+        }
+        startTranscribeGated(pageId, accurate = true)
+    }
+
+    fun confirmVlmDownload(choice: DownloadConsentChoice) {
+        val pageId = pendingVlmPageId ?: return
+        _showVlmDownloadDisclosure.value = false
+        pendingVlmPageId = null
+        viewModelScope.launch {
+            val downloaded = downloadVlmModel?.invoke(DownloadConsent(choice, disclosedMetadataShown = true)) == true
+            if (downloaded) startTranscribeGated(pageId, accurate = true)
+        }
+    }
+
+    fun dismissVlmDownloadDisclosure() {
+        _showVlmDownloadDisclosure.value = false
+        pendingVlmPageId = null
+    }
 
     /**
      * Consent-gated transcribe start (wave 4 hardening): the single place every interactive fire
@@ -1551,19 +1581,19 @@ class InkViewModel(
         ): List<String> =
             pages.filter { it.transcript.isNullOrBlank() && it.id !in inFlight }.map { it.id }
 
-        /** Pure trim applied to a manually edited transcript before it's persisted (Feature 9). A
+        /** Pure trim applied to a manually edited transcript before it's persisted. A
          *  fully-blank edit normalizes to "" — [saveTranscriptOp]'s funnel treats that as clearing
          *  the transcript, not an error. Extracted so it's unit-testable without a ViewModel. */
         fun normalizeTranscriptEdit(text: String): String = text.trim()
 
-        /** Pure filter for the Favorites list (Feature 15): [pages] narrowed to [bookmarked] ids,
+        /** Pure filter for the Favorites list: [pages] narrowed to [bookmarked] ids,
          *  most-recently-inked first. Extracted as a pure function so it's unit-testable without a
          *  ViewModel or database. */
         fun favoritePages(pages: List<PageEntity>, bookmarked: Set<String>): List<PageEntity> =
             pages.filter { it.id in bookmarked }.sortedByDescending { it.lastInkAt }
 
         /**
-         * Feature 1 (Pens home "Recent" section): group [pages] — already newest-inked-first, the
+         * (Pens home "Recent" section): group [pages] — already newest-inked-first, the
          * order [repo.allPages]/[com.nibhaus.data.PageDao.observeAll] returns — into one row per
          * notebook, up to [perNotebook] pages each, newest→oldest. Blank pages (no strokes) are
          * dropped via [nonBlankIds] first, mirroring the Library "hide blank pages" predicate
@@ -1571,7 +1601,7 @@ class InkViewModel(
          * each notebook's own most recently edited page, newest notebook first — free from a
          * [LinkedHashMap] preserving first-seen order while walking the newest-first input. Extracted
          * as a pure function so it's unit-testable without a ViewModel or database (and PensHome never
-         * opens a per-row DB subscription to compute it — perf audit P1-1 discipline).
+         * opens a per-row DB subscription to compute it).
          */
         fun groupRecentByNotebook(
             pages: List<PageEntity>,

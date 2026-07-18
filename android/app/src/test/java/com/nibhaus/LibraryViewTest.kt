@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import com.nibhaus.export.LibraryView
 import org.junit.Test
 
-/** Feature 14: Library gallery/list view preference — key round-trip + default fallback. */
+/** Library gallery/list view preference — key round-trip + default fallback. */
 class LibraryViewTest {
 
     @Test fun `view key round-trips, unknown falls back to default`() {

@@ -28,12 +28,12 @@ enum class SyncTargetState {
 /**
  * Classify [method] + its required field into a [SyncTargetState]. Framework-free/pure.
  *
- * [entitled] gates [SyncMethod.TAILSCALE_PUSH] (final-review fix, 2026-07-05): native sync is a
+ * [entitled] gates [SyncMethod.TAILSCALE_PUSH]: native sync is a
  * premium surface, and an endpoint persisted from before a relock (or from an app version that
  * predates this entitlement check) must never classify as CONFIGURED. That would show the home
  * card's ordinary pending-copy while [com.nibhaus.di.ServiceLocator.currentStorageProvider] actually
  * resolves no provider and the outbox silently never drains. A missing entitlement takes priority
- * over a missing endpoint (final-review MINOR fix, 2026-07-05): the reason the outbox isn't draining
+ * over a missing endpoint: the reason the outbox isn't draining
  * is the entitlement, not a blank field the user may well have already filled in.
  */
 fun syncTargetState(method: SyncMethod, folderUri: String, endpoint: String, entitled: Boolean): SyncTargetState = when (method) {

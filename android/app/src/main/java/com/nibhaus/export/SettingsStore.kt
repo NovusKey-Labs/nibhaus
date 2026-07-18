@@ -19,11 +19,11 @@ private val Context.settingsDataStore by preferencesDataStore(name = "settings")
  *  field, so no escaping is needed for the simple join/split roundtrip. */
 private const val RECENT_SEARCH_DELIMITER = ""
 
-/** Search hints (Feature 25): how many recent searches to keep as tappable chips. */
+/** Search hints: how many recent searches to keep as tappable chips. */
 private const val RECENT_SEARCHES_CAP = 5
 
 /**
- * Tip-card eligibility rules for the one-time "Did you know" cards (Feature 5): pure predicates so
+ * Tip-card eligibility rules for the one-time "Did you know" cards: pure predicates so
  * they're directly unit-testable without Compose/DataStore. Each card earns its place only once the
  * feature it points at is actually relevant — showing it any earlier would be noise.
  */
@@ -49,7 +49,7 @@ fun updatedRecentSearches(current: List<String>, query: String, cap: Int = 10): 
 }
 
 /**
- * Pure add/remove step for the bookmarked-pages set (Feature 15): add [id] when [on] is true, else
+ * Pure add/remove step for the bookmarked-pages set: add [id] when [on] is true, else
  * remove it. Idempotent — adding an already-present id or removing an absent one leaves the set
  * unchanged. Kept top-level (not buried in a coroutine) so it's directly unit-testable.
  */
@@ -97,7 +97,7 @@ enum class LibraryView(val key: String, val label: String) {
     }
 }
 
-/** Feature 18: a small fixed accent-color palette for tinting one notebook's library card/row —
+/** a small fixed accent-color palette for tinting one notebook's library card/row —
  *  a subtle personalization, not a data field. NONE = no tint (default, unset). */
 enum class NotebookAccent(val key: String, val argb: Long) {
     NONE("none", 0x00000000),
@@ -158,7 +158,7 @@ enum class StrokeScale(val key: String, val label: String, val multiplier: Float
 }
 
 /**
- * Runtime settings persisted with Jetpack DataStore (Preferences) per the brief — NOT
+ * Runtime settings persisted with Jetpack DataStore (Preferences), not
  * SharedPreferences. Changing a value takes effect on the next export (the worker reads it fresh),
  * no rebuild/restart. Only the keys Phase 3 needs live here; Phase 4 adds the OCR-trigger keys.
  */
@@ -183,7 +183,6 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
     private val byoOcrEndpointKey = stringPreferencesKey("ocr.byo_endpoint")
     private val byoOcrTokenKey = stringPreferencesKey("ocr.byo_token")
     private val vlmDisabledOnThisDeviceKey = booleanPreferencesKey("vlm.disabled_on_device")
-    private val vlmAllowMeteredKey   = booleanPreferencesKey("vlm.allow_metered")
     private val vlmForceOnDeviceKey  = booleanPreferencesKey("vlm.force_on_device")
     private val ocrDisclaimerShownKey = booleanPreferencesKey("ocr.disclaimer_shown")
     private val transcriptionQualityKey = stringPreferencesKey("ocr.transcription_quality")
@@ -234,7 +233,7 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
         store.data.map { it[hideBlankPagesKey] ?: false }
     suspend fun setHideBlankPages(on: Boolean) = edit { it[hideBlankPagesKey] = on }
 
-    /** Feature 15: page ids the user has starred, surfaced in the Favorites list. A DataStore string
+    /** page ids the user has starred, surfaced in the Favorites list. A DataStore string
      *  set — deliberately NOT a Room column, so bookmarking needs no schema/migration. */
     val bookmarkedPageIds: Flow<Set<String>> =
         store.data.map { it[bookmarkedPageIdsKey] ?: emptySet() }
@@ -266,7 +265,7 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
         store.data.map { it[bleRationaleShownKey] ?: false }
     suspend fun setBleRationaleShown() = edit { it[bleRationaleShownKey] = true }
 
-    /** "Did you know" tip cards (Feature 5): each dismissed independently and forever — see
+    /** "Did you know" tip cards: each dismissed independently and forever — see
      *  [replayTipEligible] / [printedButtonTipEligible] / [transcribeTipEligible] for when they show. */
     val tipReplayDismissed: Flow<Boolean> = store.data.map { it[tipReplayDismissedKey] ?: false }
     suspend fun dismissReplayTip() = edit { it[tipReplayDismissedKey] = true }
@@ -382,17 +381,12 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
     suspend fun setByoOcrToken(token: String) = edit { it[byoOcrTokenKey] = token }
 
     /** True once a first-run latency probe determined this device is too slow for on-device VLM.
-     *  Set by [markVlmTooSlow] (wired from VlmInk.onTooSlow); cleared only by user override (Task 9.5). */
+     *  Set by [markVlmTooSlow] (wired from VlmInk.onTooSlow); cleared only by user override. */
     val vlmDisabledOnThisDevice: Flow<Boolean> =
         store.data.map { it[vlmDisabledOnThisDeviceKey] ?: false }
 
     suspend fun setVlmDisabledOnThisDevice(disabled: Boolean) =
         edit { it[vlmDisabledOnThisDeviceKey] = disabled }
-
-    /** Allow model weight downloads over metered (mobile data) connections. Default off. */
-    val vlmAllowMetered: Flow<Boolean> =
-        store.data.map { it[vlmAllowMeteredKey] ?: false }
-    suspend fun setVlmAllowMetered(on: Boolean) = edit { it[vlmAllowMeteredKey] = on }
 
     /** User override: force-enable on-device VLM even if the RAM capability probe failed. Default off. */
     val vlmForceOnDevice: Flow<Boolean> =
@@ -442,7 +436,7 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
         return NotebookType.resolve(assignedId, book)
     }
 
-    // Feature 18: per-notebook accent color, keyed by the notebook's own uuid (its filing key) — each
+    // per-notebook accent color, keyed by the notebook's own uuid (its filing key) — each
     // physical copy gets its own tint, distinct from NotebookProfileStore's per-book-model geometry.
     private fun notebookAccentKey(notebookId: String) = stringPreferencesKey("notebook.accent.$notebookId")
 
@@ -500,7 +494,7 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
         it.remove(translateEndpointKey); it.remove(translateModelKey)
         it.remove(byoOcrEndpointKey); it.remove(byoOcrTokenKey)
         it.remove(vlmDisabledOnThisDeviceKey)
-        it.remove(vlmAllowMeteredKey); it.remove(vlmForceOnDeviceKey)
+        it.remove(vlmForceOnDeviceKey)
         it.remove(ocrDisclaimerShownKey); it.remove(transcriptionQualityKey)
     }
     suspend fun resetAppearance() = edit {

@@ -84,7 +84,7 @@ internal fun PenStatusCard(
 ) {
     val cs = MaterialTheme.colorScheme
     val battery by vm.battery.collectAsStateWithLifecycle()
-    // Feature 20a/21: the pen's false→true connect edge drives three things off the same detection —
+    // The pen's false→true connect edge drives three things off the same detection —
     // a confirm tick, a brief NibBadge glow-in, and a transient "Welcome back" status line.
     val haptics = rememberHaptics()
     val isConnected = pen is PenConnState.Connected
@@ -99,7 +99,7 @@ internal fun PenStatusCard(
         }
         wasConnected = isConnected
     }
-    // Feature 21: the badge's live glow eases in over ~600ms on the connect moment; NibBadge's own
+    // the badge's live glow eases in over ~600ms on the connect moment; NibBadge's own
     // always-on pulse takes over once this settles at full alpha.
     val connectGlow by animateFloatAsState(
         targetValue = if (isConnected) 1f else 0f,
@@ -123,7 +123,7 @@ internal fun PenStatusCard(
         Column {
             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(contentAlignment = Alignment.Center) {
-                    // Feature 21: a soft radial glow behind the badge, fading in on connect.
+                    // a soft radial glow behind the badge, fading in on connect.
                     if (connectGlow > 0f) {
                         Box(
                             Modifier.size(52.dp)
@@ -140,7 +140,7 @@ internal fun PenStatusCard(
                 Column(Modifier.weight(1f)) {
                     Text(l.name, style = MaterialTheme.typography.titleMedium)
                     if (l.live && justConnected) {
-                        // Feature 21: a warm greeting stands in for the chip for ~3s, then settles.
+                        // a warm greeting stands in for the chip for ~3s, then settles.
                         Text("Welcome back, ${l.name}", style = monoData, color = cs.primary)
                     } else if (l.live) {
                         StatusChip(l.tag, Modifier.padding(top = 2.dp, bottom = 2.dp))
@@ -170,7 +170,7 @@ internal fun PenStatusCard(
                         }
                     }) { Text("Official page ↗") }
                 } else if (pen is PenConnState.Disconnected) {
-                    // Feature 24: subtle "buy a pen" nudge — only in the no-pen empty state.
+                    // subtle "buy a pen" nudge — only in the no-pen empty state.
                     TextButton(onClick = {
                         runCatching {
                             context.startActivity(
@@ -231,7 +231,7 @@ internal fun SyncStatusCard(vm: InkViewModel, onOpenActivity: () -> Unit, onOpen
     val targetState by vm.syncTargetState.collectAsStateWithLifecycle()
     val cs = MaterialTheme.colorScheme
     val backed = pending == 0
-    // Feature 22: the displayed count ticks up on first composition; the branching above stays on
+    // the displayed count ticks up on first composition; the branching above stays on
     // the real (unanimated) `pending` value so state transitions aren't delayed by the animation.
     val animatedPending = com.nibhaus.ui.common.rememberCountUp(pending)
 
@@ -413,7 +413,7 @@ internal fun ActivityScreen(vm: InkViewModel) {
         item { BrandWordmark(Modifier.padding(top = 14.dp, bottom = 2.dp).riseIn(0)) }
         item { Box(Modifier.riseIn(1)) { InkAppBar(title = "Activity") } }
         if (!everCaptured) {
-            // Feature 4: nothing has ever synced because nothing's ever been written — the sync
+            // nothing has ever synced because nothing's ever been written — the sync
             // status card below would otherwise misleadingly read "all strokes saved" for zero strokes.
             item { EmptyState(Icons.Outlined.Draw, "Write a page and it lands here.", Modifier.riseIn(2)) }
         } else {
@@ -424,7 +424,7 @@ internal fun ActivityScreen(vm: InkViewModel) {
                 )
             }
             item {
-                // Feature 22: the pending count ticks up on first composition; branching above stays
+                // the pending count ticks up on first composition; branching above stays
                 // on the real (unanimated) `pending` value so it isn't delayed by the animation.
                 val animatedPending = com.nibhaus.ui.common.rememberCountUp(pending)
                 Box(Modifier.fillMaxWidth().riseIn(3).steelCard(radius = 18.dp)) {
