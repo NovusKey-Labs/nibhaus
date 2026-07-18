@@ -9,6 +9,9 @@ import com.nibhaus.data.Point
 import com.nibhaus.data.StrokeDao
 import com.nibhaus.data.StrokeEntity
 import com.nibhaus.data.SyncState
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Phase 3 export core. Drains the durable outbox (strokes captured but not yet exported) by writing
@@ -46,6 +49,8 @@ class ExportEngine(
     /** A page's tags, for the Markdown frontmatter. Default empty so the engine stays framework-free. */
     private val tagsFor: suspend (String) -> List<String> = { emptyList() },
 ) {
+    private val pageExportLocks = ConcurrentHashMap<String, Mutex>()
+
     /** @return true if everything pending was exported (or already up to date); false → retry. */
     suspend fun exportPending(provider: StorageProvider): Boolean {
         val pending = outboxDao.peek(Int.MAX_VALUE)
@@ -57,7 +62,7 @@ class ExportEngine(
         var allOk = true
         for ((pageId, pendingStrokes) in pendingByPage) {
             val uuids = pendingStrokes.map { it.uuid }
-            val ok = runCatching { exportPage(pageId, provider) }.isSuccess
+            val ok = runCatching { exportPageLocked(pageId, provider) }.isSuccess
             if (ok) {
                 strokeDao.markSync(uuids, SyncState.SYNCED)
                 outboxDao.remove(uuids)
@@ -78,7 +83,7 @@ class ExportEngine(
      *   and the strokes stay queued for the automatic retry.
      */
     suspend fun exportSingle(pageId: String, provider: StorageProvider): Boolean {
-        val ok = runCatching { exportPage(pageId, provider) }.isSuccess
+        val ok = runCatching { exportPageLocked(pageId, provider) }.isSuccess
         if (ok) {
             val uuids = strokeDao.strokesForPage(pageId).map { it.uuid }
             if (uuids.isNotEmpty()) {
@@ -87,6 +92,12 @@ class ExportEngine(
             }
         }
         return ok
+    }
+
+    private suspend fun exportPageLocked(pageId: String, provider: StorageProvider) {
+        pageExportLocks.computeIfAbsent(pageId) { Mutex() }.withLock {
+            exportPage(pageId, provider)
+        }
     }
 
     private suspend fun exportPage(pageId: String, provider: StorageProvider) {
