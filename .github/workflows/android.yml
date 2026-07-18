@@ -45,7 +45,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
       - name: Unit tests (no device, no hardware)
         run: ./gradlew :app:testDebugUnitTest :pencore:testDebugUnitTest :penble:testDebugUnitTest :premiumapi:testDebugUnitTest --stacktrace
@@ -119,7 +119,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
       - name: detekt
         run: ./gradlew detekt -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
@@ -173,7 +173,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
 
       - name: Instrumented tests on emulator
         # Report-only: emulator runs are flaky on CI and the pen link needs real hardware anyway.
