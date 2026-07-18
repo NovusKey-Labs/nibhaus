@@ -45,6 +45,12 @@ import com.nibhaus.security.AppLock
 import com.nibhaus.ui.theme.LocalPaperTemplate
 import com.nibhaus.widget.WIDGET_PAGE_ID_EXTRA
 import kotlinx.coroutines.launch
+import java.util.UUID
+
+internal fun validatedWidgetPageId(raw: String?): String? {
+    if (raw == null || raw.length != 36) return null
+    return raw.takeIf { runCatching { UUID.fromString(it).toString() }.getOrNull() == it }
+}
 
 // FragmentActivity (not bare ComponentActivity) so the AndroidX BiometricPrompt can attach — see AppLock.
 class MainActivity : FragmentActivity() {
@@ -203,7 +209,8 @@ class MainActivity : FragmentActivity() {
      *  its notebook, via [InkViewModel.openSearchHit]) off the main thread through the existing
      *  repository — no navigation code duplicated here, just the intent → id → page lookup. */
     private fun handleWidgetDeepLink(intent: Intent) {
-        val pageId = intent.getStringExtra(WIDGET_PAGE_ID_EXTRA) ?: return
+        val rawPageId = runCatching { intent.getStringExtra(WIDGET_PAGE_ID_EXTRA) }.getOrNull()
+        val pageId = validatedWidgetPageId(rawPageId) ?: return
         lifecycleScope.launch {
             ServiceLocator.from(applicationContext).repository.pageById(pageId)?.let { viewModel.openSearchHit(it) }
         }
