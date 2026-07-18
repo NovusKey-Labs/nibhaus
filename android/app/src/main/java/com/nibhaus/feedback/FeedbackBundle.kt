@@ -62,7 +62,7 @@ fun formatBundleText(bundle: FeedbackBundle): String = buildString {
     }
 }
 
-/** The exact subject line for the ACTION_SEND intent — "Nibhaus feedback (vX.Y)" per the brief. */
+/** The exact subject line for the ACTION_SEND intent: "Nibhaus feedback (vX.Y)". */
 fun feedbackEmailSubject(bundle: FeedbackBundle): String = "Nibhaus feedback (v${bundle.appVersionName})"
 
 /**

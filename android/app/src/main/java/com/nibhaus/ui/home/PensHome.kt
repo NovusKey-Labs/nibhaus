@@ -88,7 +88,7 @@ internal fun PensHome(
     onFindMyPen: () -> Unit,
     onOpenSyncSettings: () -> Unit,
 ) {
-    // Feature 1: pages grouped into one row per notebook (newest-edited first), plus the notebook
+    // pages grouped into one row per notebook (newest-edited first), plus the notebook
     // entities themselves (for each row's title) — both batched/shared, not per-row (perf audit
     // P1-1); see InkViewModel.recentByNotebook / groupRecentByNotebook.
     val recentRowsRaw by vm.recentByNotebook.collectAsStateWithLifecycle()
@@ -105,7 +105,7 @@ internal fun PensHome(
     }
     val notebooksById = remember(notebooks) { notebooks.associateBy { it.id } }
     val pagesWithAudio by vm.pagesWithAudio.collectAsStateWithLifecycle()
-    // Feature 2: saved-pen reconnect tiles. A pen with 2+ paired devices gets 2+ tiles (one per saved
+    // saved-pen reconnect tiles. A pen with 2+ paired devices gets 2+ tiles (one per saved
     // pen, most-recently-connected first — the order upsertSavedPen already maintains); the
     // CURRENTLY connected pen's own tile is suppressed (it would be a redundant reconnect affordance
     // for the one pen PenStatusCard already shows as connected), but every OTHER saved pen still shows
@@ -119,7 +119,7 @@ internal fun PensHome(
     val connectedSpp = (pen as? PenConnState.Connected)?.mac
     val visibleSavedPens = remember(savedPens, connectedSpp) { savedPens.filter { it.spp != connectedSpp } }
     val showSavedPens = visibleSavedPens.isNotEmpty()
-    // Feature 2 refinement: a background presence scan lights up each saved tile's "READY" dot when
+    // a background presence scan lights up each saved tile's "READY" dot when
     // its pen is actually advertising nearby. Only while THIS screen is visible (this composable is
     // torn down — and the DisposableEffect below disposes — on tab switch / any overlay, per the
     // AnimatedContent structure around PensHome's call site) AND the pen is fully Disconnected (not
@@ -137,7 +137,7 @@ internal fun PensHome(
         if (presenceScanActive) vm.startPresenceScan()
         onDispose { vm.stopPresenceScan() }
     }
-    // Feature 23: pull-to-refresh. The Room flows behind this screen are already live, so the
+    // pull-to-refresh. The Room flows behind this screen are already live, so the
     // gesture itself is mostly reassurance — a brief spinner acknowledging the pull, styled with the
     // app's own ink-primary color rather than the Material default.
     val cs = MaterialTheme.colorScheme
@@ -192,7 +192,7 @@ internal fun PensHome(
         val afterSaved = if (showSavedPens) 3 + visibleSavedPens.size else 3
         item { Box(Modifier.riseIn(afterSaved)) { SyncStatusCard(vm, onOpenActivity, onOpenSyncSettings) } }
         item {
-            // Feature 5 tip card: nudge toward the printed Share/Email buttons once there's enough
+            // Nudge toward the printed Share/Email buttons once there's enough
             // captured to plausibly have a page worth sharing, and only if never discovered on their own.
             val totalPages by vm.totalPageCount.collectAsStateWithLifecycle()
             val everZoneTapped by vm.everZoneTapped.collectAsStateWithLifecycle()
@@ -298,7 +298,7 @@ internal fun PensHome(
 }
 
 /**
- * Feature 1 (Pens home "Recent" section): one row per notebook — a tappable title header (opens the
+ * (Pens home "Recent" section): one row per notebook — a tappable title header (opens the
  * notebook) plus up to 3 of its most recently edited pages, newest→oldest left-to-right. Reuses
  * [ThumbRow]/[PageThumb] — no new visual primitive.
  */
@@ -326,12 +326,12 @@ private fun RecentNotebookRow(
 }
 
 /**
- * Feature 2: a saved pen's reconnect tile — pen name + "TAP TO RECONNECT", matching [PenStatusCard]'s
+ * a saved pen's reconnect tile — pen name + "TAP TO RECONNECT", matching [PenStatusCard]'s
  * idiom (steelCard, monoData tag). Tap re-scans and connects ([InkViewModel.connectSaved]); shows a
  * transient "SEARCHING…" tag while that scan runs, and a "not found" line if it times out. Long-press
  * → confirm dialog to forget the pen.
  *
- * Feature 2 refinement: when [ready] (the pen was actually sighted by the presence scan within its
+ * when [ready] (the pen was actually sighted by the presence scan within its
  * hold window — see [InkViewModel.readyPens]), the tile switches to the same live idiom
  * [PenStatusCard] uses for an actually-connected pen — a pulsing [NibBadge] dot plus a [StatusChip] —
  * instead of the dimmer static "TAP TO RECONNECT" text, so the user can tell at a glance which saved
@@ -350,7 +350,7 @@ private fun SavedPenTile(
     val notFound = connectState is com.nibhaus.pen.SavedPenConnectState.NotFound && connectState.spp == pen.spp
     val name = pen.name.ifBlank { "Smartpen" }
     var confirmForget by remember { mutableStateOf(false) }
-    // Feature 20a: a light tick the moment this tile actually flips to READY (presence-scan sighted
+    // a light tick the moment this tile actually flips to READY (presence-scan sighted
     // it), not on every recomposition while it stays ready.
     val haptics = rememberHaptics()
     var wasReady by remember { mutableStateOf(ready) }

@@ -112,7 +112,7 @@ class FakePageDao : PageDao {
      *  [observeNonBlankPageIds] above): returns every page id rather than only the ones with ink. */
     override fun observeAllNonBlankPageIds(): Flow<List<String>> = MutableStateFlow(byId.keys.toList())
 
-    /** Mirrors the real `GROUP BY notebookId` @Query (Feature 19 / P1-1 library-grid batching). */
+    /** Mirrors the real batched `GROUP BY notebookId` query used by the library grid. */
     override fun observePageCounts(): Flow<Map<String, Int>> =
         MutableStateFlow(byId.values.groupingBy { it.notebookId }.eachCount())
 }

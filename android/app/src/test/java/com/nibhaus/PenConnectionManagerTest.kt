@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
-/** Tests for the reconnect state machine (brief FIX #2/#4). */
+/** Tests for the reconnect state machine. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class PenConnectionManagerTest {
 

@@ -11,7 +11,7 @@ import com.nibhaus.ui.rememberReducedMotion
 import kotlin.math.roundToInt
 
 /**
- * Feature 22: an integer stat (page / stroke / notebook / pending counts) that counts up from 0 on
+ * an integer stat (page / stroke / notebook / pending counts) that counts up from 0 on
  * first composition — and re-counts smoothly if [target] changes later — instead of snapping
  * straight to a static number. Fast (~400ms), design-system [NibEasing]; reduced-motion users get
  * the plain value with no animation.

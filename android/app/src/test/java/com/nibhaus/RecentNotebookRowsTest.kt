@@ -6,7 +6,7 @@ import com.nibhaus.ui.InkViewModel
 import org.junit.Test
 
 /**
- * Feature 1 (Pens home "Recent" section): [InkViewModel.groupRecentByNotebook] groups the global
+ * (Pens home "Recent" section): [InkViewModel.groupRecentByNotebook] groups the global
  * newest-first page list into one row per notebook (newest-edited notebook first, newest page
  * left-to-right, capped at 3, blank pages excluded). Pure, so exercised directly without constructing
  * an [InkViewModel] (see [EagerTranscribeTest] for why VM construction is deliberately avoided in

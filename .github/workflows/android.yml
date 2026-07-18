@@ -122,7 +122,10 @@ jobs:
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4.4.3
 
       - name: detekt
-        run: ./gradlew detekt --continue --stacktrace
+        run: ./gradlew detekt -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
+
+      - name: Android lint
+        run: ./gradlew lintDebug :penble:lintDebug :pencore:lintDebug -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
 
       - name: Upload detekt reports
         if: always()

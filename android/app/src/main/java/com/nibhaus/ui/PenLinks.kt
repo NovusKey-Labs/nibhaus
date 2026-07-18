@@ -8,7 +8,7 @@ package com.nibhaus.ui
  *    don't confuse a normal fountain/ballpoint with the digital pen this app needs.
  *  - The platform "how to use" link follows the running OS: Android now; Apple once the iOS port ships.
  *
- * Wired into the no-pen empty state (Feature 24, PensHome's PenStatusCard).
+ * Wired into the no-pen empty state in PensHome's PenStatusCard.
  *
  * Both URLs point at LAMY's general digital-writing landing page (verified 200): the earlier
  * per-platform `/android/` and `/apple/` paths 404 on lamy.com.

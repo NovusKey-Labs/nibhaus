@@ -6,7 +6,7 @@ import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
 /**
- * Final-review fix (2026-07-05): a null/unresolvable storage provider (no folder chosen yet, or a
+ * a null/unresolvable storage provider (no folder chosen yet, or a
  * Tailscale endpoint that entitlement now blocks) must never report success, since that leaves the
  * outbox silently queued while WorkManager thinks the drain is done. [exportWorkResult] is the pure
  * decision [ExportWorker.doWork] delegates to, so this is testable without constructing a real

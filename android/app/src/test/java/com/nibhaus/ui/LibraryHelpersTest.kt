@@ -7,7 +7,7 @@ import com.nibhaus.ui.library.showPageFilmstrip
 import com.nibhaus.ui.library.visiblePages
 import org.junit.Test
 
-/** Feature 19: notebook metadata line — page count always; physical size only when known. */
+/** notebook metadata line — page count always; physical size only when known. */
 class NotebookMetaLineTest {
 
     @Test fun `page count only when size is unknown`() {
@@ -32,7 +32,7 @@ class NotebookMetaLineTest {
     }
 }
 
-/** Feature 16: collapse/hide blank pages in the open-notebook page navigator. */
+/** collapse/hide blank pages in the open-notebook page navigator. */
 class VisiblePagesTest {
 
     private fun page(id: String, page: Int) =
@@ -77,7 +77,7 @@ class VisiblePagesTest {
     }
 }
 
-/** Feature 17: the page filmstrip only earns its keep once the grid needs real scrolling. */
+/** the page filmstrip only earns its keep once the grid needs real scrolling. */
 class ShowPageFilmstripTest {
 
     @Test fun `few pages - grid already shows them all, no filmstrip`() {

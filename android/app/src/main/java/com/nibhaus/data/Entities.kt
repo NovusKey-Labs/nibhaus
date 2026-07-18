@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
  * One physical notebook = one *instance* of an Ncode `book` model. A book id can be reused (you
  * finish a notebook and buy another of the same model), so the identity is `(book, instanceSeq)`,
  * not `book` alone. Marking a notebook `locked` (finished) makes the next ink on that book id
- * start a new instance instead of overlapping the old pages — the bug the brief calls out.
+ * start a new instance instead of overlapping the old pages.
  */
 @Entity(tableName = "notebooks", indices = [Index(value = ["book", "instanceSeq"], unique = true)])
 data class NotebookEntity(
@@ -46,7 +46,7 @@ enum class SyncState { PENDING, SYNCED }
 
 /**
  * A completed, immutable stroke. Append-only — this is what makes sync
- * conflict-free and the source of truth for rendering (complaint #1 & #2).
+ * conflict-free and the source of truth for rendering.
  */
 @Entity(
     tableName = "strokes",

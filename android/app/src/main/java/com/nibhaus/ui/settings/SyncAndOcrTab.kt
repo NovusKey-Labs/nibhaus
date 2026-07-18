@@ -224,7 +224,7 @@ internal fun LazyListScope.syncAndOcrTab(
 
     // Power-user-only overrides (§18): self-hosted OCR/translation servers and the on-device VLM
     // overrides. Collapsed by default so the common path (on-device tiers, no BYO server) isn't
-    // cluttered by fields most people never touch. Final-review fix (2026-07-05): all three are
+    // cluttered by fields most people never touch. all three are
     // premium surfaces (native/BYO transcription, translation, VLM tuning), and a not-entitled user
     // gets one honest cleared-register line per capability instead of editable fields that promise
     // server-backed behavior the app won't actually run for them.
@@ -243,7 +243,7 @@ internal fun LazyListScope.syncAndOcrTab(
     }
 }
 
-/** Exact cleared-register sentence (final-review fix, 2026-07-05) for a premium capability that
+/** Exact cleared-register sentence for a premium capability that
  *  isn't available to a not-entitled user yet. Pure so every call site uses identical copy. */
 internal fun plannedPremiumFeatureLine(capability: String): String =
     "$capability is a planned Premium feature and is not available yet."

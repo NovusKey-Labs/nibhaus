@@ -22,7 +22,7 @@ import kotlinx.serialization.json.Json
 import java.util.UUID
 
 /**
- * The core of complaint #1 — "the app started missing ~20% of strokes".
+ * The core of the stroke-loss fix: the app was missing ~20% of strokes.
  *
  * Design: persist first, render from the database. Every [PenDot] is processed
  * serially through a [Channel] (preserving order, off the BLE callback thread):

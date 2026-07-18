@@ -137,8 +137,8 @@ class OcrSettingsTest {
         assertThat(capturedPageId).isEqualTo("page-1")
     }
 
-    // ---- On-device OCR (ML Kit download) consent gate on the accurate path (final-review CRITICAL
-    // fix, 2026-07-05): RoutedInk's accurate chain falls back to the instant ML Kit engine whenever no
+    // ---- On-device OCR (ML Kit download) consent gate on the accurate path: RoutedInk's accurate
+    // chain falls back to the instant ML Kit engine whenever no
     // accurate engine is configured or all of them fail, so "Improve transcription" must never reach
     // it without the same first-use disclosure the instant tier requires. ----
 

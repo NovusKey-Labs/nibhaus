@@ -93,7 +93,7 @@ class EagerTranscribeCancelTest {
         }
 
         // The eager pass now gates on the same first-use on-device-OCR acknowledgement the manual
-        // "Transcribe on device" flow requires (final-review CRITICAL fix, 2026-07-05); acknowledge
+        // "Transcribe on device" flow requires; acknowledge
         // it here so this test can keep exercising the cancel-mid-batch behavior it's actually about.
         val s = settings()
         s.acknowledgeOnDeviceOcr()

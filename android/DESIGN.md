@@ -15,9 +15,8 @@ Tailscale); an explicit, opt-in on-device path also exists (see Phase 4).
 > one-time model from Google the first time the user invokes them — never automatically, never in the
 > background.)*
 >
-> *(Brief history: the master brief originally said "no cloud / self-hosted only," so cloud sync
-> code was removed; the brief was then revised to allow user-selected cloud targets via a
-> pluggable provider abstraction. This doc reflects the revised brief.)*
+> Cloud sync uses a pluggable provider abstraction and only targets services explicitly selected
+> by the user.
 
 > **Status: Phase 0 GO/NO-GO cleared (LAMY NWP-F80 = GO, verified on hardware 2026-06-21).**
 > Phases 1–5 are built and unit-tested against fakes; the remaining hardware step is Phase 1's
@@ -81,7 +80,7 @@ void onReceiveOfflineStrokes(Object extra, String penAddress, Stroke[] strokes,
                              int sectionId, int ownerId, int noteId, Symbol[] symbols);
 ```
 
-**Offline data (the core of FIX #1 — pull stored pages from pen memory)**
+**Offline data — pull stored pages from pen memory**
 ```java
 void setAllowOfflineData(boolean allow);
 void reqOfflineDataList();                                   // which (section,owner) have data
@@ -115,7 +114,7 @@ twist;  int sectionId, ownerId, noteId, pageId;  int color;  String macAddress;`
 - Whether `connect(String)` SPP vs the `(spp, le, ...)` overload is required for M1+/LAMY on
   Android 12+ with the modern BLE stack.
 
-## Architecture & stack (per brief)
+## Architecture & stack
 
 **Modules (anti-corruption layer):** `:app` → `:pencore` (the `NeoPenSdk` boundary + `PenDot`/
 `PenConnState`/`FakeNeoPenSdk`). The NeoLAB SDK is quarantined in the gated `:neosdk` module
@@ -234,7 +233,7 @@ From the "Implementation Order: Settings Screen + Sync-Method & OCR-Trigger Drop
 - **Edge cases:** unreachable endpoint → queue+retry (backoff), non-blocking status, local source
   of truth intact; missing contextual config → block only that downstream step, keep capturing;
   switching sync method mid-session must not strand already-exported files.
-- **⚠ Spec gap:** the master brief lists cloud providers and says the full provider spec (auth,
+- **⚠ Spec gap:** cloud providers still need a full specification covering auth,
   least-privilege scopes, secret storage, per-provider setup) is "in the Settings/dropdowns
   implementation order," but the dropdowns doc available only specs the 3 local options + OCR. **Need
   the cloud-provider spec before building cloud targets** — will not invent OAuth scopes/secrets.
@@ -342,7 +341,7 @@ user-selected sync/OCR targets — not a blanket "no cloud."
 ## Open items
 1. ✅ **DONE — LAMY GO/NO-GO = GO** (M1+ + LAMY both verified on an Android 14+ phone, Android 15). See
    the GO/NO-GO section above. Phase 1 is unblocked.
-2. **(Blocks Phase 3 cloud) Cloud-provider spec.** The revised brief lists Drive/Dropbox/OneDrive/
+2. **(Blocks Phase 3 cloud) Cloud-provider spec.** Drive, Dropbox, OneDrive,
    WebDAV/S3 but the auth/scope/secret-storage/per-provider setup isn't in the dropdowns doc
    available. With that, the local providers + the abstraction are built so cloud drops in cleanly.
    (Local-provider default is now **Local folder (SAF)**, not Syncthing-specifically.)

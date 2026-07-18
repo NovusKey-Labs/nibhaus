@@ -24,7 +24,7 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 /**
- * Feature 9 wiring: [InkViewModel.saveTranscript] must (a) normalize the edit ([InkViewModel
+ * [InkViewModel.saveTranscript] must (a) normalize the edit ([InkViewModel
  * .normalizeTranscriptEdit] — see [NormalizeTranscriptEditTest] for its own pure-logic coverage) and
  * (b) invoke the injected `saveTranscriptOp` funnel with the open page's id — mirroring how
  * [OcrSettingsTest] verifies `transcribeOnDevice` wiring, so the DAO/FTS funnel itself

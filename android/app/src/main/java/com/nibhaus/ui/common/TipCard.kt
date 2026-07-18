@@ -21,7 +21,7 @@ import com.nibhaus.ui.Eyebrow
 import com.nibhaus.ui.steelCard
 
 /**
- * One-time "did you know" tip card (Feature 5): a small dismissible steelCard pointing at a feature
+ * One-time "did you know" tip card: a small dismissible steelCard pointing at a feature
  * that just became relevant. Dismiss is permanent (the caller persists it via a SettingsStore flag) —
  * there's no snooze, just gone. Reused for all three tip cards (replay/GIF, printed-button taps,
  * transcribe-to-search) so they share one look.

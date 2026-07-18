@@ -176,7 +176,7 @@ internal fun PageDetail(strokes: List<StrokeEntity>, vm: InkViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(onClick = vm::back) { Text("Back") }
-                // Feature 22: the stroke total counts up on first composition rather than snapping in —
+                // the stroke total counts up on first composition rather than snapping in —
                 // the live selection tally (which changes on every tap) is left un-animated on purpose.
                 val strokeCount = rememberCountUp(strokes.size)
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -242,7 +242,7 @@ internal fun PageDetail(strokes: List<StrokeEntity>, vm: InkViewModel) {
                             tint = if (editing) cs.tertiary else cs.onSurfaceVariant,
                         )
                     }
-                    // Feature 15: star/un-star this page — bookmarked pages surface in Library → Favorites.
+                    // star/un-star this page — bookmarked pages surface in Library → Favorites.
                     pageId?.let { id ->
                         val bookmarked = id in bookmarkedIds
                         IconButton(
@@ -331,7 +331,7 @@ internal fun PageDetail(strokes: List<StrokeEntity>, vm: InkViewModel) {
                     }
                 }
             }
-            // OCR progress (download → inference); the brief completion/error status line for export
+            // OCR progress (download → inference); the completion/error status line for export
             // / transcribe / save-transcript (#7) now surfaces as the app-wide snackbar (see InkApp
             // in Screens.kt, which is the one place that observes vm.exportStatus) instead of here.
             when (val ocr = ocrProgress) {
@@ -396,7 +396,7 @@ internal fun PageDetail(strokes: List<StrokeEntity>, vm: InkViewModel) {
                 }
             }
             pageId?.let { TagRow(it, vm) }
-            // Feature 5 tip card: only once the page is substantial enough that replay/GIF export is
+            // Show the tip only once the page is substantial enough that replay/GIF export is
             // actually worth knowing about, and only in the plain reading view (not mid-edit/listen/text).
             val replayTipDismissed by vm.tipReplayDismissed.collectAsStateWithLifecycle()
             if (!editing && !listening && !textView && replayTipEligible(strokes.size, replayTipDismissed)) {

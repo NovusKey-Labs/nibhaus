@@ -22,7 +22,7 @@ data class ScannedPen(val target: PenTarget, val name: String, val rssi: Int) {
 }
 
 /**
- * Feature 2 (Pens screen saved-pen tiles): tap-to-reconnect state, set only by
+ * (Pens screen saved-pen tiles): tap-to-reconnect state, set only by
  * [com.nibhaus.di.ServiceLocator.connectSaved] — distinct from [PenConnState], which tracks the
  * actual pen link once a target is found and handed to [PenConnectionManager]. Drives a saved-pen
  * tile's transient "searching…" / "not found — is the pen on?" chrome while the reconnect scan runs.

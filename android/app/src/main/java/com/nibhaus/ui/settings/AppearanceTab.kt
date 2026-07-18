@@ -165,7 +165,7 @@ internal fun LazyListScope.appearanceTab(
 
 /** Handwriting size preset (#15b): a stroke-width multiplier for live capture + every in-app page
  *  render (applied at InkSurface's single width source, [com.nibhaus.ui.common.strokeBaseWidthPx]).
- *  A row of three choices, per the design brief, rather than a dropdown — the option set is small
+ *  A row of three choices rather than a dropdown — the option set is small
  *  and fixed, so all three read at a glance. */
 @Composable
 private fun StrokeScaleRow(current: StrokeScale, onPick: (StrokeScale) -> Unit) {
@@ -228,6 +228,7 @@ private fun PaletteRow(
  *  flow every other palette card uses — no separate wiring. */
 @Composable
 @androidx.annotation.RequiresApi(Build.VERSION_CODES.S)
+@Suppress("FunctionNaming") // Compose functions are intentionally named in PascalCase.
 private fun DynamicPaletteCard(active: Boolean, pending: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current

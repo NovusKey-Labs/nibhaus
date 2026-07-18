@@ -8,7 +8,7 @@ import com.nibhaus.pen.NcodeAddress
 import java.util.UUID
 
 /**
- * Fixes complaint #3 ("sort every page into notebooks one by one").
+ * Automatically sorts pages into notebooks instead of requiring manual filing.
  *
  * The Ncode address *is* the filing system: a page's `book` id deterministically
  * selects a notebook, and `(book, page)` selects a page within it. Filing is a

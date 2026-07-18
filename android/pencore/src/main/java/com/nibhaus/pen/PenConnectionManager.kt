@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * Owns the pen connection lifecycle and fixes complaint #4 (fragile pairing /
+ * Owns the pen connection lifecycle and fixes (fragile pairing /
  * no reconnect). Instead of a one-shot connect, this is an explicit state
  * machine with auto-reconnect-with-backoff to the last-known pen.
  *
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
  *
  * Every [PenDot] received while connected is forwarded to [onDot] — which in
  * production is [com.nibhaus.ingest.StrokeIngestor.onDot], persisting it
- * immediately (complaint #1).
+ * immediately.
  *
  * @param backoffSchedule reconnection delays in ms; the last value repeats.
  */
@@ -114,7 +114,7 @@ class PenConnectionManager(
     private val _firmwareVersion = MutableStateFlow<String?>(null)
     val firmwareVersion: StateFlow<String?> = _firmwareVersion.asStateFlow()
 
-    /** Live mirror of [PenPrefs.savedPens] (Feature 2) — refreshed on every successful connect (see
+    /** Live mirror of [PenPrefs.savedPens] — refreshed on every successful connect (see
      *  [onPenMessage]'s Connected branch) and on [forgetPen], so the Pens screen's saved-pen tiles
      *  update reactively instead of polling SharedPreferences. */
     private val _savedPens = MutableStateFlow(prefs.savedPens)
@@ -215,7 +215,7 @@ class PenConnectionManager(
                 // The ONLY place lastPenMac is written — a confirmed success, never an attempt (see
                 // connect()'s doc).
                 prefs.lastPenMac = msg.macAddress
-                // Feature 2 (saved-pen tiles): remember every pen we successfully connect to, most
+                // (saved-pen tiles): remember every pen we successfully connect to, most
                 // recent first, deduped by its stable spp identity — msg.macAddress IS the spp (see
                 // PenTarget.id), never the rotating LE address. upsert-on-Connected is the ONLY source
                 // of a saved-pen tile — there is deliberately no seed/migration from lastPenMac (that
@@ -234,7 +234,7 @@ class PenConnectionManager(
             }
             is PenMessage.ConnectFailed -> {
                 if (msg.reason == PenMessage.FailureReason.BONDED_ELSEWHERE) {
-                    // Surface an actionable state instead of a dead end (complaint #4).
+                    // Surface an actionable state instead of a dead end.
                     _state.value = PenConnState.BondedElsewhere(lastTarget?.id.orEmpty())
                 } else {
                     scheduleReconnect()

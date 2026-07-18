@@ -7,7 +7,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 
 /**
- * Feature 20a: a tiny wrapper around [LocalHapticFeedback] for Nibhaus's handful of confirm/
+ * a tiny wrapper around [LocalHapticFeedback] for Nibhaus's handful of confirm/
  * segment-tick moments — pen connect, the zone-share chooser appearing, a bookmark toggle landing,
  * a saved-pen tile flipping to READY. Deliberately narrow (two calls, both subtle system feedback
  * types) — this is never [HapticFeedbackType.Reject] or another "something went wrong" buzz.

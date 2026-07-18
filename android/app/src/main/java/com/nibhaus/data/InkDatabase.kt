@@ -33,6 +33,7 @@ class Converters {
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
+@Suppress("TooManyFunctions") // Room requires one abstract accessor per DAO owned by the database.
 abstract class InkDatabase : RoomDatabase() {
     abstract fun notebookDao(): NotebookDao
     abstract fun pageDao(): PageDao
@@ -142,7 +143,7 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
     }
 }
 
-val MIGRATION_12_13 = object : Migration(12, 13) {
+val MIGRATION_12_13 = object : Migration(SCHEMA_VERSION_12, SCHEMA_VERSION_13) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS `pending_local_delete_cleanup` (`id` TEXT NOT NULL, " +
@@ -154,3 +155,6 @@ val MIGRATION_12_13 = object : Migration(12, 13) {
         )
     }
 }
+
+private const val SCHEMA_VERSION_12 = 12
+private const val SCHEMA_VERSION_13 = 13

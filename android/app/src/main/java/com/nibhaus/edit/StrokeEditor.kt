@@ -25,10 +25,7 @@ class StrokeEditor(
     private val outboxDao: OutboxDao,
     private val pendingRemoteDeleteDao: PendingRemoteDeleteDao? = null,
     private val transaction: suspend (suspend () -> Unit) -> Unit = { it() },
-    private val artifactDelete: suspend (pageId: String) -> PendingRemoteDelete? = { null },
-    private val now: () -> Long = System::currentTimeMillis,
-    /** Wired with the edited page id to enqueue the export drain and write the at-ingest safety backup. */
-    private val onChanged: (pageId: String) -> Unit = {},
+    private val hooks: StrokeEditorHooks = StrokeEditorHooks(),
 ) : PageEditor {
 
     private sealed interface UndoOp
@@ -47,7 +44,7 @@ class StrokeEditor(
             requeueInTransaction(pageId)
         }
         push(pageId, before.map { ReColor(it.uuid, it.color) })
-        onChanged(pageId)
+        hooks.onChanged(pageId)
     }
 
     override suspend fun setThickness(uuids: List<String>, width: Float, pageId: String) {
@@ -58,24 +55,25 @@ class StrokeEditor(
             requeueInTransaction(pageId)
         }
         push(pageId, before.map { ReWidth(it.uuid, it.width) })
-        onChanged(pageId)
+        hooks.onChanged(pageId)
     }
 
     override suspend fun delete(uuids: List<String>, pageId: String) {
         val before = strokeDao.byUuids(uuids)
         if (before.isEmpty()) return
-        val deleteEntry = artifactDelete(pageId)
+        val deleteEntry = hooks.artifactDelete(pageId)
         transaction {
             before.forEach { strokeDao.delete(it.uuid) }
             outboxDao.remove(before.map { it.uuid })
             requeueInTransaction(pageId, deleteEntry)
         }
         push(pageId, before.map { ReInsert(it) })
-        onChanged(pageId)
+        hooks.onChanged(pageId)
     }
 
     override suspend fun undo(pageId: String) {
         val batch = undoStacks[pageId]?.removeLastOrNull() ?: return
+        var committed = false
         try {
             transaction {
                 batch.forEach { op ->
@@ -87,11 +85,11 @@ class StrokeEditor(
                 }
                 requeueInTransaction(pageId)
             }
-        } catch (t: Throwable) {
-            undoStacks.getOrPut(pageId) { ArrayDeque() }.addLast(batch)
-            throw t
+            committed = true
+        } finally {
+            if (!committed) undoStacks.getOrPut(pageId) { ArrayDeque() }.addLast(batch)
         }
-        onChanged(pageId)
+        hooks.onChanged(pageId)
     }
 
     private fun push(pageId: String, batch: List<UndoOp>) {
@@ -106,7 +104,7 @@ class StrokeEditor(
         val remaining = strokeDao.strokesForPage(pageId)
         if (remaining.isNotEmpty()) {
             strokeDao.markSync(remaining.map { it.uuid }, SyncState.PENDING)
-            remaining.forEach { outboxDao.enqueue(OutboxEntry(it.uuid, now())) }
+            remaining.forEach { outboxDao.enqueue(OutboxEntry(it.uuid, hooks.now())) }
         } else if (deleteEntry != null) {
             checkNotNull(pendingRemoteDeleteDao) { "remote delete DAO required for page artifact deletion" }
                 .enqueue(deleteEntry)
@@ -117,3 +115,10 @@ class StrokeEditor(
         const val MAX_UNDO = 50 // cap the in-memory history per page
     }
 }
+
+data class StrokeEditorHooks(
+    val artifactDelete: suspend (pageId: String) -> PendingRemoteDelete? = { null },
+    val now: () -> Long = System::currentTimeMillis,
+    /** Enqueues the export drain and writes the at-ingest safety backup for the edited page. */
+    val onChanged: (pageId: String) -> Unit = {},
+)

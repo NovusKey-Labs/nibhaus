@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 /**
- * Final-review fix (2026-07-05): the Sync & Text tab's Advanced section (VLM tuning, the BYO
+ * the Sync & Text tab's Advanced section (VLM tuning, the BYO
  * transcription server, and the translation server) must not offer editable, server-promising
  * fields to a not-entitled (freemium) user, since those are planned Premium features, not working
  * config. [plannedPremiumFeatureLine] is the exact copy each gated field is replaced with; pure and

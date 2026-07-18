@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 /**
- * Phase 1 — fixes the brief's #2 (background BLE reconnect). The OS (and OneUI especially) will
+ * The OS (and OneUI especially) will
  * sleep a backgrounded app and drop the pen; a foreground service keeps the connection alive.
  *
  * This service OWNS the connection lifecycle but delegates the actual connect + auto-reconnect to

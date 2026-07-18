@@ -27,14 +27,14 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 /**
- * Perf audit P1-1: the library grid used to open one Flow subscription per visible card
+ * the library grid used to open one Flow subscription per visible card
  * (`notebookPageCount(id)` / `notebookHasAudio(id)` / `pageHasAudio(id)`) — Room invalidates per
  * TABLE, so any stroke write re-ran those queries for every card on screen, and `notebookPageCount`
  * loaded a notebook's whole page list just to read its `.size`. These cover the batched replacements
  * ([com.nibhaus.data.PageDao.observePageCounts], [com.nibhaus.data.RecordingDao.observePagesWithAudio],
  * [com.nibhaus.data.RecordingDao.observeNotebooksWithAudio]) — one grouped/distinct query each,
  * shared across every visible card — mirroring how [com.nibhaus.data.PageDao.observeNonBlankPageIds]
- * (Feature 16) already batches per-notebook instead of per-page.
+ * already batches per-notebook instead of per-page.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class LibraryBatchingTest {

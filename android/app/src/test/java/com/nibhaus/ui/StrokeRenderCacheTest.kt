@@ -8,7 +8,7 @@ import com.nibhaus.data.SyncState
 import com.nibhaus.ui.common.InkFit
 import org.junit.Test
 
-/** Pure key/cache behavior for the stroke render cache (perf audit P0-1) — no Compose runtime or
+/** Pure key/cache behavior for the stroke render cache — no Compose runtime or
  *  Android framework needed since [androidx.compose.ui.graphics.Path] and
  *  [androidx.collection.LruCache] are both plain JVM classes. */
 class StrokeRenderCacheTest {

@@ -217,12 +217,17 @@ private class AndroidRecordingCapture(private val recorder: MediaRecorder) : Rec
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        recorder.setAudioEncodingBitRate(64_000)
-        recorder.setAudioSamplingRate(44_100)
+        recorder.setAudioEncodingBitRate(AUDIO_BIT_RATE)
+        recorder.setAudioSamplingRate(AUDIO_SAMPLE_RATE)
         recorder.setOutputFile(file.absolutePath)
         recorder.prepare()
         recorder.start()
     }
     override fun stop() = recorder.stop()
     override fun release() = recorder.release()
+
+    private companion object {
+        const val AUDIO_BIT_RATE = 64_000
+        const val AUDIO_SAMPLE_RATE = 44_100
+    }
 }

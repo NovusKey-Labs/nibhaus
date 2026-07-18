@@ -73,8 +73,8 @@ internal fun PageThumb(
 }
 
 /** Notebook thumbnail: a cover drawn from the notebook's most-recently-inked page, plus its
- *  (Feature 19) page-count / physical-size metadata. [compact] suppresses that text overlay — used
- *  for the small cover thumb in the list-view row (Feature 14), where the text sits beside it instead. */
+ * page-count / physical-size metadata. [compact] suppresses that text overlay — used
+ *  for the small cover thumb in the list-view row, where the text sits beside it instead. */
 @Composable
 internal fun NotebookThumb(
     notebook: com.nibhaus.data.NotebookEntity,
@@ -87,17 +87,17 @@ internal fun NotebookThumb(
 ) {
     val strokes by remember(notebook.id) { vm.notebookCoverStrokes(notebook.id) }.collectAsStateWithLifecycle(emptyList())
     val geometry = remember(notebook.book) { vm.pageGeometryFor(notebook.book) }
-    // Feature 22: the page count counts up on first composition rather than snapping in.
+    // the page count counts up on first composition rather than snapping in.
     val animatedPageCount = rememberCountUp(pageCount)
     val meta = notebookMetaLine(animatedPageCount, geometry?.pageWidthMm?.roundToInt(), geometry?.pageHeightMm?.roundToInt())
-    // Feature 18: the notebook's chosen accent, if any — a small corner swatch on its cover.
+    // the notebook's chosen accent, if any — a small corner swatch on its cover.
     val accent by remember(notebook.id) { vm.notebookAccent(notebook.id) }.collectAsStateWithLifecycle(NotebookAccent.NONE)
     val accentColor = if (accent == NotebookAccent.NONE) null else Color(accent.argb)
     // Full page frame, not an ink-bbox zoom — same geometry already computed above for the meta line.
     ThumbBody(notebook.title, strokes, vm, hasAudio, geometry, modifier, meta = meta, showLabel = !compact, accentColor = accentColor, onOpen = onOpen)
 }
 
-/** Feature 14 list row: a small cover thumb + title + metadata — denser than the gallery card.
+/** List row with a small cover thumb, title, and metadata; denser than the gallery card.
  *  Reuses [NotebookThumb]/[steelCard] styling rather than inventing new chrome. */
 @Composable
 internal fun NotebookListRow(
@@ -109,7 +109,7 @@ internal fun NotebookListRow(
 ) {
     val cs = MaterialTheme.colorScheme
     val geometry = remember(notebook.book) { vm.pageGeometryFor(notebook.book) }
-    // Feature 22: the page count counts up on first composition rather than snapping in.
+    // the page count counts up on first composition rather than snapping in.
     val animatedPageCount = rememberCountUp(pageCount)
     val meta = notebookMetaLine(animatedPageCount, geometry?.pageWidthMm?.roundToInt(), geometry?.pageHeightMm?.roundToInt())
     Row(
@@ -164,7 +164,7 @@ private fun ThumbBody(
                     drawStrokes(strokes, vm::strokesFlowOf, base = cs.onSurface, brandInk = cs.onSurface, pageBounds = pageBounds)
                 }
             }
-            // Feature 18: a small corner swatch for the notebook's chosen accent color, if any.
+            // a small corner swatch for the notebook's chosen accent color, if any.
             if (accentColor != null) {
                 Box(
                     Modifier.align(Alignment.TopStart).padding(6.dp).size(10.dp)

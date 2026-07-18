@@ -65,16 +65,16 @@ class NoteRepository(
 
     fun notebooks(): Flow<List<NotebookEntity>> = notebookDao.observeAll()
     fun pages(notebookId: String): Flow<List<PageEntity>> = pageDao.observeByNotebook(notebookId)
-    /** Every captured page across all notebooks — the base for the Favorites list (Feature 15). */
+    /** Every captured page across all notebooks — the base for the Favorites list. */
     fun allPages(): Flow<List<PageEntity>> = pageDao.observeAll()
     fun strokes(pageId: String): Flow<List<StrokeEntity>> = strokeDao.observeByPage(pageId)
 
     /** Ids of pages in [notebookId] with at least one stroke — one query, not one observer per
-     *  page (Feature 16 "hide blank pages"). */
+     *  page ("hide blank pages"). */
     fun nonBlankPageIds(notebookId: String): Flow<List<String>> = pageDao.observeNonBlankPageIds(notebookId)
 
     /** Ids of every page (any notebook) with at least one stroke — the cross-notebook counterpart of
-     *  [nonBlankPageIds], for the Pens home "Recent" section (Feature 1). */
+     *  [nonBlankPageIds], for the Pens home "Recent" section. */
     fun allNonBlankPageIds(): Flow<List<String>> = pageDao.observeAllNonBlankPageIds()
 
     /**
@@ -111,12 +111,12 @@ class NoteRepository(
     fun recordings(pageId: String): Flow<List<RecordingEntity>> = recordingDao.observeByPage(pageId)
 
     /** Ids of pages / notebooks carrying voice notes — one query each, shared across every visible
-     *  library card instead of one EXISTS observer per card (perf audit P1-1). */
+     *  library card instead of one EXISTS observer per card. */
     fun pagesWithAudio(): Flow<List<String>> = recordingDao.observePagesWithAudio()
     fun notebooksWithAudio(): Flow<List<String>> = recordingDao.observeNotebooksWithAudio()
 
     /** Page counts for every notebook, one grouped query instead of loading each notebook's full
-     *  page list just to read its `.size` (perf audit P1-1; Feature 19 metadata line). */
+     *  page list just to read its `.size` for the metadata line. */
     fun notebookPageCounts(): Flow<Map<String, Int>> = pageDao.observePageCounts()
 
     suspend fun setRecordingTitle(id: String, title: String) = recordingDao.setTitle(id, title)

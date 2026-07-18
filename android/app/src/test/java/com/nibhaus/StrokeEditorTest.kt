@@ -5,6 +5,7 @@ import com.nibhaus.data.StrokeEntity
 import com.nibhaus.data.SyncState
 import com.nibhaus.data.PendingRemoteDelete
 import com.nibhaus.edit.StrokeEditor
+import com.nibhaus.edit.StrokeEditorHooks
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -54,7 +55,11 @@ class StrokeEditorTest {
     fun `recolor reports the changed pageId`() = runTest {
         val strokes = FakeStrokeDao().apply { byId["a"] = stroke("a", color = 0) }
         var changed: String? = null
-        val editor = StrokeEditor(strokes, FakeOutboxDao(), onChanged = { changed = it })
+        val editor = StrokeEditor(
+            strokes,
+            FakeOutboxDao(),
+            hooks = StrokeEditorHooks(onChanged = { changed = it }),
+        )
 
         editor.recolor(listOf("a"), 0xFFFF0000.toInt(), "p1")
 
@@ -90,8 +95,12 @@ class StrokeEditorTest {
         val strokes = FakeStrokeDao().apply { byId["a"] = stroke("a") }
         val deletes = FakePendingRemoteDeleteDao()
         val editor = StrokeEditor(
-            strokes, FakeOutboxDao(), pendingRemoteDeleteDao = deletes,
-            artifactDelete = { PendingRemoteDelete(it, "pnb/Test/Page001", 123L) },
+            strokes,
+            FakeOutboxDao(),
+            pendingRemoteDeleteDao = deletes,
+            hooks = StrokeEditorHooks(
+                artifactDelete = { PendingRemoteDelete(it, "pnb/Test/Page001", 123L) },
+            ),
         )
 
         editor.delete(listOf("a"), "p1")

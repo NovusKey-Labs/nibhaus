@@ -132,22 +132,40 @@ class NeoGattTransport(
     /** One connectGatt attempt. Establishment failures (status 133 / HCI 0x3e) are transient on
      *  Android BLE, so [onConnectionStateChange] retries this a few times before giving up. */
     private fun doConnect() {
-        val leAddress = leAddr ?: return
-        connectAttempts++
-        val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
-            ?: run { listener.onError("adapter", -1); return }
+        val leAddress = leAddr
+        if (leAddress != null) {
+            connectAttempts++
+            val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+            if (adapter == null) {
+                listener.onError("adapter", -1)
+            } else {
+                val device = selectDevice(adapter, leAddress)
+                if (device == null) {
+                    listener.onError("scanned-device", -1)
+                } else {
+                    gatt = device.connectGatt(
+                        context,
+                        /* autoConnect = */ false,
+                        callback,
+                        BluetoothDevice.TRANSPORT_LE,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun selectDevice(adapter: android.bluetooth.BluetoothAdapter, leAddress: String): BluetoothDevice? {
         val scannedDevice = ScannedBluetoothDevices.find(leAddress)
         // getRemoteLeDevice is API 33. Before that, only the BluetoothDevice returned by the active
         // scan preserves the pen's RANDOM address type; getRemoteDevice would assume PUBLIC.
-        val device = when (GattDeviceSelection.forApi(Build.VERSION.SDK_INT, scannedDevice != null)) {
+        return when (GattDeviceSelection.forApi(Build.VERSION.SDK_INT, scannedDevice != null)) {
             GattDeviceSelection.SCANNED_DEVICE -> scannedDevice
             GattDeviceSelection.REMOTE_LE_RANDOM ->
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     remoteRandomDevice(adapter, leAddress)
                 } else null
             else -> null
-        } ?: run { listener.onError("scanned-device", -1); return }
-        gatt = device.connectGatt(context, /* autoConnect = */ false, callback, BluetoothDevice.TRANSPORT_LE)
+        }
     }
 
     /** Queue a framed packet for transmission (already wrapped by NeoFraming). */

@@ -8,7 +8,7 @@ import com.nibhaus.ui.common.InkFit
 
 /**
  * Memoizes the two expensive per-stroke steps [drawStrokes] used to redo on EVERY redraw
- * (perf audit P0-1): decoding a completed stroke's `pointsJson` and tessellating it into a filled
+ *: decoding a completed stroke's `pointsJson` and tessellating it into a filled
  * outline [Path] ([com.nibhaus.ui.theme.freehandPath] -> [com.nibhaus.ink.strokeOutline]). A
  * dense live-capture page redraws the whole canvas on every new dot; without this, every stroke
  * that was already finished got re-decoded and re-tessellated anyway.

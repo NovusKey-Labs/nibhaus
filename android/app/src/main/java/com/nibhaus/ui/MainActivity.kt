@@ -49,9 +49,11 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 internal fun validatedWidgetPageId(raw: String?): String? {
-    if (raw == null || raw.length != 36) return null
+    if (raw == null || raw.length != UUID_TEXT_LENGTH) return null
     return raw.takeIf { runCatching { UUID.fromString(it).toString() }.getOrNull() == it }
 }
+
+private const val UUID_TEXT_LENGTH = 36
 
 // FragmentActivity (not bare ComponentActivity) so the AndroidX BiometricPrompt can attach — see AppLock.
 class MainActivity : FragmentActivity() {
@@ -146,7 +148,7 @@ class MainActivity : FragmentActivity() {
         // Keep the screen awake while the app is foreground so the pen connection / capture isn't
         // interrupted during use (and you don't have to keep tapping the screen while testing).
         window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        // Bluetooth rationale pre-prompt (#3): only relevant the first time BLE permission actually
+        // Bluetooth rationale: only relevant the first time BLE permission actually
         // needs asking — already-granted (or not-yet-relevant-SDK) skips straight to the old
         // eager-start behavior, same as before this feature existed.
         val needsBleRationale = blePermissions().any { checkSelfPermission(it) != android.content.pm.PackageManager.PERMISSION_GRANTED }
@@ -334,11 +336,11 @@ internal fun ZoneShareChooser() {
     val sl = androidx.compose.runtime.remember(context) { ServiceLocator.from(context.applicationContext) }
     val pending by sl.pendingZoneShare.collectAsStateWithLifecycle()
     val p = pending ?: return
-    // Feature 5: this IS "the user tapped a printed button" — recorded the moment the pen's tap is
+    // this IS "the user tapped a printed button" — recorded the moment the pen's tap is
     // recognized, not once the PNG/PDF pick resolves, so it still counts even if they dismiss the
     // dialog without picking a format. Drives the printed-buttons tip card's eligibility.
     LaunchedEffect(p) { sl.settings.markZoneTapped() }
-    // Feature 20a: a confirm tick the moment this chooser appears — the pen tapping a printed
+    // a confirm tick the moment this chooser appears — the pen tapping a printed
     // button is otherwise a silent event until the dialog itself renders.
     val haptics = com.nibhaus.ui.common.rememberHaptics()
     LaunchedEffect(p) { haptics.confirm() }
@@ -359,7 +361,7 @@ internal fun ZoneShareChooser() {
     )
 }
 
-/** Bluetooth rationale pre-prompt (#3): one friendly line explaining WHY the system BLE dialogs are
+/** Bluetooth rationale: one friendly line explaining WHY the system BLE dialogs are
  *  about to fire, shown once ever before they do. Dismissing (tap outside / Back) counts the same as
  *  Continue — this is an explanation the user needs to see once, not a gate that can strand them. */
 @Composable

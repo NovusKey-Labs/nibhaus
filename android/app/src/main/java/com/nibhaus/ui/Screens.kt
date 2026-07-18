@@ -334,7 +334,7 @@ fun InkApp(vm: InkViewModel) {
                                             // Open the notebook AND switch to the Library tab so its pages show
                                             // (selecting alone left the user on the Pens screen — looked dead).
                                             onOpenNotebook = { vm.openNotebook(it); tab = Tab.LIBRARY },
-                                            // Feature 1: tapping a Recent-row page opens straight to that page.
+                                            // tapping a Recent-row page opens straight to that page.
                                             onOpenPage = { notebookId, pageId ->
                                                 vm.openNotebook(notebookId); vm.openPage(pageId); tab = Tab.LIBRARY
                                             },

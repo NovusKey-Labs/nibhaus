@@ -5,7 +5,7 @@ import com.nibhaus.pen.readySpps
 import com.nibhaus.pen.recordSightings
 import org.junit.Test
 
-/** Feature 2 refinement (requirement 3): the "READY" live dot on saved-pen tiles — pure
+/** (requirement 3): the "READY" live dot on saved-pen tiles — pure
  *  sightings+clock → per-spp ready mapping, and the sightings accumulation feeding it. */
 class PenPresenceTest {
 

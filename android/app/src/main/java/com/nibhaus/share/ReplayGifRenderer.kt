@@ -57,7 +57,7 @@ object ReplayGifRenderer {
         val baseWidth = width * 0.0025f * strokeScale
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
 
-        // Perf audit P1-3: a finished stroke's points and fit (scale/offX/offY, computed once above
+        // a finished stroke's points and fit (scale/offX/offY, computed once above
         // from the full page) never change across frames, so its tessellated outline is identical in
         // every frame it appears in — tessellate each one once here and reuse the Path, instead of
         // re-running strokeOutline() for it on all MAX_FRAMES frames. Keyed by uuid only (not fit,
