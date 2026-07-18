@@ -19,6 +19,8 @@ import com.nibhaus.export.PaperTemplate
 import com.nibhaus.export.TranscriptionQuality
 import com.nibhaus.health.SyncTargetState
 import com.nibhaus.premiumapi.VlmDownloadState
+import com.nibhaus.premiumapi.DownloadConsent
+import com.nibhaus.premiumapi.DownloadConsentChoice
 import com.nibhaus.pen.PenConnState
 import com.nibhaus.pen.ScannedPen
 import com.nibhaus.repo.NoteRepository
@@ -87,7 +89,10 @@ class InkViewModel(
     private val transcribeOnDevice = ocr.transcribeOnDevice
     private val saveTranscriptOp = ocr.saveTranscriptOp
     private val vlmState = ocr.vlmState
+    val vlmDownloadDisclosure = ocr.vlmDisclosure
+    private val downloadVlmModel = ocr.downloadVlmModel
     private val isMetered = ocr.isMetered
+    fun isConnectionMetered(): Boolean = isMetered()
     private val premiumPresent = ocr.premiumPresent
 
     private val actionZones = zones.actionZones
@@ -890,10 +895,6 @@ class InkViewModel(
         settings.transcriptionQuality.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TranscriptionQuality.AUTO)
     fun setTranscriptionQuality(q: TranscriptionQuality) = viewModelScope.launch { settings.setTranscriptionQuality(q) }
 
-    val vlmAllowMetered: StateFlow<Boolean> =
-        settings.vlmAllowMetered.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-    fun setVlmAllowMetered(on: Boolean) = viewModelScope.launch { settings.setVlmAllowMetered(on) }
-
     val vlmForceOnDevice: StateFlow<Boolean> =
         settings.vlmForceOnDevice.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
     fun setVlmForceOnDevice(on: Boolean) = viewModelScope.launch { settings.setVlmForceOnDevice(on) }
@@ -1165,7 +1166,33 @@ class InkViewModel(
      * disclaimer was already shown. Read fresh, same as [transcribeCurrentPageOnDevice], so
      * acknowledging via either flow unblocks the other with no app restart needed.
      */
-    private suspend fun startAccurateTranscribe(pageId: String) = startTranscribeGated(pageId, accurate = true)
+    private val _showVlmDownloadDisclosure = MutableStateFlow(false)
+    val showVlmDownloadDisclosure: StateFlow<Boolean> = _showVlmDownloadDisclosure
+    private var pendingVlmPageId: String? = null
+
+    private suspend fun startAccurateTranscribe(pageId: String) {
+        if (vlmDownloadDisclosure != null && vlmModelState.value !is VlmDownloadState.Ready) {
+            pendingVlmPageId = pageId
+            _showVlmDownloadDisclosure.value = true
+            return
+        }
+        startTranscribeGated(pageId, accurate = true)
+    }
+
+    fun confirmVlmDownload(choice: DownloadConsentChoice) {
+        val pageId = pendingVlmPageId ?: return
+        _showVlmDownloadDisclosure.value = false
+        pendingVlmPageId = null
+        viewModelScope.launch {
+            val downloaded = downloadVlmModel?.invoke(DownloadConsent(choice, disclosedMetadataShown = true)) == true
+            if (downloaded) startTranscribeGated(pageId, accurate = true)
+        }
+    }
+
+    fun dismissVlmDownloadDisclosure() {
+        _showVlmDownloadDisclosure.value = false
+        pendingVlmPageId = null
+    }
 
     /**
      * Consent-gated transcribe start (wave 4 hardening): the single place every interactive fire

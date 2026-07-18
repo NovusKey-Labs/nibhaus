@@ -461,23 +461,10 @@ private fun OcrSettingsCard(vm: InkViewModel) {
 @Composable
 private fun OcrAdvancedOverrides(vm: InkViewModel) {
     val cs = MaterialTheme.colorScheme
-    val allowMetered by vm.vlmAllowMetered.collectAsStateWithLifecycle()
     val forceOnDevice by vm.vlmForceOnDevice.collectAsStateWithLifecycle()
     SettingsCard {
         Column(Modifier.padding(vertical = 14.dp)) {
             Text("On-device conversion overrides", style = MaterialTheme.typography.titleMedium)
-            Row(
-                Modifier.fillMaxWidth().padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                    Text("Allow downloading over mobile data", style = MaterialTheme.typography.titleSmall)
-                    Text("Off: keeps the on-device model download off your mobile data plan. Wi-Fi only.", style = MaterialTheme.typography.bodySmall,
-                        color = cs.onSurfaceVariant)
-                }
-                NibToggle(checked = allowMetered, onCheckedChange = vm::setVlmAllowMetered)
-            }
             Row(
                 Modifier.fillMaxWidth().padding(top = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,

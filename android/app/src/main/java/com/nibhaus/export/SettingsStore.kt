@@ -183,7 +183,6 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
     private val byoOcrEndpointKey = stringPreferencesKey("ocr.byo_endpoint")
     private val byoOcrTokenKey = stringPreferencesKey("ocr.byo_token")
     private val vlmDisabledOnThisDeviceKey = booleanPreferencesKey("vlm.disabled_on_device")
-    private val vlmAllowMeteredKey   = booleanPreferencesKey("vlm.allow_metered")
     private val vlmForceOnDeviceKey  = booleanPreferencesKey("vlm.force_on_device")
     private val ocrDisclaimerShownKey = booleanPreferencesKey("ocr.disclaimer_shown")
     private val transcriptionQualityKey = stringPreferencesKey("ocr.transcription_quality")
@@ -389,11 +388,6 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
     suspend fun setVlmDisabledOnThisDevice(disabled: Boolean) =
         edit { it[vlmDisabledOnThisDeviceKey] = disabled }
 
-    /** Allow model weight downloads over metered (mobile data) connections. Default off. */
-    val vlmAllowMetered: Flow<Boolean> =
-        store.data.map { it[vlmAllowMeteredKey] ?: false }
-    suspend fun setVlmAllowMetered(on: Boolean) = edit { it[vlmAllowMeteredKey] = on }
-
     /** User override: force-enable on-device VLM even if the RAM capability probe failed. Default off. */
     val vlmForceOnDevice: Flow<Boolean> =
         store.data.map { it[vlmForceOnDeviceKey] ?: false }
@@ -500,7 +494,7 @@ class SettingsStore internal constructor(private val store: DataStore<Preference
         it.remove(translateEndpointKey); it.remove(translateModelKey)
         it.remove(byoOcrEndpointKey); it.remove(byoOcrTokenKey)
         it.remove(vlmDisabledOnThisDeviceKey)
-        it.remove(vlmAllowMeteredKey); it.remove(vlmForceOnDeviceKey)
+        it.remove(vlmForceOnDeviceKey)
         it.remove(ocrDisclaimerShownKey); it.remove(transcriptionQualityKey)
     }
     suspend fun resetAppearance() = edit {

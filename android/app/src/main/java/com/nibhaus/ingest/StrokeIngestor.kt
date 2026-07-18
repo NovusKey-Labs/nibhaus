@@ -14,6 +14,7 @@ import com.nibhaus.zones.ActionZone
 import com.nibhaus.zones.boundsOf
 import com.nibhaus.zones.tapCentre
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
@@ -86,6 +87,7 @@ class StrokeIngestor(
 
     /** Called synchronously from the pen layer for every dot. Backpressures when persistence stalls. */
     fun onDot(dot: PenDot) {
+        if (!scope.isActive) throw IllegalStateException("stroke ingest is closed")
         val immediate = channel.trySend(dot)
         if (immediate.isSuccess) return
         if (immediate.isClosed) throw IllegalStateException("stroke ingest is closed", immediate.exceptionOrNull())

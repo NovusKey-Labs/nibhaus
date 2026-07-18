@@ -12,6 +12,7 @@ import com.nibhaus.repo.NoteRepository
 import com.nibhaus.ui.InkViewModel
 import com.nibhaus.ui.OcrDeps
 import com.nibhaus.ui.PenDeps
+import com.nibhaus.premiumapi.DownloadDisclosure
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,10 +64,6 @@ class OcrSettingsTest {
     }
 
     // ---- New SettingsStore flag defaults ----
-
-    @Test fun `vlmAllowMetered defaults to false`() = runTest {
-        assertThat(settings().vlmAllowMetered.first()).isFalse()
-    }
 
     @Test fun `vlmForceOnDevice defaults to false`() = runTest {
         assertThat(settings().vlmForceOnDevice.first()).isFalse()
@@ -183,6 +180,43 @@ class OcrSettingsTest {
         assertThat(vm.showOcrDisclosure.value).isFalse()
         assertThat(capturedAccurate).isTrue()
         assertThat(capturedPageId).isEqualTo("page-1")
+    }
+
+    @Test fun `declining model download disclosure leaves accurate OCR off`() = runTest {
+        val s = settings()
+        s.setOcrDisclaimerShown()
+        s.setPremiumUnlocked(true)
+        s.acknowledgeOnDeviceOcr()
+        var transcribed = false
+        val vm = InkViewModel(
+            repo = NoteRepository(FakeNotebookDao(), FakePageDao(), FakeStrokeDao(), FakeOutboxDao(), FakeRecordingDao(), FakeTagDao()),
+            settings = s,
+            pen = PenDeps(
+                penManager = PenConnectionManager(
+                    sdk = FakeNeoPenSdk(),
+                    prefs = InMemoryPenPrefs(),
+                    scope = backgroundScope,
+                    onDot = {},
+                ),
+                scanner = PenScanner(),
+            ),
+            ocr = OcrDeps(
+                premiumPresent = true,
+                transcribeOnDevice = { _, _ -> transcribed = true; "unexpected" },
+                vlmDisclosure = DownloadDisclosure("huggingface.co", 3_268_329_184L, "pinned"),
+                downloadVlmModel = { false },
+            ),
+        )
+        vm.openPage("page-1")
+        vm.transcribeCurrentPageAccurate()
+        testScheduler.advanceUntilIdle()
+        assertThat(vm.showVlmDownloadDisclosure.value).isTrue()
+
+        vm.dismissVlmDownloadDisclosure()
+        testScheduler.advanceUntilIdle()
+
+        assertThat(vm.showVlmDownloadDisclosure.value).isFalse()
+        assertThat(transcribed).isFalse()
     }
 
     // ---- shouldAutoRunAccuratePass pure-function matrix ----

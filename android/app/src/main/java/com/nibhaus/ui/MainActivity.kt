@@ -94,6 +94,8 @@ class MainActivity : FragmentActivity() {
                         transcribeOnDevice = sl::transcribeOnDevice,
                         saveTranscriptOp = sl::saveTranscript,
                         vlmState = sl.vlmModelStateFlow,
+                        vlmDisclosure = sl.vlmDownloadDisclosure,
+                        downloadVlmModel = sl::downloadVlmModel,
                         isMetered = { cm.isActiveNetworkMetered },
                         premiumPresent = sl.premiumPresent,
                     ),

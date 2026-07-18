@@ -704,4 +704,13 @@ internal fun PageDetail(strokes: List<StrokeEntity>, vm: InkViewModel) {
             confirmButton = { Button(onClick = { vm.confirmAccuracyDisclaimer() }) { Text("Got it") } },
         )
     }
+    val showVlmDisclosure by vm.showVlmDownloadDisclosure.collectAsStateWithLifecycle()
+    if (showVlmDisclosure && vm.vlmDownloadDisclosure != null) {
+        ModelDownloadDisclosure(
+            metered = vm.isConnectionMetered(),
+            onWifiOnly = { vm.confirmVlmDownload(com.nibhaus.premiumapi.DownloadConsentChoice.WifiOnly) },
+            onAllowMetered = { vm.confirmVlmDownload(com.nibhaus.premiumapi.DownloadConsentChoice.AllowMetered) },
+            onDecline = vm::dismissVlmDownloadDisclosure,
+        )
+    }
 }

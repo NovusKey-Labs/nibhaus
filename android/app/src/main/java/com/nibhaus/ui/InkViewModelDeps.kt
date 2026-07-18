@@ -62,6 +62,8 @@ class OcrDeps(
     val saveTranscriptOp: suspend (pageId: String, text: String) -> Unit = { _, _ -> },
     /** Live VLM model download/readiness state from ServiceLocator; null in freemium builds. */
     val vlmState: kotlinx.coroutines.flow.Flow<VlmDownloadState>? = null,
+    val vlmDisclosure: com.nibhaus.premiumapi.DownloadDisclosure? = null,
+    val downloadVlmModel: (suspend (com.nibhaus.premiumapi.DownloadConsent) -> Boolean)? = null,
     /**
      * Synchronous check: is the active network connection metered (mobile data)?
      * Used by the Auto quality tier to skip the accurate pass when on mobile data.

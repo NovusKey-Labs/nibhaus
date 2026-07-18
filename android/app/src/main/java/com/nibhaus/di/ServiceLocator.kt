@@ -30,6 +30,8 @@ import com.nibhaus.premiumapi.InkPt
 import com.nibhaus.premiumapi.PremiumDeps
 import com.nibhaus.premiumapi.PremiumServices
 import com.nibhaus.premiumapi.VlmDownloadState
+import com.nibhaus.premiumapi.DownloadConsent
+import com.nibhaus.premiumapi.DownloadDisclosure
 import kotlinx.coroutines.flow.Flow
 import com.nibhaus.translate.InkTranslator
 import com.nibhaus.export.LocalFolderProvider
@@ -116,8 +118,6 @@ class ServiceLocator private constructor(context: Context) {
     /** In-memory mirror of settings.vlmDisabledOnThisDevice — keeps the lambda synchronous. */
     @Volatile private var isVlmDisabledOnDevice = false
 
-    /** In-memory mirror of settings.vlmAllowMetered — keeps the lambda synchronous. */
-    @Volatile private var isVlmAllowMetered = false
 
     /** In-memory mirror of settings.vlmForceOnDevice — keeps the lambda synchronous. */
     @Volatile private var isVlmUserForced = false
@@ -204,7 +204,6 @@ class ServiceLocator private constructor(context: Context) {
                 byoEndpoint = { byoOcrEndpointMirror.ifBlank { null } },
                 byoToken = { byoOcrTokenMirror.ifBlank { null } },
                 allowCleartextEndpoints = BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
-                allowMetered = { isVlmAllowMetered },
                 isMetered = { cm.isActiveNetworkMetered },
                 userForcedVlm = { isVlmUserForced },
                 vlmDisabledOnDevice = vlmDisabledFn,
@@ -260,9 +259,6 @@ class ServiceLocator private constructor(context: Context) {
         // Mirror the VLM too-slow flag so the supplier lambda stays synchronous (avoids DataStore reads on the hot path).
         appScope.launch {
             settings.vlmDisabledOnThisDevice.collect { isVlmDisabledOnDevice = it }
-        }
-        appScope.launch {
-            settings.vlmAllowMetered.collect { isVlmAllowMetered = it }
         }
         appScope.launch {
             settings.vlmForceOnDevice.collect { isVlmUserForced = it }
@@ -342,6 +338,9 @@ class ServiceLocator private constructor(context: Context) {
      *  have run first — so this capture at construction time
      *  is safe even though accurateChain() itself is resolved lazily, per request, above. */
     val vlmModelStateFlow: Flow<VlmDownloadState>? = premium?.vlmModelState()
+    val vlmDownloadDisclosure: DownloadDisclosure? = premium?.vlmDownloadDisclosure()
+    suspend fun downloadVlmModel(consent: DownloadConsent): Boolean =
+        premium?.downloadVlmModel(consent) == true
 
     /** Tiered translator: the user's GPU-box translation LLM (quality), ML Kit on-device (offline).
      *  Premium; null in a freemium build. */
