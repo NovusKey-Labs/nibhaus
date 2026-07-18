@@ -354,7 +354,10 @@ class InkViewModel(
         _syncTest.value = SyncTest.Testing
         _syncTest.value = withContext(Dispatchers.IO) {
             try {
-                val conn = (java.net.URL(endpoint.trimEnd('/') + "/_index").openConnection()
+                val target = com.nibhaus.export.ExportEndpoint.parse(
+                    endpoint, com.nibhaus.BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
+                )
+                val conn = (target.resolve("_index").openConnection()
                     as java.net.HttpURLConnection).apply {
                     requestMethod = "GET"
                     connectTimeout = 8000

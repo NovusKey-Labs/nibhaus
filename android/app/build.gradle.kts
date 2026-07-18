@@ -38,6 +38,10 @@ android {
         // dependencies-block condition below; lets tests assert the reflective seam matches the variant
         // (bundle present in the full build, absent in the public clone / -Pnibhaus.premium=false).
         buildConfigField("Boolean", "PREMIUM_LINKED", (rootProject.findProject(":premium") != null).toString())
+        // Cleartext export is opt-in for explicitly trusted WireGuard/tailnet deployments. It is
+        // disabled in every build by default so bearer tokens cannot silently cross plaintext HTTP.
+        buildConfigField("Boolean", "ALLOW_CLEARTEXT_SYNC_ENDPOINT",
+            (project.findProperty("nibhaus.allowCleartextSync") == "true").toString())
     }
 
     // Release signing: reads android/keystore.properties (gitignored) or, failing that, the

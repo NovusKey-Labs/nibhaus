@@ -299,7 +299,10 @@ class ServiceLocator private constructor(context: Context) {
             when (method) {
                 com.nibhaus.export.SyncMethod.TAILSCALE_PUSH -> {
                     val token = settings.syncToken.first()
-                    resolveNativeSync(premiumEntitledNow(), endpoint) { premium?.transcriptSource(it, token) }
+                    resolveNativeSync(premiumEntitledNow(), endpoint) {
+                        val target = com.nibhaus.export.ExportEndpoint.parse(it, BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT)
+                        premium?.transcriptSource(target.origin, token)
+                    }
                 }
                 com.nibhaus.export.SyncMethod.LOCAL_ONLY -> null
                 else ->
@@ -780,7 +783,10 @@ class ServiceLocator private constructor(context: Context) {
                 // Entitlement-gated (spec matrix, Native sync row): null when locked or when the
                 // :premium module is absent, even if an endpoint is configured.
                 val token = settings.syncToken.first()
-                resolveNativeSync(premiumEntitledNow(), endpoint) { premium?.pushProvider(it, token) }
+                resolveNativeSync(premiumEntitledNow(), endpoint) {
+                    val target = com.nibhaus.export.ExportEndpoint.parse(it, BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT)
+                    premium?.pushProvider(target.origin, token)
+                }
             }
             SyncMethod.LOCAL_ONLY -> LocalOnlyProvider(appContext)
         }
