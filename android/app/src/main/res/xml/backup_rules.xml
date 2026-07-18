@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Legacy (API ≤30) backup rules — same intent as data_extraction_rules.xml: exclude the note vault,
-  the encrypted-secret prefs, and settings from auto-backup. See Section C4.
+  Legacy (API ≤30) backup rules. Every private persistent store is excluded; only Android-managed
+  state outside this list (for example genuinely non-sensitive UI state) may be backed up.
 -->
 <full-backup-content>
     <exclude domain="database" path="nibhaus.db" />
     <exclude domain="database" path="nibhaus.db-wal" />
     <exclude domain="database" path="nibhaus.db-shm" />
+    <exclude domain="database" path="nibhaus.db-journal" />
     <exclude domain="sharedpref" path="nibhaus_secrets.xml" />
+    <exclude domain="sharedpref" path="pen_prefs.xml" />
+    <exclude domain="sharedpref" path="nibhaus_notebook_profiles.xml" />
+    <exclude domain="sharedpref" path="nibhaus_zones.xml" />
+    <exclude domain="sharedpref" path="nibhaus_backgrounds.xml" />
     <exclude domain="file" path="datastore/" />
     <exclude domain="file" path="recordings/" />  <!-- voice notes: user audio never leaves the device -->
     <exclude domain="file" path="exports/" />     <!-- local export staging contains rendered notes -->
+    <exclude domain="file" path="crash/" />       <!-- bounded stack trace captured for user feedback -->
 </full-backup-content>
