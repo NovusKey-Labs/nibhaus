@@ -10,4 +10,5 @@
     <exclude domain="sharedpref" path="nibhaus_secrets.xml" />
     <exclude domain="file" path="datastore/" />
     <exclude domain="file" path="recordings/" />  <!-- voice notes: user audio never leaves the device -->
+    <exclude domain="file" path="exports/" />     <!-- local export staging contains rendered notes -->
 </full-backup-content>
