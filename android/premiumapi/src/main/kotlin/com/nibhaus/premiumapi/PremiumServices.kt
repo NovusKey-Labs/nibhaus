@@ -33,7 +33,11 @@ interface PremiumServices {
      *  instant tier (ML Kit OnDeviceInk) lives in :app and is free; :app composes
      *  RoutedInk(instant, accurateChain()) itself. Entitlement is enforced at :app call sites. */
     fun accurateChain(): List<InkOcr>
-    fun translator(endpoint: suspend () -> String, model: suspend () -> String): InkTranslator
+    fun translator(
+        endpoint: suspend () -> String,
+        model: suspend () -> String,
+        allowCleartextEndpoints: Boolean = false,
+    ): InkTranslator
     fun pushProvider(endpoint: String, token: String): StorageProvider
     fun transcriptSource(endpoint: String, token: String): TranscriptSource
     /** Download/readiness state of the on-device VLM model. Nullable so a freemium-safe caller can

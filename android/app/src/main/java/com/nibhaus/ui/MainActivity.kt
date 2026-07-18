@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -57,6 +58,7 @@ class MainActivity : FragmentActivity() {
 
     // Nib unlocked for this foreground session (Section C1); re-locked in onStop when backgrounded.
     private var unlocked by mutableStateOf(false)
+    private var appLockEnabled = false
 
     private val viewModel: InkViewModel by viewModels {
         val sl = ServiceLocator.from(applicationContext)
@@ -155,6 +157,14 @@ class MainActivity : FragmentActivity() {
             val lightPaper by viewModel.lightPaper.collectAsStateWithLifecycle()
             val paperTemplate by viewModel.paperTemplate.collectAsStateWithLifecycle()
             val lockEnabled by viewModel.appLockEnabled.collectAsStateWithLifecycle()
+            SideEffect {
+                appLockEnabled = lockEnabled
+                if (lockEnabled) {
+                    window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                } else {
+                    window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                }
+            }
             NibhausTheme(palette, lightPaper) {
                 CompositionLocalProvider(LocalPaperTemplate provides paperTemplate) {
                     Surface(Modifier.fillMaxSize()) {
@@ -188,6 +198,13 @@ class MainActivity : FragmentActivity() {
                 }
             }
         }
+    }
+
+    // Hide note content before Android captures the task snapshot; FLAG_SECURE remains set while
+    // app lock is enabled, blocking both screenshots and recents imagery.
+    override fun onPause() {
+        if (appLockEnabled && !isChangingConfigurations) unlocked = false
+        super.onPause()
     }
 
     // Re-lock when the app is genuinely backgrounded — but not on a rotation/config change.

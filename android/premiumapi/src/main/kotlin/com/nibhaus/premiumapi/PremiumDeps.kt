@@ -18,6 +18,8 @@ data class PremiumDeps(
     val byoEndpoint: (() -> String?)? = null,
     /** Supplier for the BYO endpoint auth token. Null → empty token. */
     val byoToken: (() -> String?)? = null,
+    /** Allows HTTP only for explicitly opted-in trusted tailnet endpoints. */
+    val allowCleartextEndpoints: Boolean = false,
     /** True when the user has opted in to downloading model weights over metered connections. */
     val allowMetered: (() -> Boolean)? = null,
     /** True when the device is on a metered connection. */

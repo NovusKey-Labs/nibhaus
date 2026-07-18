@@ -202,6 +202,7 @@ class ServiceLocator private constructor(context: Context) {
             val deps = PremiumDeps(
                 byoEndpoint = { byoOcrEndpointMirror.ifBlank { null } },
                 byoToken = { byoOcrTokenMirror.ifBlank { null } },
+                allowCleartextEndpoints = BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
                 allowMetered = { isVlmAllowMetered },
                 isMetered = { cm.isActiveNetworkMetered },
                 userForcedVlm = { isVlmUserForced },
@@ -343,6 +344,7 @@ class ServiceLocator private constructor(context: Context) {
     val translator: InkTranslator? = premium?.translator(
         endpoint = { settings.translateEndpoint.first() },
         model = { settings.translateModel.first() },
+        allowCleartextEndpoints = BuildConfig.ALLOW_CLEARTEXT_SYNC_ENDPOINT,
     )
 
     /**
