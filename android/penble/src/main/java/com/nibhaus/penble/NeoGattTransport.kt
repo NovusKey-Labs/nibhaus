@@ -1,6 +1,7 @@
 package com.nibhaus.penble
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
@@ -15,6 +16,36 @@ import android.os.Looper
 import android.util.Log
 import com.nibhaus.pen.PenProtocol
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
+
+/** Retains the framework device produced by an active LE scan. Required on API 24-32 because those
+ * releases cannot reconstruct a RANDOM-address device with an explicit address type. */
+object ScannedBluetoothDevices {
+    private val byAddress = ConcurrentHashMap<String, BluetoothDevice>()
+
+    fun remember(device: BluetoothDevice) { byAddress[device.address] = device }
+    internal fun find(address: String): BluetoothDevice? = byAddress[address]
+    fun clear() = byAddress.clear()
+}
+
+@TargetApi(Build.VERSION_CODES.TIRAMISU)
+@SuppressLint("UseRequiresApi") // penble deliberately has no AndroidX annotation dependency.
+private fun remoteRandomDevice(adapter: android.bluetooth.BluetoothAdapter, address: String): BluetoothDevice =
+    adapter.getRemoteLeDevice(address, BluetoothDevice.ADDRESS_TYPE_RANDOM)
+
+@SuppressLint("InlinedApi") // Values are passed only on API levels selected by forApi().
+internal object GattDeviceSelection {
+    const val UNAVAILABLE = 0
+    const val SCANNED_DEVICE = 1
+    const val REMOTE_LE_RANDOM = 2
+    const val remoteAddressType = BluetoothDevice.ADDRESS_TYPE_RANDOM
+
+    fun forApi(api: Int, hasScannedDevice: Boolean): Int = when {
+        hasScannedDevice -> SCANNED_DEVICE
+        api >= Build.VERSION_CODES.TIRAMISU -> REMOTE_LE_RANDOM
+        else -> UNAVAILABLE
+    }
+}
 
 /** GATT service + characteristic UUIDs for one pen protocol generation (V2 = M1+/short UUIDs, V5 = LAMY). */
 internal data class GattProfile(val service: UUID, val write: UUID, val notify: UUID)
@@ -105,26 +136,18 @@ class NeoGattTransport(
         connectAttempts++
         val adapter = (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
             ?: run { listener.onError("adapter", -1); return }
-        // The pen advertises a RANDOM (rotating) LE address. getRemoteDevice() assumes a PUBLIC
-        // address, so connectGatt mismatches and fails fast. On API 30+ resolve it with the correct
-        // address type; older devices fall back.
-        val device = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            runCatching { adapter.getRemoteLeDevice(leAddress, addressTypeOf(leAddress)) }.getOrNull()
-                ?: adapter.getRemoteDevice(leAddress)
-        } else {
-            adapter.getRemoteDevice(leAddress)
-        }
+        val scannedDevice = ScannedBluetoothDevices.find(leAddress)
+        // getRemoteLeDevice is API 33. Before that, only the BluetoothDevice returned by the active
+        // scan preserves the pen's RANDOM address type; getRemoteDevice would assume PUBLIC.
+        val device = when (GattDeviceSelection.forApi(Build.VERSION.SDK_INT, scannedDevice != null)) {
+            GattDeviceSelection.SCANNED_DEVICE -> scannedDevice
+            GattDeviceSelection.REMOTE_LE_RANDOM ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    remoteRandomDevice(adapter, leAddress)
+                } else null
+            else -> null
+        } ?: run { listener.onError("scanned-device", -1); return }
         gatt = device.connectGatt(context, /* autoConnect = */ false, callback, BluetoothDevice.TRANSPORT_LE)
-    }
-
-    /** Classify a BLE address from the top 2 bits of its most-significant octet: 11 = random static,
-     *  01 = resolvable private — both RANDOM; OUI-assigned public addresses fall through. */
-    private fun addressTypeOf(addr: String): Int {
-        val msb = addr.substringBefore(':').toIntOrNull(16) ?: return BluetoothDevice.ADDRESS_TYPE_RANDOM
-        return when (msb and 0xC0) {
-            0xC0, 0x40 -> BluetoothDevice.ADDRESS_TYPE_RANDOM
-            else -> BluetoothDevice.ADDRESS_TYPE_PUBLIC
-        }
     }
 
     /** Queue a framed packet for transmission (already wrapped by NeoFraming). */
