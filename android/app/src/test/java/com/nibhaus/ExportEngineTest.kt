@@ -234,6 +234,41 @@ class ExportEngineTest {
         assertThat(provider.writes.size).isEqualTo(successfulPageWrites + 5)
     }
 
+    @Test fun `drains more than one thousand pending strokes using bounded uuid lookups`() = runTest {
+        strokeDao.maxUuidQuerySize = 900
+        repeat(1_005) { index ->
+            val pageId = "P${index / 335}"
+            pageDao.insert(page(pageId).copy(page = index / 335 + 1))
+            seedStroke("s$index", pageId, pts)
+        }
+
+        assertThat(engine.exportPending(FakeStorageProvider())).isTrue()
+
+        assertThat(outbox.peek(Int.MAX_VALUE)).isEmpty()
+        assertThat(strokeDao.byId.values.map { it.syncState }.distinct()).containsExactly(SyncState.SYNCED)
+        assertThat(strokeDao.uuidQuerySizes).containsExactly(900, 105).inOrder()
+    }
+
+    @Test fun `a bad page remains queued while later pages still drain`() = runTest {
+        pageDao.insert(page("bad"))
+        pageDao.insert(page("good").copy(page = 2))
+        seedStroke("bad-stroke", "bad", pts)
+        seedStroke("good-stroke", "good", pts)
+        val provider = object : StorageProvider {
+            override val id = "page-isolation"
+            override suspend fun write(name: String, bytes: ByteArray) {
+                if (name.startsWith("bad.")) throw IOException("bad page")
+            }
+            override suspend fun delete(name: String) = Unit
+        }
+
+        assertThat(engine.exportPending(provider)).isFalse()
+
+        assertThat(outbox.peek(Int.MAX_VALUE).map { it.strokeUuid }).containsExactly("bad-stroke")
+        assertThat(strokeDao.byId.getValue("good-stroke").syncState).isEqualTo(SyncState.SYNCED)
+        assertThat(outbox.rows.getValue("bad-stroke").attempts).isEqualTo(1)
+    }
+
     @Test fun `concurrent drains converge on an empty synced outbox`() = runTest {
         pageDao.insert(page("P1"))
         seedStroke("s1", "P1", pts)

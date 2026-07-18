@@ -56,18 +56,21 @@ class ExportEngine(
         val pending = outboxDao.peek(Int.MAX_VALUE)
         if (pending.isEmpty()) return true
 
-        val pendingByPage = strokeDao.byUuids(pending.map { it.strokeUuid })
+        val pendingByPage = pending.map { it.strokeUuid }
+            .chunked(MAX_UUID_QUERY_SIZE)
+            .flatMap { strokeDao.byUuids(it) }
             .groupBy { it.pageId }
 
         var allOk = true
         for ((pageId, pendingStrokes) in pendingByPage) {
             val uuids = pendingStrokes.map { it.uuid }
-            val ok = runCatching { exportPageLocked(pageId, provider) }.isSuccess
-            if (ok) {
+            val ok = runCatching {
+                exportPageLocked(pageId, provider)
                 strokeDao.markSync(uuids, SyncState.SYNCED)
                 outboxDao.remove(uuids)
-            } else {
-                outboxDao.bumpAttempts(uuids)
+            }.isSuccess
+            if (!ok) {
+                runCatching { outboxDao.bumpAttempts(uuids) }
                 allOk = false
             }
         }
@@ -216,6 +219,8 @@ class ExportEngine(
     }
 
     companion object {
+        // Leave headroom below SQLite's commonly configured 999 bind-variable limit.
+        private const val MAX_UUID_QUERY_SIZE = 900
         /** Every artifact extension one page's export can produce — shared by [deleteRemote]'s
          *  immediate best-effort delete and [RemoteDeleteQueue]'s durable retry drain. .txt is written
          *  by the NAS OCR watcher, not the app, but it's this page's artifact too; .bak.json must go
