@@ -52,6 +52,7 @@ class SyncDeps(
 )
 
 /** On-device / server OCR + transcript dependencies. */
+@Suppress("LongParameterList") // dependency aggregator (a holder, not a call site)
 class OcrDeps(
     val transcripts: com.nibhaus.ocr.TranscriptImporter? = null,
     /** On-device handwriting OCR of a page → stored transcript (or null). ML Kit Digital Ink.

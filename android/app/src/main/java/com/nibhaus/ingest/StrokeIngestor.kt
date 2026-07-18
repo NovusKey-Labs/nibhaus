@@ -87,7 +87,7 @@ class StrokeIngestor(
 
     /** Called synchronously from the pen layer for every dot. Backpressures when persistence stalls. */
     fun onDot(dot: PenDot) {
-        if (!scope.isActive) throw IllegalStateException("stroke ingest is closed")
+        check(scope.isActive) { "stroke ingest is closed" }
         val immediate = channel.trySend(dot)
         if (immediate.isSuccess) return
         if (immediate.isClosed) throw IllegalStateException("stroke ingest is closed", immediate.exceptionOrNull())

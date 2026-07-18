@@ -189,7 +189,10 @@ class OcrSettingsTest {
         s.acknowledgeOnDeviceOcr()
         var transcribed = false
         val vm = InkViewModel(
-            repo = NoteRepository(FakeNotebookDao(), FakePageDao(), FakeStrokeDao(), FakeOutboxDao(), FakeRecordingDao(), FakeTagDao()),
+            repo = NoteRepository(
+                FakeNotebookDao(), FakePageDao(), FakeStrokeDao(),
+                FakeOutboxDao(), FakeRecordingDao(), FakeTagDao(),
+            ),
             settings = s,
             pen = PenDeps(
                 penManager = PenConnectionManager(
