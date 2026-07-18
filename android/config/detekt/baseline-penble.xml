@@ -60,11 +60,13 @@
     <ID>MagicNumber:NeoProto.kt$NeoRequest$0xFF</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$14</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$16</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$17</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$18</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$19</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$20</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$24</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$3</ID>
+    <ID>MagicNumber:NeoProto.kt$NeoRequest$33</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$36</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$4</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$42</ID>
@@ -74,6 +76,7 @@
     <ID>MagicNumber:NeoProto.kt$NeoRequest$8</ID>
     <ID>MagicNumber:NeoProto.kt$NeoRequest$9</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$0xFF</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$10</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$100</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$16</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$17</ID>
@@ -82,6 +85,7 @@
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$40</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$56</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$6</ID>
+    <ID>MagicNumber:PenBleSdk.kt$PenBleSdk$8</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$0xFF</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$12</ID>
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$3</ID>
@@ -89,6 +93,7 @@
     <ID>MagicNumber:PenBleSdk.kt$PenBleSdk.&lt;no name provided&gt;$8</ID>
     <ID>MaxLineLength:NeoDotDecodeTest.kt$NeoDotDecodeTest$d.decode(NeoDotDecoder.EVT_DOT_ID, bytes(0x1B, 0x00, 0x00, 0x03, 0xB6, 0x01, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00))</ID>
     <ID>MaxLineLength:NeoGattTransport.kt$NeoGattTransport.&lt;no name provided&gt;$Log.i(tag, "establishment failed (status=$status) — retry ${connectAttempts + 1}/$MAX_CONNECT_ATTEMPTS")</ID>
+    <ID>NestedBlockDepth:NeoFraming.kt$NeoFrameDecoder$fun feed(chunk: ByteArray): List&lt;ByteArray&gt;</ID>
     <ID>NestedBlockDepth:NeoOfflineDecoder.kt$NeoOfflineDecoder$private fun inflate(data: ByteArray): ByteArray</ID>
     <ID>ReturnCount:NeoGattTransport.kt$NeoGattTransport$@Suppress("DEPRECATION") private fun pump()</ID>
     <ID>ReturnCount:NeoGattTransport.kt$NeoGattTransport.&lt;no name provided&gt;$override fun onServicesDiscovered(g: BluetoothGatt, status: Int)</ID>

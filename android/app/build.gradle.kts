@@ -278,5 +278,5 @@ tasks.register("verifyGplFree") {
     }
 }
 tasks.matching { it.name == "assembleRelease" || it.name == "bundleRelease" }.configureEach {
-    dependsOn("verifyGplFree")
+    dependsOn("verifyGplFree", "verifyNoTelemetry")
 }
