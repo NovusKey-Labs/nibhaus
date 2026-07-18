@@ -19,6 +19,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import java.io.IOException
+import kotlinx.coroutines.CancellationException
 
 /** A target that records writes (and can be told to fail), so the export engine is tested for real. */
 private class FakeStorageProvider(override val id: String = "fake") : StorageProvider {
@@ -78,6 +79,23 @@ class ExportEngineTest {
         assertThat(provider.writes.keys).containsExactly("P1.svg", "P1.inkml", "P1.md", "P1.json", "P1.bak.json")
         assertThat(outbox.peek(10)).isEmpty()                       // drained
         assertThat(strokeDao.byId["s1"]!!.syncState).isEqualTo(SyncState.SYNCED)
+    }
+
+    @Test fun `drain cancellation propagates without bumping attempts`() = runTest {
+        pageDao.insert(page("P1"))
+        seedStroke("s1", "P1", pts)
+        val cancelling = object : StorageProvider {
+            override val id = "cancel"
+            override suspend fun write(name: String, bytes: ByteArray): Unit =
+                throw CancellationException("replaced")
+            override suspend fun delete(name: String) = Unit
+        }
+
+        var propagated = false
+        try { engine.exportPending(cancelling) } catch (_: CancellationException) { propagated = true }
+
+        assertThat(propagated).isTrue()
+        assertThat(outbox.rows.getValue("s1").attempts).isEqualTo(0)
     }
 
     @Test fun `decodes each stroke's points once and reuses them across svg, inkml and backup`() = runTest {

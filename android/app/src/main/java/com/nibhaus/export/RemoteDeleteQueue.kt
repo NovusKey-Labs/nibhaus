@@ -2,6 +2,7 @@ package com.nibhaus.export
 
 import com.nibhaus.data.PendingRemoteDelete
 import com.nibhaus.data.PendingRemoteDeleteDao
+import kotlinx.coroutines.CancellationException
 
 /**
  * Durable "pending remote delete" queue — the delete-side counterpart of [ExportEngine.exportPending]'s
@@ -41,7 +42,8 @@ class RemoteDeleteQueue(
 
         var allOk = true
         for (entry in pending) {
-            val ok = runCatching { deleteArtifacts(entry.basePath, provider) }.isSuccess
+            val ok = runCatching { deleteArtifacts(entry.basePath, provider) }
+                .onFailure { if (it is CancellationException) throw it }.isSuccess
             if (ok) {
                 dao.remove(entry.pageId)
             } else {

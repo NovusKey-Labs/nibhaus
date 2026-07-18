@@ -166,3 +166,12 @@ data class PendingRemoteDelete(
     val enqueuedAt: Long,
     val attempts: Int = 0,
 )
+
+/** A durable post-commit cleanup operation for state outside Room (files, SAF, DataStore). */
+@Entity(tableName = "pending_local_delete_cleanup", indices = [Index(value = ["enqueuedAt"])])
+data class PendingLocalDeleteCleanup(
+    @PrimaryKey val id: String,
+    val kind: String,
+    val target: String,
+    val enqueuedAt: Long,
+)

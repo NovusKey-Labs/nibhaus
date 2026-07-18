@@ -34,9 +34,11 @@ class ReleaseLoggingContractTest {
         }
     }
 
-    @Test fun `per dot JSON logging remains debug gated`() {
+    @Test fun `stroke ingest hot path logs no per-dot ink content`() {
         val source = File("src/main/java/com/nibhaus/ingest/StrokeIngestor.kt").readText()
-        assertThat(source).contains("if (BuildConfig.DEBUG)")
-        assertThat(source).contains("Log.d(")
+        // Ink coordinates/content must never be logged from the per-dot path (privacy), in any build.
+        assertThat(source).doesNotContain("Log.d(")
+        assertThat(source).doesNotContain("Log.v(")
+        assertThat(source).doesNotContain("Log.i(")
     }
 }

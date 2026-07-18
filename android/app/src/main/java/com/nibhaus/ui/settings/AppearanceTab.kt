@@ -227,6 +227,7 @@ private fun PaletteRow(
  *  a static stand-in. Tapping it feeds [Palettes.DYNAMIC_ID] into the same pending/Preview/Apply
  *  flow every other palette card uses — no separate wiring. */
 @Composable
+@androidx.annotation.RequiresApi(Build.VERSION_CODES.S)
 private fun DynamicPaletteCard(active: Boolean, pending: Boolean, onClick: () -> Unit) {
     val cs = MaterialTheme.colorScheme
     val context = LocalContext.current

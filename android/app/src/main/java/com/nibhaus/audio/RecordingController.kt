@@ -9,6 +9,7 @@ import com.nibhaus.data.RecordingDao
 import com.nibhaus.data.RecordingEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,10 +28,17 @@ import java.util.UUID
  * (keep recording after leaving the screen) is to move this into the foreground service.
  */
 class RecordingController(
-    private val context: Context,
+    private val context: Context?,
     private val dao: RecordingDao,
     private val scope: CoroutineScope,
     private val now: () -> Long = System::currentTimeMillis,
+    private val recordingsDir: File = File(requireNotNull(context).filesDir, "recordings"),
+    private val captureFactory: () -> RecordingCapture = {
+        AndroidRecordingCapture(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) MediaRecorder(requireNotNull(context))
+            else @Suppress("DEPRECATION") MediaRecorder(),
+        )
+    },
 ) {
     sealed interface State {
         data object Idle : State
@@ -53,10 +61,11 @@ class RecordingController(
     private val _positionMs = MutableStateFlow(0L)
     val positionMs: StateFlow<Long> = _positionMs.asStateFlow()
 
-    private var recorder: MediaRecorder? = null
+    private var recorder: RecordingCapture? = null
     private var inProgress: RecordingEntity? = null
     private var player: MediaPlayer? = null
     private var positionJob: Job? = null
+    private var insertJob: Job? = null
 
     val isRecording: Boolean get() = recorder != null
 
@@ -65,19 +74,11 @@ class RecordingController(
         if (recorder != null) return
         stopPlayback()
         val id = UUID.randomUUID().toString()
-        val dir = File(context.filesDir, "recordings").apply { mkdirs() }
+        val dir = recordingsDir.apply { mkdirs() }
         val file = File(dir, "$id.m4a")
-        val rec = newRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setAudioEncodingBitRate(64_000)
-            setAudioSamplingRate(44_100)
-            setOutputFile(file.absolutePath)
-        }
+        val rec = captureFactory()
         try {
-            rec.prepare()
-            rec.start()
+            rec.start(file)
         } catch (e: Exception) {
             Log.w(TAG, "record start failed: ${e.message}")
             runCatching { rec.release() }
@@ -87,8 +88,11 @@ class RecordingController(
         recorder = rec
         val entity = RecordingEntity(id, pageId, file.absolutePath, now(), 0L, addressKey = addressKey)
         inProgress = entity
-        scope.launch { dao.insert(entity) }
-        _state.value = State.Recording(pageId, entity.startedAt)
+        insertJob = scope.launch(Dispatchers.IO) {
+            dao.insert(entity)
+            // stop() may have run while the insert was suspended. Never resurrect a stopped session.
+            if (inProgress === entity) _state.value = State.Recording(pageId, entity.startedAt)
+        }
     }
 
     /** Stop the active recording and persist its final duration. No-op if not recording. */
@@ -104,11 +108,20 @@ class RecordingController(
         if (entity != null) {
             if (ok) {
                 val dur = (now() - entity.startedAt).coerceAtLeast(0L)
-                scope.launch { dao.setDuration(entity.id, dur) }
+                val pendingInsert = insertJob
+                scope.launch(Dispatchers.IO) {
+                    pendingInsert?.join()
+                    dao.setDuration(entity.id, dur)
+                }
             } else {
                 File(entity.path).delete()
-                scope.launch { dao.delete(entity.id) }
+                val pendingInsert = insertJob
+                scope.launch(Dispatchers.IO) {
+                    pendingInsert?.join()
+                    dao.delete(entity.id)
+                }
             }
+            insertJob = null
         }
     }
 
@@ -190,9 +203,26 @@ class RecordingController(
         scope.launch { dao.setTitle(id, title.trim()) }
     }
 
-    private fun newRecorder(): MediaRecorder =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) MediaRecorder(context)
-        else @Suppress("DEPRECATION") MediaRecorder()
-
     private companion object { const val TAG = "NibhausAudio" }
+}
+
+interface RecordingCapture {
+    fun start(file: File)
+    fun stop()
+    fun release()
+}
+
+private class AndroidRecordingCapture(private val recorder: MediaRecorder) : RecordingCapture {
+    override fun start(file: File) {
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+        recorder.setAudioEncodingBitRate(64_000)
+        recorder.setAudioSamplingRate(44_100)
+        recorder.setOutputFile(file.absolutePath)
+        recorder.prepare()
+        recorder.start()
+    }
+    override fun stop() = recorder.stop()
+    override fun release() = recorder.release()
 }

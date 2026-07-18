@@ -21,13 +21,14 @@ class ExportWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 
     override suspend fun doWork(): Result {
         val sl = ServiceLocator.from(applicationContext)
+        val locallyCleaned = sl.localDeleteCleanupQueue.drain()
         // Missing/!configured target (including a sync method entitlement now blocks, such as a
         // relock, or a Tailscale endpoint predating this check): nothing was drained, so this must
         // NOT report success; that would leave the outbox silently queued forever with WorkManager
         // believing the job is done. Retrying (with the class's normal backoff) keeps it honest and
         // self-heals the moment the target becomes resolvable again, same as a real drain failure below.
         val provider = sl.currentStorageProvider()
-            ?: return exportWorkResult(providerAvailable = false, exported = false, deleted = false)
+            ?: return exportWorkResult(providerAvailable = false, exported = false, deleted = locallyCleaned)
         // Both queues share this one worker's cadence/backoff (a durable delete queue mirroring the
         // durable export outbox — see RemoteDeleteQueue's kdoc). Run both even if the first needs a
         // retry, so one backlog stalling the other never happens.
@@ -37,7 +38,7 @@ class ExportWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         // loss. Delete-then-export makes the collision self-heal in one cycle (stale gone, fresh rewritten).
         val deleted = sl.remoteDeleteQueue.drain(provider)
         val exported = sl.exportEngine.exportPending(provider)
-        return exportWorkResult(providerAvailable = true, exported = exported, deleted = deleted)
+        return exportWorkResult(providerAvailable = true, exported = exported, deleted = deleted && locallyCleaned)
     }
 
     companion object {

@@ -12,6 +12,7 @@ import com.nibhaus.data.SyncState
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.CancellationException
 
 /**
  * Phase 3 export core. Drains the durable outbox (strokes captured but not yet exported) by writing
@@ -68,9 +69,10 @@ class ExportEngine(
                 exportPageLocked(pageId, provider)
                 strokeDao.markSync(uuids, SyncState.SYNCED)
                 outboxDao.remove(uuids)
-            }.isSuccess
+            }.onFailure { if (it is CancellationException) throw it }.isSuccess
             if (!ok) {
                 runCatching { outboxDao.bumpAttempts(uuids) }
+                    .onFailure { if (it is CancellationException) throw it }
                 allOk = false
             }
         }
@@ -86,7 +88,8 @@ class ExportEngine(
      *   and the strokes stay queued for the automatic retry.
      */
     suspend fun exportSingle(pageId: String, provider: StorageProvider): Boolean {
-        val ok = runCatching { exportPageLocked(pageId, provider) }.isSuccess
+        val ok = runCatching { exportPageLocked(pageId, provider) }
+            .onFailure { if (it is CancellationException) throw it }.isSuccess
         if (ok) {
             val uuids = strokeDao.strokesForPage(pageId).map { it.uuid }
             if (uuids.isNotEmpty()) {

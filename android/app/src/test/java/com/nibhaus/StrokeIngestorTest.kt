@@ -10,10 +10,18 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.junit.Test
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrokeIngestorTest {
@@ -249,5 +257,60 @@ class StrokeIngestorTest {
         advanceUntilIdle()
 
         assertThat(committed).isEqualTo(pageDao.byId.values.first().id)
+    }
+
+    @Test fun `overload backpressures producer and eventually persists every dot`() {
+        val gate = CompletableDeferred<Unit>()
+        val entered = CompletableDeferred<Unit>()
+        val inserts = AtomicInteger()
+        val pending = object : com.nibhaus.data.PendingDotDao {
+            override suspend fun insertAll(dots: List<com.nibhaus.data.PendingDotEntity>) {
+                entered.complete(Unit)
+                gate.await()
+                inserts.addAndGet(dots.size)
+            }
+            override suspend fun forPage(pageKey: String) = emptyList<com.nibhaus.data.PendingDotEntity>()
+            override suspend fun pageKeysWithPending() = emptyList<String>()
+            override suspend fun clearPage(pageKey: String) = Unit
+        }
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val stroke = FakeStrokeDao(); val outbox = FakeOutboxDao(); val page = FakePageDao()
+        val ingest = object : com.nibhaus.data.IngestDao() {
+            override suspend fun insertStroke(stroke: com.nibhaus.data.StrokeEntity) = Unit
+            override suspend fun enqueueOutbox(entry: com.nibhaus.data.OutboxEntry) = Unit
+            override suspend fun clearPending(pageKey: String) = Unit
+        }
+        val ingestor = StrokeIngestor(
+            ingest, pending, page,
+            AutoOrganizer(FakeNotebookDao(), page), scope,
+        )
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val producer = executor.submit {
+                repeat(1_100) { ingestor.onDot(dot(PenDot.Phase.DOWN, it.toFloat())) }
+            }
+            runBlocking { entered.await() }
+            Thread.sleep(50)
+            assertThat(producer.isDone).isFalse()
+            gate.complete(Unit)
+            producer.get(5, TimeUnit.SECONDS)
+            runBlocking {
+                while (inserts.get() < 1_100) kotlinx.coroutines.delay(1)
+            }
+            assertThat(inserts.get()).isEqualTo(1_100)
+        } finally {
+            scope.cancel()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test fun `enqueue after ingest cancellation fails explicitly`() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val f = fixture(scope)
+        scope.cancel()
+        runBlocking { kotlinx.coroutines.yield() }
+
+        val failure = runCatching { f.ingestor.onDot(dot(PenDot.Phase.DOWN, 0f)) }.exceptionOrNull()
+        assertThat(failure).isInstanceOf(IllegalStateException::class.java)
     }
 }

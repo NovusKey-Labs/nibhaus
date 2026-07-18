@@ -54,7 +54,7 @@ class NeoSdkAdapter(
     private var dotCount = 0
     /** Guards against a wrong stored password looping: we auto-answer from storage at most once per
      *  connection, then defer to the user prompt. Reset on every (re)connect and on disconnect. */
-    private var autoTriedPassword = false
+    @Volatile private var autoTriedPassword = false
 
     override fun connect(target: PenTarget) {
         autoTriedPassword = false
@@ -88,7 +88,7 @@ class NeoSdkAdapter(
      *  PEN_SETUP_SUCCESS/FAILURE is the password result. The app issues no other setup ops, so this
      *  gate can't be confused by an unrelated setup reply. Note: if other setup ops are added,
      *  distinguish by the PEN_SETUP_* payload instead of a single in-flight flag. */
-    private var passwordOpInFlight = false
+    @Volatile private var passwordOpInFlight = false
 
     override fun changePassword(oldPassword: String, newPassword: String) {
         Log.i(TAG, "reqSetupPassword(old=${oldPassword.length}, new=${newPassword.length})")

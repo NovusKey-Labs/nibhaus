@@ -27,8 +27,9 @@ class Converters {
         PageTag::class,
         PageFts::class,
         PendingRemoteDelete::class,
+        PendingLocalDeleteCleanup::class,
     ],
-    version = 12,
+    version = 13,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -43,6 +44,8 @@ abstract class InkDatabase : RoomDatabase() {
     abstract fun recordingDao(): RecordingDao
     abstract fun tagDao(): TagDao
     abstract fun pendingRemoteDeleteDao(): PendingRemoteDeleteDao
+    abstract fun pendingLocalDeleteCleanupDao(): PendingLocalDeleteCleanupDao
+    abstract fun deleteDao(): DeleteDao
 }
 
 /**
@@ -135,6 +138,19 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
         db.execSQL(
             "CREATE INDEX IF NOT EXISTS `index_pending_remote_deletes_enqueuedAt` " +
                 "ON `pending_remote_deletes` (`enqueuedAt`)",
+        )
+    }
+}
+
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `pending_local_delete_cleanup` (`id` TEXT NOT NULL, " +
+                "`kind` TEXT NOT NULL, `target` TEXT NOT NULL, `enqueuedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_pending_local_delete_cleanup_enqueuedAt` " +
+                "ON `pending_local_delete_cleanup` (`enqueuedAt`)",
         )
     }
 }

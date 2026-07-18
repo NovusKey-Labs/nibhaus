@@ -340,6 +340,69 @@ interface PendingRemoteDeleteDao {
     fun observeBacklog(): Flow<Int>
 }
 
+data class PageDeletionPlan(
+    val pageId: String,
+    val remoteDelete: PendingRemoteDelete?,
+    val cleanups: List<PendingLocalDeleteCleanup>,
+    val deleteAudio: Boolean,
+)
+
+/** Owns the complete Room boundary for destructive page/notebook deletion. */
+@Dao
+abstract class DeleteDao {
+    @Query("DELETE FROM outbox WHERE strokeUuid IN (SELECT uuid FROM strokes WHERE pageId = :pageId)")
+    protected abstract suspend fun deleteOutbox(pageId: String)
+    @Query("DELETE FROM strokes WHERE pageId = :pageId")
+    protected abstract suspend fun deleteStrokes(pageId: String)
+    @Query("DELETE FROM page_fts WHERE pageId = :pageId")
+    protected abstract suspend fun deleteFts(pageId: String)
+    @Query("DELETE FROM export_records WHERE pageId = :pageId")
+    protected abstract suspend fun deleteExport(pageId: String)
+    @Query("DELETE FROM page_tags WHERE pageId = :pageId")
+    protected abstract suspend fun deleteTags(pageId: String)
+    @Query("DELETE FROM recordings WHERE addressKey IN (SELECT addressKey FROM pages WHERE id = :pageId)")
+    protected abstract suspend fun deleteRecordings(pageId: String)
+    @Query("DELETE FROM pages WHERE id = :pageId")
+    protected abstract suspend fun deletePage(pageId: String)
+    @Query("DELETE FROM notebooks WHERE id = :notebookId")
+    protected abstract suspend fun deleteNotebook(notebookId: String)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    protected abstract suspend fun enqueueRemote(entry: PendingRemoteDelete)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    protected abstract suspend fun enqueueCleanups(entries: List<PendingLocalDeleteCleanup>)
+
+    @Transaction
+    open suspend fun deletePages(
+        plans: List<PageDeletionPlan>,
+        notebookId: String? = null,
+        extraCleanups: List<PendingLocalDeleteCleanup> = emptyList(),
+    ) {
+        if (extraCleanups.isNotEmpty()) enqueueCleanups(extraCleanups)
+        plans.forEach { plan ->
+            plan.remoteDelete?.let { enqueueRemote(it) }
+            if (plan.cleanups.isNotEmpty()) enqueueCleanups(plan.cleanups)
+            deleteOutbox(plan.pageId)
+            deleteStrokes(plan.pageId)
+            deleteFts(plan.pageId)
+            deleteExport(plan.pageId)
+            deleteTags(plan.pageId)
+            if (plan.deleteAudio) deleteRecordings(plan.pageId)
+            deletePage(plan.pageId)
+        }
+        notebookId?.let { deleteNotebook(it) }
+    }
+}
+
+@Dao
+interface PendingLocalDeleteCleanupDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun enqueue(entry: PendingLocalDeleteCleanup)
+    @Query("SELECT * FROM pending_local_delete_cleanup ORDER BY enqueuedAt ASC LIMIT :limit")
+    suspend fun peek(limit: Int): List<PendingLocalDeleteCleanup>
+    @Query("DELETE FROM pending_local_delete_cleanup WHERE id = :id")
+    suspend fun remove(id: String)
+}
+
 @Dao
 interface ExportDao {
     @Query("SELECT * FROM export_records WHERE pageId = :pageId LIMIT 1")

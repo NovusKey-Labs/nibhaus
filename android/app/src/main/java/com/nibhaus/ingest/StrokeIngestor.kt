@@ -15,6 +15,7 @@ import com.nibhaus.zones.boundsOf
 import com.nibhaus.zones.tapCentre
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -68,7 +69,7 @@ class StrokeIngestor(
     @Volatile var onCalibrationTrace: ((book: Int, Float, Float, Float, Float) -> Unit)? = null
 
     private val json = Json
-    private val channel = Channel<PenDot>(capacity = Channel.UNLIMITED)
+    private val channel = Channel<PenDot>(capacity = INGEST_BUFFER_DOTS)
 
     /** In-progress strokes keyed by page address. Survives only crash via pending_dots. */
     private val active = HashMap<String, ActiveStroke>()
@@ -77,14 +78,22 @@ class StrokeIngestor(
     private val lastStrokeEndByKey = HashMap<String, Long>()
 
     init {
-        scope.launch {
+        val consumer = scope.launch {
             for (dot in channel) process(dot)
         }
+        consumer.invokeOnCompletion { cause -> channel.close(cause) }
     }
 
-    /** Called synchronously from the pen layer for every dot. Never blocks the caller. */
+    /** Called synchronously from the pen layer for every dot. Backpressures when persistence stalls. */
     fun onDot(dot: PenDot) {
-        channel.trySend(dot)
+        val immediate = channel.trySend(dot)
+        if (immediate.isSuccess) return
+        if (immediate.isClosed) throw IllegalStateException("stroke ingest is closed", immediate.exceptionOrNull())
+
+        // BLE delivery is sequential, so blocking this producer is a bounded, order-preserving spool:
+        // no dot is dropped and memory cannot grow with an arbitrarily stalled database.
+        val delivered = runBlocking { channel.runCatching { send(dot) } }
+        delivered.getOrElse { throw IllegalStateException("stroke ingest is closed", it) }
     }
 
     private suspend fun process(dot: PenDot) {
@@ -233,6 +242,9 @@ class StrokeIngestor(
     }
 
     private companion object {
+        // Roughly four seconds at a conservative 250 dots/sec; enough for normal DB jitter while
+        // still placing a hard ceiling on memory during a prolonged stall.
+        const val INGEST_BUFFER_DOTS = 1_024
         // Max Ncode-unit spread for a stroke to count as a "tap" (zone/calibration). May need tuning
         // on hardware once the Ncode coordinate scale is confirmed on the target pens.
         const val TAP_EPS = 2.0f

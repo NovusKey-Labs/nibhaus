@@ -2,6 +2,8 @@ package com.nibhaus.edit
 
 import com.nibhaus.data.OutboxDao
 import com.nibhaus.data.OutboxEntry
+import com.nibhaus.data.PendingRemoteDelete
+import com.nibhaus.data.PendingRemoteDeleteDao
 import com.nibhaus.data.StrokeDao
 import com.nibhaus.data.StrokeEntity
 import com.nibhaus.data.SyncState
@@ -16,13 +18,14 @@ import com.nibhaus.data.SyncState
  * what it changed (old colors / old widths / the deleted strokes), pushed as one batch onto a
  * per-page, in-memory stack. [undo] pops and applies the inverse.
  *
- * Note (known limitation): the undo stack is in-memory (a within-session convenience), and
- * deleting every stroke on a page leaves the previously-exported file on the target — we only
- * re-write pages that still have ink.
+ * Note (known limitation): the undo stack is in-memory (a within-session convenience).
  */
 class StrokeEditor(
     private val strokeDao: StrokeDao,
     private val outboxDao: OutboxDao,
+    private val pendingRemoteDeleteDao: PendingRemoteDeleteDao? = null,
+    private val transaction: suspend (suspend () -> Unit) -> Unit = { it() },
+    private val artifactDelete: suspend (pageId: String) -> PendingRemoteDelete? = { null },
     private val now: () -> Long = System::currentTimeMillis,
     /** Wired with the edited page id to enqueue the export drain and write the at-ingest safety backup. */
     private val onChanged: (pageId: String) -> Unit = {},
@@ -39,38 +42,56 @@ class StrokeEditor(
     override suspend fun recolor(uuids: List<String>, color: Int, pageId: String) {
         val before = strokeDao.byUuids(uuids)
         if (before.isEmpty()) return
-        before.forEach { strokeDao.setColor(it.uuid, color) }
+        transaction {
+            before.forEach { strokeDao.setColor(it.uuid, color) }
+            requeueInTransaction(pageId)
+        }
         push(pageId, before.map { ReColor(it.uuid, it.color) })
-        requeue(pageId)
+        onChanged(pageId)
     }
 
     override suspend fun setThickness(uuids: List<String>, width: Float, pageId: String) {
         val before = strokeDao.byUuids(uuids)
         if (before.isEmpty()) return
-        before.forEach { strokeDao.setWidth(it.uuid, width) }
+        transaction {
+            before.forEach { strokeDao.setWidth(it.uuid, width) }
+            requeueInTransaction(pageId)
+        }
         push(pageId, before.map { ReWidth(it.uuid, it.width) })
-        requeue(pageId)
+        onChanged(pageId)
     }
 
     override suspend fun delete(uuids: List<String>, pageId: String) {
         val before = strokeDao.byUuids(uuids)
         if (before.isEmpty()) return
-        before.forEach { strokeDao.delete(it.uuid) }
-        outboxDao.remove(before.map { it.uuid })
+        val deleteEntry = artifactDelete(pageId)
+        transaction {
+            before.forEach { strokeDao.delete(it.uuid) }
+            outboxDao.remove(before.map { it.uuid })
+            requeueInTransaction(pageId, deleteEntry)
+        }
         push(pageId, before.map { ReInsert(it) })
-        requeue(pageId)
+        onChanged(pageId)
     }
 
     override suspend fun undo(pageId: String) {
         val batch = undoStacks[pageId]?.removeLastOrNull() ?: return
-        batch.forEach { op ->
-            when (op) {
-                is ReColor -> strokeDao.setColor(op.uuid, op.color)
-                is ReWidth -> strokeDao.setWidth(op.uuid, op.width)
-                is ReInsert -> strokeDao.insert(op.stroke)
+        try {
+            transaction {
+                batch.forEach { op ->
+                    when (op) {
+                        is ReColor -> strokeDao.setColor(op.uuid, op.color)
+                        is ReWidth -> strokeDao.setWidth(op.uuid, op.width)
+                        is ReInsert -> strokeDao.insert(op.stroke)
+                    }
+                }
+                requeueInTransaction(pageId)
             }
+        } catch (t: Throwable) {
+            undoStacks.getOrPut(pageId) { ArrayDeque() }.addLast(batch)
+            throw t
         }
-        requeue(pageId)
+        onChanged(pageId)
     }
 
     private fun push(pageId: String, batch: List<UndoOp>) {
@@ -81,13 +102,15 @@ class StrokeEditor(
     }
 
     /** The page's exported artifact is now stale — re-queue its remaining strokes for a fresh write. */
-    private suspend fun requeue(pageId: String) {
+    private suspend fun requeueInTransaction(pageId: String, deleteEntry: PendingRemoteDelete? = null) {
         val remaining = strokeDao.strokesForPage(pageId)
         if (remaining.isNotEmpty()) {
             strokeDao.markSync(remaining.map { it.uuid }, SyncState.PENDING)
             remaining.forEach { outboxDao.enqueue(OutboxEntry(it.uuid, now())) }
+        } else if (deleteEntry != null) {
+            checkNotNull(pendingRemoteDeleteDao) { "remote delete DAO required for page artifact deletion" }
+                .enqueue(deleteEntry)
         }
-        onChanged(pageId)
     }
 
     private companion object {
