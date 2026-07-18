@@ -11,6 +11,14 @@
 -dontwarn com.nibhaus.neosdk.**
 -dontwarn com.nibhaus.premium.**
 
+# Release privacy: diagnostic detail is useful in debug builds but stable pen identifiers and raw
+# protocol/note content must not survive in release logcat. Warn/error remain for actionable faults.
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+}
+
 # kotlinx-serialization
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.**

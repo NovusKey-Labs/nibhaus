@@ -241,7 +241,7 @@ class PenBleSdk(
 
     /** RES_OfflineChunk: decode this chunk's strokes, ACK it, and flush the note on the last chunk. */
     private fun onOfflineChunk(packetId: Int, payload: ByteArray) {
-        if (payload.size < 17) { Log.w(tag, "offline chunk too short: ${payload.size}"); return }
+        if (payload.size < 17) { Log.w(tag, "invalid offline pen data chunk"); return }
         val position = payload[6].toInt() and 0xFF // 0 = first, 1 = more, 2 = last
         Log.i(tag, "offline chunk pkt=$packetId pos=$position len=${payload.size}")
         offlineAccum.addAll(NeoOfflineDecoder.parse(payload, maxPress))
