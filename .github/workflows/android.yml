@@ -25,19 +25,19 @@ jobs:
     name: Build + JVM unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Set up Android SDK
         continue-on-error: true # setup-android@v3's sdkmanager flakes intermittently; the next step recovers
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
 
       - name: Ensure SDK platform + licenses (resilient; retries the flaky sdkmanager)
         run: |
@@ -49,7 +49,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: Unit tests (no device, no hardware)
         run: ./gradlew :app:testDebugUnitTest :pencore:testDebugUnitTest :penble:testDebugUnitTest :premiumapi:testDebugUnitTest --stacktrace
@@ -99,19 +99,19 @@ jobs:
     # Per-module baselines freeze the existing debt. Detekt still exits non-zero for any finding
     # introduced after the baseline, so new violations block the job while reports remain available.
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Set up Android SDK
         continue-on-error: true # setup-android@v3's sdkmanager flakes intermittently; the next step recovers
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
 
       - name: Ensure SDK platform + licenses (resilient; retries the flaky sdkmanager)
         run: |
@@ -123,7 +123,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: detekt
         run: ./gradlew detekt -Pnibhaus.premium=false -PpenDriver=penble --no-daemon --stacktrace
@@ -145,12 +145,12 @@ jobs:
     # Everything except the physical pen link: Room, lifecycle, BLE permission flow on a real
     # Android image. No pen is attached, so this never covers the LAMY GO/NO-GO.
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
@@ -165,7 +165,7 @@ jobs:
 
       - name: Set up Android SDK
         continue-on-error: true # setup-android@v3's sdkmanager flakes intermittently; the next step recovers
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
 
       - name: Ensure SDK platform + licenses (resilient; retries the flaky sdkmanager)
         run: |
@@ -177,7 +177,7 @@ jobs:
           done || echo "android-37 not in the sdkmanager channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       - name: Instrumented tests on emulator
         # Report-only: emulator runs are flaky on CI and the pen link needs real hardware anyway.
@@ -199,7 +199,7 @@ jobs:
     # (no SEMGREP_APP_TOKEN); add the token later to upload results to the platform.
     container: semgrep/semgrep
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: semgrep scan
