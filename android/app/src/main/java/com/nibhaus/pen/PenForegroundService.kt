@@ -196,9 +196,11 @@ class PenForegroundService : Service() {
     }
 
     private fun openAppIntent() =
-        packageManager.getLaunchIntentForPackage(packageName)?.let {
-            PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE)
-        }
+        packageManager.getLaunchIntentForPackage(packageName)
+            // Explicit by construction (the launcher Intent already targets this package); setPackage
+            // makes that visible to static analysis (CodeQL java/android/implicit-pendingintents).
+            ?.setPackage(packageName)
+            ?.let { PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_IMMUTABLE) }
 
     /** The silent ongoing capture notification — a reassurance object, never an alert. */
     private fun buildCaptureNotification(
