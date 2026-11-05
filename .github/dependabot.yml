@@ -10,6 +10,10 @@ updates:
       prefix: "ci"
     cooldown:
       default-days: 7
+    # One PR per week for all action bumps instead of one PR per action.
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   # Gradle version-updates (STANDARDS.md §9: Security owns this gate). Scoped via `ignore` below to
   # protect the deliberate lockstep pins instead of excluding Gradle entirely (the prior approach):
@@ -28,6 +32,12 @@ updates:
     open-pull-requests-limit: 5
     cooldown:
       default-days: 7
+    # Group families that move together so one CI run covers the set.
+    groups:
+      androidx:
+        patterns: ["androidx.*"]
+      kotlinx:
+        patterns: ["org.jetbrains.kotlinx*"]
     ignore:
       # AGP + Kotlin + KSP move together on purpose (KSP only tracks specific Kotlin releases; AGP
       # pins the required Gradle/JDK/compileSdk floor — see android/build.gradle.kts). Bump as one
