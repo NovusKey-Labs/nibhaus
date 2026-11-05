@@ -33,5 +33,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
     // Saved-pen list persistence (PenPrefs.savedPens) — same JSON-in-SharedPreferences approach the
     // app module already uses (ActionZoneStore etc.), same pinned version.
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.12.0")
 }
