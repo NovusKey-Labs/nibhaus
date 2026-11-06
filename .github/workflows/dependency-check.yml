@@ -20,7 +20,9 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Only cancel superseded PR runs. A push to master must not kill the ~60-minute cold NVD sync:
+  # actions/cache's post-step never runs on a cancelled job, so the cache was never saved (2026-11-06).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
