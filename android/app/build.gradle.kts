@@ -131,9 +131,9 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2026.05.00")
     implementation(composeBom)
 
-    implementation("androidx.core:core-ktx:1.19.0")
+    implementation("androidx.core:core-ktx:1.19.1")
     // Branded launch: Android-12 SplashScreen backported to minSdk 24; held until the palette loads.
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
@@ -151,22 +151,22 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
 
     // Persistence — the source of truth. Room 2.8.x is KSP2-ready.
-    implementation("androidx.room:room-runtime:2.8.4")
-    implementation("androidx.room:room-ktx:2.8.4")
-    ksp("androidx.room:room-compiler:2.8.4")
+    implementation("androidx.room:room-runtime:2.8.5")
+    implementation("androidx.room:room-ktx:2.8.5")
+    ksp("androidx.room:room-compiler:2.8.5")
 
     // Durable background sync.
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("androidx.work:work-runtime-ktx:2.12.0")
 
     // Phase 3 export: persisted settings + SAF folder writes.
     // 1.1.7 is the last 1.1.x with a confirmed 16 KB-aligned libdatastore_shared_counter.so.
     // Note: do NOT jump to 1.2.0 — it regressed the .so back to 4 KB alignment
     // (issuetracker 357653528 / flutter#182898); re-verify with check_elf_alignment.sh before any 1.2.x.
     implementation("androidx.datastore:datastore-preferences:1.1.7")
-    implementation("androidx.documentfile:documentfile:1.0.1")
+    implementation("androidx.documentfile:documentfile:1.1.0")
 
     // Print a page via the system print dialog (PrintHelper renders a bitmap).
-    implementation("androidx.print:print:1.0.0")
+    implementation("androidx.print:print:1.1.0")
 
     // On-device handwriting OCR straight from captured strokes (offline after a one-time model
     // download; no GPU/NAS). ML Kit Digital Ink consumes our X/Y/time pen data — see OnDeviceInk.
@@ -204,7 +204,7 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
     testImplementation("com.google.truth:truth:1.4.4")
-    testImplementation("androidx.room:room-testing:2.8.4")
+    testImplementation("androidx.room:room-testing:2.8.5")
 
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
