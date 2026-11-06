@@ -34,19 +34,19 @@ jobs:
     # Every cancelled run also skips the cache save, so a too-low cap keeps every run cold.
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up JDK 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Set up Android SDK
         continue-on-error: true
-        uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
 
       - name: Ensure SDK platform + licenses
         run: |
@@ -55,12 +55,12 @@ jobs:
           "$sdkm" "platform-tools" "platforms;android-37" || echo "android-37 not in channel; AGP will auto-download"
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       # The local NVD CVE cache (~350-500MB) is the expensive part of a first run — without a
       # cache, every CI run re-syncs it. Path must match `data.directory` in the init script.
       - name: Cache the local NVD data directory
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.dependency-check-data
           key: dependency-check-nvd-${{ github.run_id }}
