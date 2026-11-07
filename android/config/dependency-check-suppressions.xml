@@ -24,18 +24,4 @@
         <packageUrl regex="true">^pkg:maven/androidx\.sqlite/sqlite(-framework)?(-android)?@.*$</packageUrl>
         <cpe>cpe:/a:sqlite:sqlite</cpe>
     </suppress>
-    <!--
-      CVE-2026-53914 (GHSA-r937-wjx7-w2jp): unsafe deserialization of Kotlin BUILD CACHE metadata in
-      org.jetbrains.kotlin:kotlin-gradle-plugin < 2.4.20. NVD's CPE is the whole jetbrains:kotlin
-      product below 2.4.20, so every Kotlin runtime jar on the classpath (stdlib, stdlib-jdk7/8,
-      parcelize-runtime, android-extensions-runtime) inherits it, and NVD's generic 9.8 trips the
-      gate (JetBrains' own score is 6.7, AV:L/PR:H). The runtime jars contain no build-cache code;
-      the affected component only runs inside the Gradle daemon. False positive on the ship
-      artifact. The real fix is the toolchain: kotlin-gradle-plugin >= 2.4.20 (noted 2026-11-06).
-    -->
-    <suppress>
-        <notes>CVE-2026-53914 is in kotlin-gradle-plugin (build cache), not in the Kotlin runtime jars.</notes>
-        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-(stdlib|parcelize-runtime|android-extensions-runtime)(-[a-z0-9]+)*@.*$</packageUrl>
-        <cve>CVE-2026-53914</cve>
-    </suppress>
 </suppressions>
