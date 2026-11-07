@@ -48,6 +48,10 @@ allprojects {
         pluginManager.apply(DependencyCheckPlugin::class.java)
         extensions.configure(DependencyCheckExtension::class.java) {
             failBuildOnCVSS = 7.0f
+            // Scan only what ships: the :app release runtime classpath. Without this the plugin walks
+            // every resolvable configuration (Kotlin compiler, KSP/Room processors, Detekt, AGP's own
+            // gRPC/Netty tooling): 103 flagged jars / 122 CVEs on 2026-11-06, none of them in the APK.
+            scanConfigurations = listOf("releaseRuntimeClasspath")
             format = "ALL"
             data.directory = "${System.getProperty("user.home")}/.dependency-check-data"
             val suppressions = file("$rootDir/config/dependency-check-suppressions.xml")

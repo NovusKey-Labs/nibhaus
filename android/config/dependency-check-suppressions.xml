@@ -11,4 +11,31 @@
   Schema: https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <!--
+      androidx.sqlite 2.6.2 (sqlite, sqlite-android, sqlite-framework, sqlite-framework-android) is
+      matched to cpe:/a:sqlite:sqlite:2.6.2, i.e. the SQLite ENGINE at a 1990s version number. These
+      AndroidX artifacts are the Kotlin API plus the driver over the device's platform SQLite; they
+      bundle no engine (androidx.sqlite:sqlite-bundled is the one that does, and the regex below
+      deliberately does NOT match it). 39 engine CVEs (CVE-2017-10989, CVE-2019-19646,
+      CVE-2020-11656, ...) were reported against them on 2026-11-06. False positive: wrong product.
+    -->
+    <suppress>
+        <notes>androidx.sqlite API/driver artifacts are not the SQLite engine (CPE mismatch).</notes>
+        <packageUrl regex="true">^pkg:maven/androidx\.sqlite/sqlite(-framework)?(-android)?@.*$</packageUrl>
+        <cpe>cpe:/a:sqlite:sqlite</cpe>
+    </suppress>
+    <!--
+      CVE-2026-53914 (GHSA-r937-wjx7-w2jp): unsafe deserialization of Kotlin BUILD CACHE metadata in
+      org.jetbrains.kotlin:kotlin-gradle-plugin < 2.4.20. NVD's CPE is the whole jetbrains:kotlin
+      product below 2.4.20, so every Kotlin runtime jar on the classpath (stdlib, stdlib-jdk7/8,
+      parcelize-runtime, android-extensions-runtime) inherits it, and NVD's generic 9.8 trips the
+      gate (JetBrains' own score is 6.7, AV:L/PR:H). The runtime jars contain no build-cache code;
+      the affected component only runs inside the Gradle daemon. False positive on the ship
+      artifact. The real fix is the toolchain: kotlin-gradle-plugin >= 2.4.20 (noted 2026-11-06).
+    -->
+    <suppress>
+        <notes>CVE-2026-53914 is in kotlin-gradle-plugin (build cache), not in the Kotlin runtime jars.</notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-(stdlib|parcelize-runtime|android-extensions-runtime)(-[a-z0-9]+)*@.*$</packageUrl>
+        <cve>CVE-2026-53914</cve>
+    </suppress>
 </suppressions>

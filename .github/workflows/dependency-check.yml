@@ -30,8 +30,8 @@ jobs:
   dependency-check:
     name: OWASP Dependency-Check (freemium build, CVSS >= 7 fails)
     runs-on: ubuntu-latest
-    # Cap generous enough for a cold NVD sync WITH an API key (observed: >30 min on ubuntu-latest).
-    # Every cancelled run also skips the cache save, so a too-low cap keeps every run cold.
+    # Cap generous enough for a cold NVD sync even if the API key is rate-limited (3 min with the key
+    # on 2026-11-06; >30 min without one). A cancelled run skips the cache save, so keep it high.
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -59,8 +59,11 @@ jobs:
 
       # The local NVD CVE cache (~350-500MB) is the expensive part of a first run — without a
       # cache, every CI run re-syncs it. Path must match `data.directory` in the init script.
-      - name: Cache the local NVD data directory
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      # restore + explicit save (if: always()) instead of plain actions/cache: the combined action's
+      # post-step is skipped when the job fails, and this job fails whenever the gate trips, so the
+      # cache was never saved (every run on 2026-11-05/06 started cold).
+      - name: Restore the local NVD data directory
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.dependency-check-data
           key: dependency-check-nvd-${{ github.run_id }}
@@ -88,3 +91,10 @@ jobs:
           name: dependency-check-report
           path: android/app/build/reports/dependency-check-report.*
           if-no-files-found: warn
+
+      - name: Save the local NVD data directory
+        if: always()
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.dependency-check-data
+          key: dependency-check-nvd-${{ github.run_id }}
