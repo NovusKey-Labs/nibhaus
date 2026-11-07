@@ -1,5 +1,6 @@
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.getKotlinPluginVersion
 
 plugins {
     id("com.android.application")
@@ -102,6 +103,17 @@ dependencies {
     constraints {
         implementation("com.squareup.okhttp3:okhttp:4.12.0") {
             because("CVE-2021-0341: ML Kit pulls a vulnerable okhttp 3.12.1 transitively")
+        }
+        // Transitive Kotlin runtime jars lag the toolchain (datastore 1.1.7 -> parcelize-runtime 1.9.22;
+        // okio / ML Kit -> stdlib-jdk7/8 1.9.10) and dependency-check CPE-matches them to old Kotlin CVEs
+        // (CVE-2020-29582 on 2026-11-06). Align them with the Kotlin plugin: the jdk7/jdk8 jars have been
+        // empty shims since 1.8.0, and parcelize-runtime >= 2.2.20 no longer drags in the discontinued
+        // kotlin-android-extensions-runtime at all.
+        val kotlinVersion = getKotlinPluginVersion()
+        listOf("kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-parcelize-runtime").forEach {
+            implementation("org.jetbrains.kotlin:$it:$kotlinVersion") {
+                because("align transitive Kotlin runtime jars with the toolchain (stale 1.9.x CPE matches)")
+            }
         }
     }
 
