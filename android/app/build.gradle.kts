@@ -215,13 +215,13 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
-    testImplementation("com.google.truth:truth:1.4.4")
+    testImplementation("com.google.truth:truth:1.4.5")
     testImplementation("androidx.room:room-testing:2.8.5")
 
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test:core-ktx:1.6.1")
-    androidTestImplementation("com.google.truth:truth:1.4.4")
+    androidTestImplementation("com.google.truth:truth:1.4.5")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 }
 
