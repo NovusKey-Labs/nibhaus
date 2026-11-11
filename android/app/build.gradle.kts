@@ -101,7 +101,7 @@ dependencies {
     // It reaches the freemium build transitively through Firebase ML Kit's on-device model download
     // (a live TLS path in the free tier). Force the patched line until ML Kit ships a fixed okhttp.
     constraints {
-        implementation("com.squareup.okhttp3:okhttp:4.12.0") {
+        implementation("com.squareup.okhttp3:okhttp:5.5.1") {
             because("CVE-2021-0341: ML Kit pulls a vulnerable okhttp 3.12.1 transitively")
         }
         // Transitive Kotlin runtime jars lag the toolchain (datastore 1.1.7 -> parcelize-runtime 1.9.22;
